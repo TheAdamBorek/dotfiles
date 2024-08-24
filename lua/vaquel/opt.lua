@@ -8,40 +8,55 @@ vim.opt.relativenumber = true
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
 
--- Don't show the mode, since it's already in the status line
-vim.opt.showmode = false
+-- tabs & independent
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
+vim.opt.expandtab = true
+vim.opt.autoindent = true
 
--- Sync clipboard between OS and Neovim.
---  Schedule the setting after `UiEnter` because it can increase startup-time.
---  Remove this option if you want your OS clipboard to remain independent.
---  See `:help 'clipboard'`
--- vim.schedule(function()
---   vim.opt.clipboard = 'unnamedplus'
--- end)
+-- line wrapping
+vim.opt.wrap = false
+
+-- searching
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
+
+-- Don't show the mode, since it's already in the status line
+-- vim.opt.showmode = false
 
 -- Enable break indent
-vim.opt.breakindent = true
+-- vim.opt.breakindent = true
 
 -- Save undo history
 vim.opt.undofile = true
 
--- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
-vim.opt.ignorecase = true
-vim.opt.smartcase = true
-
 -- Keep signcolumn on by default
 vim.opt.signcolumn = 'yes'
 
--- Decrease update time
-vim.opt.updatetime = 250
+-- cursor line
+vim.opt.cursorline = true -- highlight the current cursor line
+
+-- appearance
+
+-- turn on termguicolors for nightfly colorscheme to work
+-- (have to use iterm2 or any other true color terminal)
+vim.opt.termguicolors = true
+vim.opt.background = 'dark' -- colorschemes that can be light or dark will be made dark
+vim.opt.signcolumn = 'yes' -- show sign column so that text doesn't shift
+
+-- backspace
+vim.opt.backspace = 'indent,eol,start' -- allow backspace on indent, end of line or insert mode start position
+
+-- split windows
+vim.opt.splitright = true -- split vertical window to the right
+vim.opt.splitbelow = true -- split horizontal window to the bottom
+
+-- turn off swapfile
+vim.opt.swapfile = false
 
 -- Decrease mapped sequence wait time
 -- Displays which-key popup sooner
 vim.opt.timeoutlen = 300
-
--- Configure how new splits should be opened
-vim.opt.splitright = true
-vim.opt.splitbelow = true
 
 -- Sets how neovim will display certain whitespace characters in the editor.
 --  See `:help 'list'`
@@ -51,9 +66,6 @@ vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = 'split'
-
--- Show which line your cursor is on
-vim.opt.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10

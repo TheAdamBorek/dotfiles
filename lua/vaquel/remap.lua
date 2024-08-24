@@ -4,11 +4,14 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
-vim.keymap.set('n', '<leader>nf', vim.cmd.Ex, { desc = 'Exit to netrw' })
 vim.keymap.set('n', 'Q', '<Nop>')
 vim.keymap.set('i', 'jk', '<Esc>')
+
+-- Keep cursor in the middle
 vim.keymap.set('n', '<C-d>', '<C-d>zz')
 vim.keymap.set('n', '<C-u>', '<C-u>zz')
+vim.keymap.set('n', 'n', 'nzzzv')
+vim.keymap.set('n', 'N', 'Nzzzv')
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
@@ -25,14 +28,11 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
--- Keybinds to make split navigation easier.
---  Use CTRL+<hjkl> to switch between windows
---
---  See `:help wincmd` for a list of all window commands
-vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+vim.keymap.set('n', '<C-w><C-q>', '<cmd>close<CR>', { desc = 'Close current split' })
+
+-- Quickfix list navigation
+vim.keymap.set('n', 'J', '<cmd>cnext<CR>', { desc = 'Move to next Quickfix item' })
+vim.keymap.set('n', 'K', '<cmd>cprev<CR>', { desc = 'Move to prev Quickfix item' })
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
@@ -41,3 +41,10 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- System yanking
 vim.keymap.set('n', '<leader>y', '"+y', { desc = 'Copy to system clipboard' })
 vim.keymap.set('v', '<leader>y', '"+y', { desc = 'Copy to system clipboard' })
+
+--
+vim.keymap.set('n', '<leader><C-s>', [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
+
+-- Move highlighted lines
+vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv")
+vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv")
