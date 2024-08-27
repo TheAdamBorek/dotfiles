@@ -9,9 +9,9 @@ return {
     vim.keymap.set('n', '<leader>ha', function()
       harpoon:list():add()
     end, { desc = '[A]dd file to harpoon' })
-    vim.keymap.set('n', '<leader>hr', function()
+    vim.keymap.set('n', '<leader>hd', function()
       harpoon:list():remove()
-    end, { desc = '[R]emove file from harpoon' })
+    end, { desc = '[D]elete the file from harpoon' })
 
     vim.keymap.set('n', '<C-m>', function()
       harpoon:list():select(1)
@@ -30,7 +30,7 @@ return {
     vim.keymap.set('n', '<leader>hp', function()
       harpoon:list():prev()
     end)
-    vim.keymap.set('n', '<leader>hn', function()
+    vim.keymap.set('n', '<leader>hn', function()harp
       harpoon:list():next()
     end)
 
