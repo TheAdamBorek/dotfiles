@@ -9,10 +9,10 @@ vim.opt.relativenumber = true
 vim.opt.mouse = 'a'
 
 -- tabs & independent
-vim.opt.tabstop = 2
-vim.opt.shiftwidth = 2
-vim.opt.expandtab = true
-vim.opt.autoindent = true
+-- vim.opt.tabstop = 2
+-- vim.opt.shiftwidth = 2
+-- vim.opt.expandtab = true
+-- vim.opt.autoindent = true
 
 -- line wrapping
 vim.opt.wrap = false

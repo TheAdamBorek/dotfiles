@@ -32,16 +32,20 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 vim.keymap.set('n', '<C-w><C-q>', '<cmd>close<CR>', { desc = 'Close current split' })
 
 -- Quickfix list navigation
-vim.keymap.set('n', 'J', '<cmd>cnext<CR>', { desc = 'Move to next Quickfix item' })
-vim.keymap.set('n', 'K', '<cmd>cprev<CR>', { desc = 'Move to prev Quickfix item' })
+vim.keymap.set('n', '<C-n>', '<cmd>cnext<CR>', { desc = 'Move to next Quickfix item' })
+vim.keymap.set('n', '<C-p>', '<cmd>cprev<CR>', { desc = 'Move to prev Quickfix item' })
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
--- System yanking
+-- System yanking, deleting etc.
 vim.keymap.set('n', '<leader>y', '"+y', { desc = 'Copy to system clipboard' })
 vim.keymap.set('v', '<leader>y', '"+y', { desc = 'Copy to system clipboard' })
+vim.keymap.set('n', '<leader>p', '"+p', { desc = 'Paste from the system clipboard' })
+vim.keymap.set('v', '<leader>p', '"+p', { desc = 'Paste from the system clipboard' })
+vim.keymap.set('n', '<leader>d', '"\\d')
+vim.keymap.set('v', '<leader>d', '"\\d')
 
 --
 vim.keymap.set('n', '<leader><C-s>', [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
