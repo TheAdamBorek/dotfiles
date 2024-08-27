@@ -22,8 +22,6 @@ return {
       end,
     })
 
-    vim.keymap.set('n', '<leader>dl', function()
-      lint.try_lint()
-    end, { desc = '[L]int current file' })
+    vim.keymap.set('n', '<leader>dl', '<cmd>EslintFixAll<CR><cmd>w<CR>', { desc = 'Fix all ES[L]int problems' })
   end,
 }
