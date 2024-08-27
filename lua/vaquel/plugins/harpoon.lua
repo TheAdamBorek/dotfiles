@@ -13,16 +13,16 @@ return {
       harpoon:list():remove()
     end, { desc = '[D]elete the file from harpoon' })
 
-    vim.keymap.set('n', '<C-m>', function()
+    vim.keymap.set('n', 'N', function()
       harpoon:list():select(1)
     end)
-    vim.keymap.set('n', '<C-,>', function()
+    vim.keymap.set('n', 'M', function()
       harpoon:list():select(2)
     end)
-    vim.keymap.set('n', '<C-.>', function()
+    vim.keymap.set('n', '<', function()
       harpoon:list():select(3)
     end)
-    vim.keymap.set('n', '<C-/>', function()
+    vim.keymap.set('n', '>', function()
       harpoon:list():select(4)
     end)
 
@@ -30,7 +30,7 @@ return {
     vim.keymap.set('n', '<leader>hp', function()
       harpoon:list():prev()
     end)
-    vim.keymap.set('n', '<leader>hn', function()harp
+    vim.keymap.set('n', '<leader>hn', function()
       harpoon:list():next()
     end)
 
