@@ -12,6 +12,8 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+-- Disable for now as sometimes I don't want it to quit.
+-- Quit nvim if nvim-tree is the last window
 -- vim.api.nvim_create_autocmd('QuitPre', {
 --   callback = function()
 --     local invalid_win = {}
