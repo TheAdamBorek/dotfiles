@@ -32,7 +32,7 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 vim.keymap.set('n', '<C-w><C-q>', '<cmd>close<CR>', { desc = 'Close current split' })
 
 -- Quickfix list navigation
-vim.keymap.set('n', '<C-o>', '<cmd>cnext<CR>', { desc = 'Move to next Quickfix item' })
+vim.keymap.set('n', '<C-n>', '<cmd>cnext<CR>', { desc = 'Move to next Quickfix item' })
 vim.keymap.set('n', '<C-p>', '<cmd>cprev<CR>', { desc = 'Move to prev Quickfix item' })
 
 -- Clear highlights on search when pressing <Esc> in normal mode
