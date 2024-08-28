@@ -52,6 +52,7 @@ return { -- Fuzzy finder (files, lsp, etc)
       --  all the info you're looking for is in `:help telescope.setup()`
       --
       defaults = {
+        path_display = { 'smart' },
         mappings = {
           i = {
             ['<C-k>'] = actions.move_selection_previous,
