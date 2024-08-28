@@ -1,6 +1,6 @@
 return {
   'mbbill/undotree',
   keys = {
-    { '<leader><F2>', ':UndotreeToggle<CR>', desc = 'Toggle UndoTree' },
+    { '<leader><F5>', ':UndotreeToggle<CR>', desc = 'Toggle UndoTree' },
   },
 }

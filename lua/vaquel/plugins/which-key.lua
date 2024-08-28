@@ -24,7 +24,7 @@ return { -- Useful plugin to show you pending keybinds.
       { '<leader>g', group = '[G]it', mode = { 'n' } },
       { '<leader>e', group = 'File [e]xplorer', mode = { 'n' } },
       { '<leader>h', group = '[H]arpoon' },
-      { '<leader>t', group = '[T]ests' },
+      { '<leader>t', group = '[t]ests' },
       { '<leader>T', group = '[T]rouble' },
     }
   end,
