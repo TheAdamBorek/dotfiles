@@ -15,7 +15,7 @@ vim.opt.mouse = 'a'
 -- vim.opt.autoindent = true
 
 -- line wrapping
-vim.opt.wrap = false
+vim.opt.wrap = true
 
 -- searching
 vim.opt.ignorecase = true
