@@ -1,6 +1,5 @@
 return {
   'nvim-lua/plenary.nvim',
-  'christoomey/vim-tmux-navigator',
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
   -- NOTE: plugins can also be added by using a table,
