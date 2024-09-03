@@ -1,3 +1,16 @@
+local function make_telescope_results(harpoon_list)
+  local file_paths = {}
+  for i = 1, #harpoon_list.items do
+    local item = harpoon_list.items[i]
+    if not (item == nil or item == vim.NIL) then
+      table.insert(file_paths, item.value)
+    end
+  end
+  return require('telescope.finders').new_table {
+    results = file_paths,
+  }
+end
+
 return {
   'ThePrimeagen/harpoon',
   branch = 'harpoon2',
@@ -34,32 +47,28 @@ return {
       harpoon:list():next()
     end)
 
-    local function toggle_telescope(harpoon_files)
-      local function make_telescope_results()
-        local file_paths = {}
-        for _, item in ipairs(harpoon_files.items) do
-          table.insert(file_paths, item.value)
-        end
-        return require('telescope.finders').new_table {
-          results = file_paths,
-        }
-      end
-
+    local function toggle_telescope()
+      local harpoon_list = harpoon:list()
       require('telescope.pickers')
         .new({}, {
           prompt_title = 'Harpoon',
-          finder = make_telescope_results(),
+          finder = make_telescope_results(harpoon_list),
           previewer = telescopeConfig.file_previewer {},
           sorter = telescopeConfig.generic_sorter {},
           attach_mappings = function(prompt_buffer_number, map)
-            -- The keymap you need
             map('i', '<C-d>', function()
               local state = require 'telescope.actions.state'
               local selected_entry = state.get_selected_entry()
               local current_picker = state.get_current_picker(prompt_buffer_number)
 
-              harpoon:list():remove(selected_entry)
-              current_picker:refresh(make_telescope_results())
+              local harpoon_item, item_index = harpoon_list:get_by_value(selected_entry.value)
+              if not (harpoon_item == nil or item_index == nil or item_index == -1) then
+                -- Fix for https://github.com/ThePrimeagen/harpoon/issues/627
+                table.remove(harpoon:list().items, item_index)
+                local new_telescope_items = make_telescope_results(harpoon_list)
+
+                current_picker:refresh(new_telescope_items)
+              end
             end)
 
             return true
@@ -69,7 +78,7 @@ return {
     end
 
     vim.keymap.set('n', '<leader>hl', function()
-      toggle_telescope(harpoon:list())
+      toggle_telescope()
     end, { desc = 'Open harpoon [l]ist' })
   end,
 }
