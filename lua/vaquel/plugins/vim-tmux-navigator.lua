@@ -1,9 +1,12 @@
 local open_terminal_window = function()
-  -- Check the number of panes in the current tmux window
-  local pane_count = tonumber(vim.fn.system 'tmux list-panes | wc -l')
-  local need_to_create_pane = pane_count < 2
-  if need_to_create_pane then
-    -- Create a new horizontal split if there's only one pane (horizontal means split below)
+  local command = [[
+tmux list-panes -F "#{pane_active} #{pane_top}" | awk -v bottom=$(tmux display-message -p "#{pane_bottom}") '
+$1 == "1" {current_bottom=bottom}
+$2 > current_bottom {print "Pane below exists"; found=1; exit}
+END {if (!found) print "No pane below"}'
+]]
+  local has_pane_below = vim.fn.system(command) == 'Pane below exists\n'
+  if not has_pane_below then
     os.execute 'tmux split-window -v -l 33%'
   else
     os.execute 'tmux resize-pane -Z'
