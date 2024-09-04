@@ -6,7 +6,7 @@ return {
     require('catppuccin').setup {
       custom_highlights = function(colors)
         return {
-          LineNr = { fg = colors.overlay0 },
+          LineNr = { fg = colors.overlay2 },
         }
       end,
     }

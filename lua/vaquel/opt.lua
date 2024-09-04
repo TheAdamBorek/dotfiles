@@ -69,3 +69,6 @@ vim.opt.inccommand = 'split'
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
+
+-- Read files again if they are changed outside of vim
+vim.opt.autoread = true
