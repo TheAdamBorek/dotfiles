@@ -39,7 +39,7 @@ return {
         map('n', ']d', vim.diagnostic.goto_next, 'Go to next diagnostic') -- jump to next diagnostic in buffer
         map('n', 'K', vim.lsp.buf.hover, 'Show documentation for what is under cursor') -- show documentation for what is under cursor
         map('n', '<leader>cK', vim.diagnostic.open_float, 'Show line diagnostics') -- show diagnostics for line
-        vim.keymap.set('n', '<leader>rs', ':LspRestart<CR>', { desc = 'Restart LSP' }) -- mapping to restart lsp if necessary
+        vim.keymap.set('n', '<leader>rs', ':LspRestart<CR>', { desc = 'Restart LSP' }) -- mapping to restart lsp when necessary
       end,
     })
 
@@ -77,6 +77,26 @@ return {
             },
           },
         }
+      end,
+      ['tsserver'] = function()
+        local npmRoot = string.gsub(vim.fn.system 'npm root -g', '\n', '')
+        local styledComponentsPath = npmRoot .. '/@styled/typescript-styled-plugin'
+        if vim.fn.isdirectory(styledComponentsPath) == 1 then
+          lspconfig['tsserver'].setup {
+            capabilities = capabilities,
+            init_options = {
+              plugins = {
+                {
+                  name = '@styled/typescript-styled-plugin',
+                  location = styledComponentsPath,
+                  languages = { 'javascript', 'javascriptreact', 'javascript.jsx', 'typescript', 'typescriptreact', 'typescript.tsx' },
+                },
+              },
+            },
+          }
+        else
+          print "Couldn't load styled-components/typescript-styled-plugin"
+        end
       end,
     }
   end,
