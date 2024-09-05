@@ -47,6 +47,24 @@ return { -- Fuzzy finder (files, lsp, etc)
     local actions = require 'telescope.actions'
     local liveGrepArgsActions = require 'telescope-live-grep-args.actions'
 
+    --- Quote the prompt and append a postfix to the prompt
+    -- @param filetype string | nil : the filetype
+    local function quote_prompt_with_file_type(filetype)
+      return function(prompt_bufnr)
+        local postfix = ' --iglob "**/*X*/**"'
+        if not (filetype == nil) then
+          postfix = postfix .. string.format(' -t %s', filetype)
+        end
+
+        local action = liveGrepArgsActions.quote_prompt { postfix = postfix }
+        action(prompt_bufnr)
+        -- Go to the middle of --iglob where the X is
+        vim.cmd 'norm! FXx'
+      end
+    end
+
+    quote_prompt_with_file_type 'ts'
+
     require('telescope').setup {
       -- you can put your default mappings / updates / etc. in here
       --  all the info you're looking for is in `:help telescope.setup()`
@@ -70,12 +88,8 @@ return { -- Fuzzy finder (files, lsp, etc)
           auto_quoting = true,
           mappings = {
             i = {
-              ['<C-p>'] = function(promt_bufnr)
-                local action = liveGrepArgsActions.quote_prompt { postfix = ' --iglob "**/*X*/**' }
-                action(promt_bufnr)
-                -- Go to the middle of --iglob where the X is
-                vim.cmd 'norm! FXx'
-              end,
+              ['<C-t>'] = quote_prompt_with_file_type 'ts',
+              ['<C-p>'] = quote_prompt_with_file_type(nil),
             },
           },
         },
@@ -94,8 +108,8 @@ return { -- Fuzzy finder (files, lsp, etc)
     vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
     vim.keymap.set('n', '<leader>ss', builtin.lsp_dynamic_workspace_symbols, { desc = '[S]earch [S]ymbols' })
     vim.keymap.set({ 'n', 'v' }, '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
-    vim.keymap.set('n', '<leader>sb', require('telescope').extensions.live_grep_args.live_grep_args, { desc = '[S]earch by Grep with [b]lob' })
-    vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
+    vim.keymap.set('n', '<leader>sg', require('telescope').extensions.live_grep_args.live_grep_args, { desc = '[S]earch by [G]rep with [b]lob' })
+    -- vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
     vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
     vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
     vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
