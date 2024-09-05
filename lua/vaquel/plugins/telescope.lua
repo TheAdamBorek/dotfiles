@@ -70,8 +70,11 @@ return { -- Fuzzy finder (files, lsp, etc)
           auto_quoting = true,
           mappings = {
             i = {
-              ['<C-p>'] = function()
-                liveGrepArgsActions.quote_prompt { postfix = ' --iglob ' }
+              ['<C-p>'] = function(promt_bufnr)
+                local action = liveGrepArgsActions.quote_prompt { postfix = ' --iglob "**/*X*/**' }
+                action(promt_bufnr)
+                -- Go to the middle of --iglob where the X is
+                vim.cmd 'norm! FXx'
               end,
             },
           },
@@ -91,7 +94,7 @@ return { -- Fuzzy finder (files, lsp, etc)
     vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
     vim.keymap.set('n', '<leader>ss', builtin.lsp_dynamic_workspace_symbols, { desc = '[S]earch [S]ymbols' })
     vim.keymap.set({ 'n', 'v' }, '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
-    -- vim.keymap.set('n', '<leader>sg', require('telescope').extensions.live_grep_args.live_grep_args, { desc = '[S]earch by [G]rep' })
+    vim.keymap.set('n', '<leader>sb', require('telescope').extensions.live_grep_args.live_grep_args, { desc = '[S]earch by Grep with [b]lob' })
     vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
     vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
     vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
