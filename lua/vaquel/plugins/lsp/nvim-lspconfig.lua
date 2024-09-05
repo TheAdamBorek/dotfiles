@@ -26,7 +26,7 @@ return {
         end
 
         -- set keybinds
-        map('n', 'gR', '<cmd>Telescope lsp_references<CR>', 'Show LSP references') -- show definition, references
+        map('n', 'gr', '<cmd>Telescope lsp_references<CR>', 'Show LSP references') -- show definition, references
         map('n', 'gD', vim.lsp.buf.declaration, 'Go to declaration') -- go to declaration
         map('n', 'gd', '<cmd>Telescope lsp_definitions<CR>', 'Show LSP definitions') -- show lsp definitions
         map('n', 'gi', '<cmd>Telescope lsp_implementations<CR>', 'Show LSP implementations') -- show lsp implementations
