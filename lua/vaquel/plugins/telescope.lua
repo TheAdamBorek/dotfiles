@@ -48,13 +48,14 @@ return { -- Fuzzy finder (files, lsp, etc)
     local liveGrepArgsActions = require 'telescope-live-grep-args.actions'
 
     --- Quote the prompt and append a postfix to the prompt
-    -- @param filetype string | nil : the filetype
-    local function quote_prompt_with_file_type(filetype)
+    -- @param filetypes string[] : the filetype
+    local function quote_prompt_with_file_type(filetypes)
       return function(prompt_bufnr)
-        local postfix = ' --iglob "**/*X*/**"'
-        if not (filetype == nil) then
-          postfix = postfix .. string.format(' -t %s', filetype)
+        local globPattern = '**/*X*/**'
+        if #filetypes > 0 then
+          globPattern = globPattern .. string.format('/*.{%s}', table.concat(filetypes, ','))
         end
+        local postfix = string.format(' --iglob "%s"', globPattern)
 
         local action = liveGrepArgsActions.quote_prompt { postfix = postfix }
         action(prompt_bufnr)
@@ -88,7 +89,7 @@ return { -- Fuzzy finder (files, lsp, etc)
           auto_quoting = true,
           mappings = {
             i = {
-              ['<C-t>'] = quote_prompt_with_file_type 'ts',
+              ['<C-t>'] = quote_prompt_with_file_type { 'ts', 'tsx' },
               ['<C-p>'] = quote_prompt_with_file_type(nil),
             },
           },
