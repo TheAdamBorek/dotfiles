@@ -48,7 +48,7 @@ return { -- Fuzzy finder (files, lsp, etc)
     local liveGrepArgsActions = require 'telescope-live-grep-args.actions'
 
     --- Quote the prompt and append a postfix to the prompt
-    -- @param filetypes string[] : the filetype
+    --- @param filetypes string[] : the filetype
     local function quote_prompt_with_file_type(filetypes)
       return function(prompt_bufnr)
         local globPattern = '**/*X*/**'
@@ -63,8 +63,6 @@ return { -- Fuzzy finder (files, lsp, etc)
         vim.cmd 'norm! FXx'
       end
     end
-
-    quote_prompt_with_file_type 'ts'
 
     require('telescope').setup {
       -- you can put your default mappings / updates / etc. in here
@@ -90,7 +88,7 @@ return { -- Fuzzy finder (files, lsp, etc)
           mappings = {
             i = {
               ['<C-t>'] = quote_prompt_with_file_type { 'ts', 'tsx' },
-              ['<C-p>'] = quote_prompt_with_file_type(nil),
+              ['<C-p>'] = quote_prompt_with_file_type {},
             },
           },
         },
