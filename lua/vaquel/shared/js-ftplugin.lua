@@ -1,6 +1,6 @@
 local M = {}
 
-M.apply = function()
+local function setup_eslint_on_save()
   vim.keymap.set('n', '<leader>dl', '<cmd>EslintFixAll<CR><cmd>w<CR>', { desc = 'Fix all ES[L]int problems' })
   local linter = require 'lint'
 
@@ -8,9 +8,11 @@ M.apply = function()
   local on_safe_autogroup = vim.api.nvim_create_augroup(autogroup_name, { clear = true })
   vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
     group = on_safe_autogroup,
-    callback = function(bufnr)
-      vim.cmd 'EslintFixAll'
-      vim.cmd 'w'
+    callback = function()
+      vim.cmd [[
+        EslintFixAll
+      ]]
+
       linter.try_lint()
     end,
   })
@@ -22,6 +24,10 @@ M.apply = function()
       linter.try_lint()
     end,
   })
+end
+
+M.apply = function()
+  setup_eslint_on_save()
 end
 
 return M
