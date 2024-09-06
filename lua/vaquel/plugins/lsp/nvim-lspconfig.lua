@@ -82,7 +82,7 @@ return {
         local npmRoot = string.gsub(vim.fn.system 'npm root -g', '\n', '')
         local styledComponentsPath = npmRoot .. '/@styled/typescript-styled-plugin'
         if vim.fn.isdirectory(styledComponentsPath) == 1 then
-          lspconfig['tsserver'].setup {
+          lspconfig['ts_ls'].setup {
             capabilities = capabilities,
             init_options = {
               plugins = {
