@@ -13,7 +13,7 @@ return {
       python = { 'pylint' },
     }
 
-    local lint_augroup = vim.api.nvim_create_augroup('lint', { clear = true })
+    local lint_augroup = require('vaquel.shared.lint-autogroup').lint_autogroup
 
     vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
       group = lint_augroup,

@@ -1,1 +1,1 @@
-require('vaquel.ftplugin.js-stack').apply()
+require('vaquel.shared.js-ftplugin').apply()
