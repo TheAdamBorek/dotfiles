@@ -10,7 +10,7 @@ local function setup_eslint_on_save()
     group = on_safe_autogroup,
     callback = function()
       vim.cmd [[
-        EslintFixAll
+        silent! EslintFixAll
       ]]
 
       linter.try_lint()
