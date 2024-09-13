@@ -7,15 +7,26 @@ return {
         autojump = true,
       },
       search = {
-        enabled = true,
+        enabled = false,
       },
       char = { -- Mode for 'f' and 'F'
+        enabled = false,
+        multi_line = false,
+        autojump = true,
+        label = { exclude = 'g' },
         jump_labels = true,
-        autohide = true,
       },
     },
   },
   keys = {
+    {
+      '<leader>fs',
+      mode = { 'n', 'x', 'o' },
+      function()
+        require('flash').jump()
+      end,
+      desc = 'Flash',
+    },
     {
       's',
       mode = { 'n', 'x', 'o' },
@@ -25,7 +36,7 @@ return {
       desc = 'Flash',
     },
     {
-      'S',
+      '<leader>fS',
       mode = { 'n', 'x', 'o' },
       function()
         require('flash').treesitter()
@@ -33,7 +44,7 @@ return {
       desc = 'Flash Treesitter',
     },
     {
-      'r',
+      '<leader>fr',
       mode = 'o',
       function()
         require('flash').remote()
@@ -41,7 +52,7 @@ return {
       desc = 'Remote Flash',
     },
     {
-      'R',
+      '<ldear>fR',
       mode = { 'o', 'x' },
       function()
         require('flash').treesitter_search()

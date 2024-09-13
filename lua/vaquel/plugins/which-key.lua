@@ -26,6 +26,7 @@ return { -- Useful plugin to show you pending keybinds.
       { '<leader>h', group = '[H]arpoon' },
       { '<leader>t', group = '[t]ests' },
       { '<leader>T', group = '[T]rouble' },
+      { '<leader>f', group = '[F]lash' },
     }
   end,
 }
