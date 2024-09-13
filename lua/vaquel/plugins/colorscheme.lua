@@ -10,6 +10,10 @@ return {
       }
     end,
     integrations = {
+      nvim_surround = true,
+      lsp_trouble = true,
+      which_key = true,
+      mason = true,
       cmp = true,
       nvimtree = true,
       telescope = {
