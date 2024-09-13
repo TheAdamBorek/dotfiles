@@ -19,7 +19,6 @@ return {
             color = { fg = '#ff9e64' },
           },
           {
-            'branch',
             'diff',
             'diagnostics',
             sources = { 'nvim_lsp', 'nvim_diagnostic' },
