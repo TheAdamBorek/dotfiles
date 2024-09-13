@@ -21,6 +21,8 @@ return { -- Fuzzy finder (files, lsp, etc)
     -- useful for getting pretty icons, but requires a Nerd Font.
     { 'nvim-tree/nvim-web-devicons' },
     'nvim-telescope/telescope-live-grep-args.nvim',
+    'nvim-telescope/telescope-smart-history.nvim',
+    'kkharji/sqlite.lua',
   },
   config = function()
     -- telescope is a fuzzy finder that comes with a lot of different things that
@@ -77,6 +79,10 @@ return { -- Fuzzy finder (files, lsp, etc)
             ['<C-q>'] = actions.send_selected_to_qflist + actions.open_qflist,
           },
         },
+        history = {
+          path = '~/.local/share/nvim/telescope_history.sqlite3',
+          limit = 100,
+        },
       },
       -- pickers = {}
       extensions = {
@@ -96,19 +102,21 @@ return { -- Fuzzy finder (files, lsp, etc)
     }
 
     -- enable telescope extensions if they are installed
-    pcall(require('telescope').load_extension, 'fzf')
-    pcall(require('telescope').load_extension, 'ui-select')
-    pcall(require('telescope').load_extension, 'live_grep_args')
+    local telescope = require 'telescope'
+    pcall(telescope.load_extension, 'fzf')
+    pcall(telescope.load_extension, 'ui-select')
+    pcall(telescope.load_extension, 'live_grep_args')
+    pcall(telescope.load_extension, 'smart_history')
 
     -- see `:help telescope.builtin`
     local builtin = require 'telescope.builtin'
     vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
     vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
     vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
+    vim.keymap.set('n', '<leader>sF', builtin.git_files, { desc = '[S]earch [F]iles' })
     vim.keymap.set('n', '<leader>ss', builtin.lsp_dynamic_workspace_symbols, { desc = '[S]earch [S]ymbols' })
     vim.keymap.set({ 'n', 'v' }, '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
     vim.keymap.set('n', '<leader>sg', require('telescope').extensions.live_grep_args.live_grep_args, { desc = '[S]earch by [G]rep with [b]lob' })
-    -- vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
     vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
     vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
     vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
