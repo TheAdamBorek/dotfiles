@@ -2,15 +2,42 @@ return {
   'catppuccin/nvim',
   name = 'catppuccin',
   priority = 1000,
-  config = function()
-    require('catppuccin').setup {
-      custom_highlights = function(colors)
-        return {
-          LineNr = { fg = colors.overlay2 },
-        }
-      end,
-    }
-    vim.cmd.colorscheme 'catppuccin-macchiato'
+  opts = {
+    flavour = 'macchiato',
+    custom_highlights = function(colors)
+      return {
+        LineNr = { fg = colors.overlay2 },
+      }
+    end,
+    integrations = {
+      cmp = true,
+      nvimtree = true,
+      telescope = {
+        enabled = true,
+      },
+      native_lsp = {
+        enabled = true,
+        virtual_text = {
+          errors = { 'italic' },
+          hints = { 'italic' },
+          warnings = { 'italic' },
+          information = { 'italic' },
+        },
+        underlines = {
+          errors = { 'underline' },
+          hints = { 'underline' },
+          warnings = { 'underline' },
+          information = { 'underline' },
+        },
+        inlay_hints = {
+          background = true,
+        },
+      },
+    },
+  },
+  config = function(_, opts)
+    require('catppuccin').setup(opts)
+    vim.cmd.colorscheme 'catppuccin'
   end,
 }
 
