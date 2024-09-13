@@ -15,6 +15,9 @@ return {
     win_options = {
       wrap = true,
     },
+    keymaps = {
+      ['<C-q>'] = 'actions.send_to_qflist',
+    },
   },
   config = function(_, opts)
     require('oil').setup(opts)
