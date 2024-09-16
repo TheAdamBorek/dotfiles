@@ -34,11 +34,10 @@ return {
         map({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, 'See available code actions') -- see available code actions, in visual mode will apply to selection
         map('n', '<leader>rn', vim.lsp.buf.rename, 'Smart rename') -- smart rename
         map('n', '<leader>cr', vim.lsp.buf.rename, 'Smart [r]ename') -- smart rename
-        map('n', '<leader>ddf', '<cmd>Telescope diagnostics bufnr=0<CR>', 'Show file diagnostics') -- show  diagnostics for file
         map('n', '[d', vim.diagnostic.goto_prev, 'Go to previous diagnostic') -- jump to previous diagnostic in buffer
         map('n', ']d', vim.diagnostic.goto_next, 'Go to next diagnostic') -- jump to next diagnostic in buffer
         map('n', 'K', vim.lsp.buf.hover, 'Show documentation for what is under cursor') -- show documentation for what is under cursor
-        map('n', '<leader>cK', vim.diagnostic.open_float, 'Show line diagnostics') -- show diagnostics for line
+        map('n', 'L', vim.diagnostic.open_float, 'Show line diagnostics') -- show diagnostics for line
         vim.keymap.set('n', '<leader>rs', ':LspRestart<CR>', { desc = 'Restart LSP' }) -- mapping to restart lsp when necessary
       end,
     })

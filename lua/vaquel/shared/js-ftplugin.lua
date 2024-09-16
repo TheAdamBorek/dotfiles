@@ -1,7 +1,7 @@
 local M = {}
 
 local function setup_eslint_on_save()
-  vim.keymap.set('n', '<leader>dl', '<cmd>EslintFixAll<CR><cmd>w<CR>', { desc = 'Fix all ES[L]int problems' })
+  vim.keymap.set('n', '<leader>ml', '<cmd>EslintFixAll<CR><cmd>w<CR>', { desc = 'Fix all ES[L]int problems' })
   local linter = require 'lint'
 
   local autogroup_name = require('vaquel.shared.lint-autogroup').lint_autogroup_name

@@ -17,16 +17,16 @@ return { -- Useful plugin to show you pending keybinds.
     -- document existing key chains
     require('which-key').add {
       { '<leader>c', group = '[C]ode' },
-      { '<leader>d', group = '[D]ocument' },
+      { '<leader>m', group = 'Docu[m]ent' },
       { '<leader>r', group = '[R]ename' },
-      { '<leader>s', group = '[S]earch' },
+      { '<leader>f', group = '[F]ind files' },
       { '<leader>w', group = '[W]orkspace' },
       { '<leader>g', group = '[G]it', mode = { 'n' } },
       { '<leader>e', group = 'File [e]xplorer', mode = { 'n' } },
       { '<leader>h', group = '[H]arpoon' },
       { '<leader>t', group = '[t]ests' },
       { '<leader>T', group = '[T]rouble' },
-      { '<leader>f', group = '[F]lash' },
+      { '<leader>s', group = '[S]earch with Flash' },
     }
   end,
 }
