@@ -94,7 +94,7 @@ return { -- Fuzzy finder (files, lsp, etc)
           mappings = {
             i = {
               ['<C-t>'] = quote_prompt_with_file_type { 'ts', 'tsx' },
-              ['<C-p>'] = quote_prompt_with_file_type {},
+              ['<C-p>'] = liveGrepArgsActions.quote_prompt(),
             },
           },
         },
