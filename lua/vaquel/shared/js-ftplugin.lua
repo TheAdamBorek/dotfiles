@@ -13,7 +13,9 @@ local function setup_eslint_on_save()
         silent! EslintFixAll
       ]]
 
-      linter.try_lint()
+      vim.defer_fn(function()
+        linter.try_lint()
+      end, 1000)
     end,
   })
 
