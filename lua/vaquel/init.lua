@@ -1,5 +1,6 @@
 require 'vaquel.remap'
 require 'vaquel.opt'
+require 'vaquel.commands'
 require 'vaquel.autocmd'
 require 'vaquel.lazy'
 require 'vaquel.string-manipulation'
