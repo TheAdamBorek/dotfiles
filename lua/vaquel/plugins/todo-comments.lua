@@ -9,14 +9,14 @@ return {
   },
   keys = {
     {
-      '<leader>Tq',
+      '<leader>ct',
       function()
         local todoComments = require 'todo-comments.search'
         todoComments.setqflist {
           keywords = 'TODO_FOR_ADAM',
         }
       end,
-      desc = 'Puts my todos to [q]uickfix list',
+      desc = 'Puts my [t]odos to quickfix list',
     },
     {
       ']t',
