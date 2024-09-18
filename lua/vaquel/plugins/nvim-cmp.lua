@@ -41,8 +41,17 @@ return {
         ['<C-b>'] = cmp.mapping.scroll_docs(-4),
         ['<C-g>'] = cmp.mapping.scroll_docs(4),
         ['<C-Space>'] = cmp.mapping.complete(), -- show completion suggestions
-        ['<C-e>'] = cmp.mapping.abort(), -- close completion window
-        ['<CR>'] = cmp.mapping.confirm { select = true },
+        ['<C-y>'] = cmp.mapping.confirm { select = true },
+        ['<C-l>'] = cmp.mapping(function()
+          if luasnip.expand_or_jumpable() then
+            luasnip.expand_or_jump()
+          end
+        end),
+        ['<C-h>'] = cmp.mapping(function()
+          if luasnip.jumpable(-1) then
+            luasnip.jump(-1)
+          end
+        end),
       },
       -- sources for autocompletion
       sources = cmp.config.sources {
@@ -66,14 +75,15 @@ return {
           -- maxwidth = function() return math.floor(0.45 * vim.o.columns) end,
           ellipsis_char = '...', -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
           show_labelDetails = true, -- show labelDetails in menu. Disabled by default
-
-          -- The function below will be called before any actual modifications from lspkind
-          -- so that you can provide more controls on popup customization. (See [#30](https://github.com/onsails/lspkind-nvim/pull/30))
-          before = function(_, vim_item)
-            return vim_item
-          end,
         },
       },
     }
+    vim.keymap.set({ 'i', 's' }, '<C-l>', function() end, { silent = true })
+
+    vim.keymap.set({ 'i', 's' }, '<C-h>', function()
+      if luasnip.jumpable(-1) then
+        luasnip.jump(-1)
+      end
+    end, { silent = true })
   end,
 }
