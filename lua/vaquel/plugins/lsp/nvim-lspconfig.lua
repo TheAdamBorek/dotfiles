@@ -66,6 +66,12 @@ return {
           capabilities = capabilities,
           settings = {
             Lua = {
+              workspace = {
+                library = {
+                  '${3rd}/luv/library',
+                  unpack(vim.api.nvim_get_runtime_file('', true)),
+                },
+              },
               -- make the language server recognize "vim" global
               diagnostics = {
                 globals = { 'vim' },
