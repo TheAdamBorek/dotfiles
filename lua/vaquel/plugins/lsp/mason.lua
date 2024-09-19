@@ -35,7 +35,6 @@ return {
         'prettier',
         'stylua',
         'eslint',
-        'eslint_d',
       },
     }
   end,
