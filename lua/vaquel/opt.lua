@@ -1,10 +1,6 @@
 -- [[ Setting options ]]
 -- See `:help vim.opt`
 
--- Enable spell checking and set the spell language to en_us using Lua API
-vim.opt_local.spell = true
-vim.opt_local.spelllang = 'en_us'
-
 -- Make line numbers default
 vim.opt.number = true
 vim.opt.relativenumber = true
@@ -76,3 +72,8 @@ vim.opt.scrolloff = 10
 
 -- Read files again if they are changed outside of vim
 vim.opt.autoread = true
+
+-- Enable spell checking and set the spell language to en_us using Lua API
+-- vim.cmd 'setlocal spell spelllang=en_us'
+vim.opt.spell = true
+vim.opt.spelllang = 'en_us'
