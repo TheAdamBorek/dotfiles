@@ -5,14 +5,14 @@ return {
     'preservim/vimux',
   },
   keys = {
-    vim.keymap.set('n', '<leader>tn', '<cmd>TestNearest<CR>'),
-    vim.keymap.set('n', '<leader>tf', '<cmd>TestFile<CR>'),
-    vim.keymap.set('n', '<leader>ts', '<cmd>TestSuite<CR>'),
-    vim.keymap.set('n', '<leader>tl', '<cmd>TestLast<CR>'),
-    -- vim.keymap.set('n', '<leader>g', ':TestVisit<CR>'),
+    vim.keymap.set('n', '<leader>Tn', '<cmd>TestNearest<CR>'),
+    vim.keymap.set('n', '<leader>Tf', '<cmd>TestFile<CR>'),
+    vim.keymap.set('n', '<leader>Ts', '<cmd>TestSuite<CR>'),
+    vim.keymap.set('n', '<leader>Tl', '<cmd>TestLast<CR>'),
   },
   opt = {},
-  config = function()
+  init = function()
+    require('which-key').add { '<leader>T', group = '[T]ests' }
     vim.cmd 'let test#strategy = "vimux"'
   end,
 }
