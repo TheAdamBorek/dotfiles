@@ -83,7 +83,7 @@ return {
           },
         }
       end,
-      ['tsserver'] = function()
+      ['ts_ls'] = function()
         local ts_lsp_config = require 'vaquel.plugins.lsp.ftplugin.typescript'
         ts_lsp_config(lspconfig, capabilities)
       end,
