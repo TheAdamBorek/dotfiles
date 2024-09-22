@@ -77,3 +77,4 @@ vim.opt.autoread = true
 -- vim.cmd 'setlocal spell spelllang=en_us'
 vim.opt.spell = true
 vim.opt.spelllang = 'en_us'
+vim.o.cedit = '<C-g>'
