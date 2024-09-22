@@ -85,7 +85,19 @@ return {
       end,
       ['ts_ls'] = function()
         local ts_lsp_config = require 'vaquel.plugins.lsp.ftplugin.typescript'
-        ts_lsp_config(lspconfig, capabilities)
+        ts_lsp_config(capabilities)
+      end,
+      ['eslint'] = function()
+        lspconfig['eslint'].setup {
+          capabilities = capabilities,
+          root_dir = require 'vaquel.plugins.lsp.utils.attio-root-dir' 'eslint',
+        }
+      end,
+      ['tailwindcss'] = function()
+        lspconfig['tailwindcss'].setup {
+          capabilities = capabilities,
+          root_dir = require 'vaquel.plugins.lsp.utils.attio-root-dir' 'tailwindcss',
+        }
       end,
     }
   end,
