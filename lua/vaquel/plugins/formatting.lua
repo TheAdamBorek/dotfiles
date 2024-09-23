@@ -1,9 +1,10 @@
 return {
+  enabled = false,
   'stevearc/conform.nvim',
   event = { 'BufReadPre', 'BufNewFile' },
   config = function()
     local conform = require 'conform'
-    local jsFormatters = { 'prettier', stop_after_first = true }
+    local jsFormatters = { 'prettierd', 'prettier', stop_after_first = true }
 
     conform.setup {
       formatters_by_ft = {
@@ -22,12 +23,17 @@ return {
         lua = { 'stylua' },
         python = { 'isort', 'black' },
       },
-      format_on_save = {
-        lsp_fallback = true,
-        async = false,
-        timeout_ms = 1000,
-      },
     }
+
+    vim.api.nvim_create_autocmd('BufReadPre', {
+      pattern = '*',
+      group = vim.api.nvim_create_augroup('conform-autosave', { clear = true }),
+      callback = function(args)
+        conform.format {
+          bufnr = args.buf,
+        }
+      end,
+    })
 
     vim.keymap.set({ 'n', 'v' }, '<leader>mf', function()
       conform.format {
