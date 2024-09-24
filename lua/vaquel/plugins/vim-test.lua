@@ -1,6 +1,7 @@
 return {
   'vim-test/vim-test',
   lazy = false,
+  enabled = false,
   dependencies = {
     'preservim/vimux',
   },
@@ -11,8 +12,8 @@ return {
     vim.keymap.set('n', '<leader>Tl', '<cmd>TestLast<CR>'),
   },
   opt = {},
-  init = function()
+  config = function(_, opts)
     require('which-key').add { '<leader>T', group = '[T]ests' }
+
     vim.cmd 'let test#strategy = "vimux"'
-  end,
-}
+  end, }

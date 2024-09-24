@@ -18,7 +18,7 @@ return function(capabilities)
 
   lspconfig['ts_ls'].setup {
     capabilities = capabilities,
-    root_dir = require 'vaquel.plugins.lsp.utils.attio-root-dir' 'ts_ls',
+    root_dir = require 'vaquel.plugins.lsp.utils.attio-root-dir'.attio_root_dir 'ts_ls',
     init_options = {
       plugins = {
         styled_components_path(),

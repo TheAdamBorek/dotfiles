@@ -9,8 +9,8 @@ vim.opt.relativenumber = true
 vim.opt.mouse = 'a'
 
 -- tabs & independent
-vim.opt.tabstop = 2
-vim.opt.shiftwidth = 2
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 vim.opt.autoindent = true
 
@@ -68,7 +68,7 @@ vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 vim.opt.inccommand = 'split'
 
 -- Minimal number of screen lines to keep above and below the cursor.
-vim.opt.scrolloff = 10
+vim.opt.scrolloff = 40
 
 -- Read files again if they are changed outside of vim
 vim.opt.autoread = true

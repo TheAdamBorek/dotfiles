@@ -4,6 +4,7 @@ return { -- Highlight, edit, and navigate code
   build = ':TSUpdate',
   opts = {
     ensure_installed = {
+      'ruby',
       'bash',
       'c',
       'diff',

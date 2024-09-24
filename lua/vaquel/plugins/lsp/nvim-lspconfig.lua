@@ -91,13 +91,13 @@ return {
       ['eslint'] = function()
         lspconfig['eslint'].setup {
           capabilities = capabilities,
-          root_dir = require 'vaquel.plugins.lsp.utils.attio-root-dir' 'eslint',
+          root_dir = require 'vaquel.plugins.lsp.utils.attio-root-dir'.attio_root_dir 'eslint',
         }
       end,
       ['tailwindcss'] = function()
         lspconfig['tailwindcss'].setup {
           capabilities = capabilities,
-          root_dir = require 'vaquel.plugins.lsp.utils.attio-root-dir' 'tailwindcss',
+          root_dir = require 'vaquel.plugins.lsp.utils.attio-root-dir'.attio_root_dir 'tailwindcss',
         }
       end,
     }

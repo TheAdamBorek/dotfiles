@@ -1,5 +1,4 @@
 return {
-  enabled = false,
   'stevearc/conform.nvim',
   event = { 'BufReadPre', 'BufNewFile' },
   config = function()
@@ -25,7 +24,7 @@ return {
       },
     }
 
-    vim.api.nvim_create_autocmd('BufReadPre', {
+    vim.api.nvim_create_autocmd('BufWritePre', {
       pattern = '*',
       group = vim.api.nvim_create_augroup('conform-autosave', { clear = true }),
       callback = function(args)

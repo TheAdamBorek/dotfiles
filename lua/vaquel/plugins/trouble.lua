@@ -5,8 +5,9 @@ return {
     focus = true,
   },
   cmd = 'Trouble',
-  init = function()
+  config = function(_, opts)
     require('which-key').add { '<leader>t', group = '[t]rouble' }
+    require('trouble').setup(opts)
   end,
   keys = {
     { '<leader>tw', '<cmd>Trouble diagnostics toggle<CR>', desc = 'Open trouble workspace diagnostics' },
