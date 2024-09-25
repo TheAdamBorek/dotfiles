@@ -3,7 +3,7 @@ return {
   name = 'catppuccin',
   priority = 1000,
   opts = {
-    flavour = 'frappe',
+    flavour = 'mocha',
     custom_highlights = function(colors)
       return {
         LineNr = { fg = colors.overlay2 },
