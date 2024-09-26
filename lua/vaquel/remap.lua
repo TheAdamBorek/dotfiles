@@ -56,3 +56,7 @@ vim.keymap.set('n', '<leader><C-s>', [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Le
 -- Move highlighted lines
 vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv")
 vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv")
+
+-- Map '\' to start and stop macro recording (like 'q' does by default)
+vim.api.nvim_set_keymap('n', '\\', 'q', { noremap = true })
+vim.api.nvim_set_keymap('n', 'q', '<Nop>', { noremap = true })
