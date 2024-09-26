@@ -28,3 +28,6 @@ runtimes
 src
 const
 initialStateResult
+willRenameFiles
+LSP
+autosave
