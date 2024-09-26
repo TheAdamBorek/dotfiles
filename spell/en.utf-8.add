@@ -24,3 +24,7 @@ config
 VsCode
 json
 vscode
+runtimes
+src
+const
+initialStateResult
