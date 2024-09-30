@@ -1,16 +1,6 @@
--- For example, in the following configuration, we use:
---  event = 'vimenter'
---
--- which loads which-key before all the UI elements are loaded. Events can be
--- normal autocommands events (`:help autocmd-events`).
---
--- Then, because we use the `config` key, the configuration only runs
--- after the plugin has been loaded:
---  config = function() ... end
-
 return { -- Useful plugin to show you pending keybinds.
   'folke/which-key.nvim',
-  event = 'vimenter', -- Sets the loading event to 'VimEnter'
+  lazy = false,
   config = function() -- This is the function that runs, AFTER loading
     require('which-key').setup()
 
@@ -24,8 +14,9 @@ return { -- Useful plugin to show you pending keybinds.
       { '<leader>g', group = '[G]it', mode = { 'n' } },
       { '<leader>e', group = 'File [e]xplorer', mode = { 'n' } },
       { '<leader>h', group = '[H]arpoon' },
-      { '<leader>t', group = '[t]ests' },
       { '<leader>s', group = '[S]earch with Flash' },
+      { '<leader>t', group = '[t]rouble' },
+      { '<leader>T', group = '[T]ests' },
     }
   end,
 }

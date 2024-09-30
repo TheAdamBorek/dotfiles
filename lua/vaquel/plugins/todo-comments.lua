@@ -4,16 +4,16 @@ return {
   dependencies = { 'nvim-lua/plenary.nvim' },
   opts = {
     keywords = {
-      TODO_FOR_ADAM = { icon = ' ', color = 'info', alt = { 'TODO FOR ADAM', 'TODO for Adam', 'TODO ADAM', 'TODO Adam' } },
+      TODO_ADAM = { icon = ' ', color = 'info', alt = { 'TODO FOR ADAM', 'TODO for Adam', 'TODO Adam' } },
     },
   },
   keys = {
     {
-      '<leader>ct',
+      '<leader>tt',
       function()
         local todoComments = require 'todo-comments.search'
         todoComments.setqflist {
-          keywords = 'TODO_FOR_ADAM',
+          keywords = 'TODO_ADAM',
         }
       end,
       desc = 'Puts my [t]odos to quickfix list',
@@ -21,14 +21,14 @@ return {
     {
       ']t',
       function()
-        require('todo-comments').jump_next()
+        require('todo-comments').jump_next { keywords = { 'TODO_ADAM' } }
       end,
       { desc = 'Next todo comment' },
     },
     {
       '[t',
       function()
-        require('todo-comments').jump_prev()
+        require('todo-comments').jump_prev { keywords = { 'TODO_ADAM' } }
       end,
       { desc = 'Previous todo comment' },
     },
