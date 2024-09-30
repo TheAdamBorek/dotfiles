@@ -14,10 +14,11 @@ end
 return {
   'ThePrimeagen/harpoon',
   branch = 'harpoon2',
-  dependencies = { 'nvim-lua/plenary.nvim', 'nvim-telescope/telescope.nvim' },
+  dependencies = { 'nvim-lua/plenary.nvim', 'nvim-telescope/telescope.nvim', 'folke/which-key.nvim' },
   config = function()
     local harpoon = require 'harpoon'
     local telescopeConfig = require('telescope.config').values
+    local whichKey = require 'which-key'
 
     vim.keymap.set('n', '<leader>ha', function()
       harpoon:list():add()
@@ -26,26 +27,50 @@ return {
       harpoon:list():remove()
     end, { desc = '[D]elete the file from harpoon' })
 
-    vim.keymap.set('n', '<leader>h1', function()
+    vim.keymap.set('n', '<leader>1', function()
       harpoon:list():select(1)
-    end)
-    vim.keymap.set('n', '<leader>h2', function()
+    end, { desc = 'Opens 1th harpooned file' })
+    vim.keymap.set('n', '<leader>2', function()
       harpoon:list():select(2)
-    end)
-    vim.keymap.set('n', '<leader>h3', function()
+    end, { desc = 'Opens 2th harpooned file' })
+    vim.keymap.set('n', '<leader>3', function()
       harpoon:list():select(3)
-    end)
-    vim.keymap.set('n', '<leader>h4', function()
+    end, { desc = 'Opens 3th harpooned file' })
+    vim.keymap.set('n', '<leader>4', function()
       harpoon:list():select(4)
-    end)
+    end, { desc = 'Opens 4th harpooned file' })
+    vim.keymap.set('n', '<leader>5', function()
+      harpoon:list():select(5)
+    end, { desc = 'Opens 5th harpooned file' })
+
+    --
+    vim.keymap.set('n', '<leader>hr1', function()
+      harpoon:list():replace_at(1)
+    end, { desc = 'Replace 1st harpooned file' })
+    vim.keymap.set('n', '<leader>hr2', function()
+      harpoon:list():replace_at(2)
+    end, { desc = 'Replace 2nd harpooned file' })
+    vim.keymap.set('n', '<leader>hr3', function()
+      harpoon:list():replace_at(3)
+    end, { desc = 'Replace 3rd harpooned file' })
+    vim.keymap.set('n', '<leader>hr4', function()
+      harpoon:list():replace_at(4)
+    end, { desc = 'Replace 4th harpooned file' })
+    vim.keymap.set('n', '<leader>hr5', function()
+      harpoon:list():replace_at(5)
+    end, { desc = 'Replace 5th harpooned file' })
+
+    whichKey.add {
+      { '<leader>hr', group = '[R]eplace' },
+    }
 
     -- Toggle previous & next buffers stored within Harpoon list
     vim.keymap.set('n', '<leader>hp', function()
       harpoon:list():prev()
-    end)
+    end, { desc = 'Selects previous harpooned file' })
     vim.keymap.set('n', '<leader>hn', function()
       harpoon:list():next()
-    end)
+    end, { desc = 'Selects next harpooned file' })
 
     local function toggle_telescope()
       local harpoon_list = harpoon:list()
@@ -78,7 +103,7 @@ return {
     end
 
     vim.keymap.set('n', '<leader>hl', function()
-      toggle_telescope()
+      harpoon.ui:toggle_quick_menu(harpoon:list())
     end, { desc = 'Open harpoon [l]ist' })
   end,
 }
