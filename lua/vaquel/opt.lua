@@ -9,8 +9,8 @@ vim.opt.relativenumber = true
 vim.opt.mouse = 'a'
 
 -- tabs & independent
-vim.opt.tabstop = 4
-vim.opt.shiftwidth = 4
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
 vim.opt.expandtab = true
 vim.opt.autoindent = true
 
@@ -78,3 +78,6 @@ vim.opt.autoread = true
 vim.opt.spell = true
 vim.opt.spelllang = 'en_us'
 vim.o.cedit = '<C-g>'
+
+-- Enable virtual edit mode for visual block mode
+vim.opt.virtualedit = 'block'
