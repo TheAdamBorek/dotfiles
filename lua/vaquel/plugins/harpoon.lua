@@ -43,6 +43,22 @@ return {
       harpoon:list():select(5)
     end, { desc = 'Opens 5th harpooned file' })
 
+    vim.keymap.set('n', '<leader>h1', function()
+      harpoon:list():select(1)
+    end, { desc = 'Opens 1th harpooned file' })
+    vim.keymap.set('n', '<leader>h2', function()
+      harpoon:list():select(2)
+    end, { desc = 'Opens 2th harpooned file' })
+    vim.keymap.set('n', '<leader>h3', function()
+      harpoon:list():select(3)
+    end, { desc = 'Opens 3th harpooned file' })
+    vim.keymap.set('n', '<leader>h4', function()
+      harpoon:list():select(4)
+    end, { desc = 'Opens 4th harpooned file' })
+    vim.keymap.set('n', '<leader>h5', function()
+      harpoon:list():select(5)
+    end, { desc = 'Opens 5th harpooned file' })
+
     --
     vim.keymap.set('n', '<leader>hr1', function()
       harpoon:list():replace_at(1)
