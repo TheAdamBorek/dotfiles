@@ -8,6 +8,7 @@ return {
     mini_ai.setup {
       custom_textobjects = {
         f = spec_treesitter { a = '@function.outer', i = '@function.inner' },
+        p = spec_treesitter { a = '@parameter.outer', i = '@parameter.inner' },
       },
       n_lines = 100,
     }
