@@ -33,13 +33,11 @@ return {
         map('n', 'gi', '<cmd>Telescope lsp_implementations<CR>', 'Show LSP implementations') -- show lsp implementations
         map('n', 'gt', '<cmd>Telescope lsp_type_definitions<CR>', 'Show LSP type definitions') -- show lsp type definitions
         map({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, 'See available code actions') -- see available code actions, in visual mode will apply to selection
-        map('n', '<leader>rn', vim.lsp.buf.rename, 'Smart rename') -- smart rename
-        map('n', '<leader>cr', vim.lsp.buf.rename, 'Smart [r]ename') -- smart rename
+        map('n', '<leader>rr', vim.lsp.buf.rename, 'Smart [r]ename') -- smart rename
         map('n', '[d', vim.diagnostic.goto_prev, 'Go to previous diagnostic') -- jump to previous diagnostic in buffer
         map('n', ']d', vim.diagnostic.goto_next, 'Go to next diagnostic') -- jump to next diagnostic in buffer
         map('n', 'K', vim.lsp.buf.hover, 'Show documentation for what is under cursor') -- show documentation for what is under cursor
         map('n', 'L', vim.diagnostic.open_float, 'Show line diagnostics') -- show diagnostics for line
-        vim.keymap.set('n', '<leader>rs', ':LspRestart<CR>', { desc = 'Restart LSP' }) -- mapping to restart lsp when necessary
       end,
     })
 
@@ -91,13 +89,13 @@ return {
       ['eslint'] = function()
         lspconfig['eslint'].setup {
           capabilities = capabilities,
-          root_dir = require 'vaquel.plugins.lsp.utils.attio-root-dir'.attio_root_dir 'eslint',
+          root_dir = require('vaquel.plugins.lsp.utils.attio-root-dir').attio_root_dir 'eslint',
         }
       end,
       ['tailwindcss'] = function()
         lspconfig['tailwindcss'].setup {
           capabilities = capabilities,
-          root_dir = require 'vaquel.plugins.lsp.utils.attio-root-dir'.attio_root_dir 'tailwindcss',
+          root_dir = require('vaquel.plugins.lsp.utils.attio-root-dir').attio_root_dir 'tailwindcss',
         }
       end,
     }

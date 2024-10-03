@@ -1,18 +1,26 @@
 return {
   'ThePrimeagen/refactoring.nvim',
-  dependencies = { 'nvim-lua/plenary.nvim', 'nvim-treesitter/nvim-treesitter' },
+  dependencies = { 'nvim-lua/plenary.nvim', 'nvim-treesitter/nvim-treesitter', 'folke/which-key.nvim' },
+  event = 'BufEnter',
   keys = {
-    { 'x', '<leader>re', ':Refactor extract ' },
-    { 'x', '<leader>rf', ':Refactor extract_to_file ' },
+    { '<leader>re', ':Refactor extract ', mode = { 'x' }, desc = 'Extract' },
+    { '<leader>rf', ':Refactor extract_to_file ', mode = { 'x' }, desc = 'Extract to a file' },
 
-    { 'x', '<leader>rv', ':Refactor extract_var ' },
+    { '<leader>rv', ':Refactor extract_var ', mode = { 'x' }, desc = 'Extract var' },
 
-    { { 'n', 'x' }, '<leader>ri', ':Refactor inline_var' },
+    { '<leader>ri', ':Refactor inline_var', mode = { 'n', 'x' }, desc = 'Inline var' },
 
-    { 'n', '<leader>rI', ':Refactor inline_func' },
+    { '<leader>rI', ':Refactor inline_func', mode = { 'n' }, desc = 'inline func' },
 
-    { 'n', '<leader>rb', ':Refactor extract_block' },
-    { 'n', '<leader>rbf', ':Refactor extract_block_to_file' },
+    { '<leader>rb', ':Refactor extract_block', mode = { 'n' }, desc = 'Extract bloc' },
+    { '<leader>rbf', ':Refactor extract_block_to_file', mode = { 'n' }, desc = 'Extract block to a file' },
   },
   opts = {},
+  config = function(_, opts)
+    require('which-key').add {
+      { '<leader>r', group = '[R]efector' },
+    }
+
+    require('refactoring').setup(opts)
+  end,
 }
