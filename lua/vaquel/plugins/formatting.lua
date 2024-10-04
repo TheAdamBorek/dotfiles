@@ -24,21 +24,25 @@ return {
       },
     }
 
+    -- There seems to be a bug with vim.lsp.get_clients({ method = 'textDocument/formatting' }) inside conform.
+    -- The lsp.get_clients crashes on some files. Passing a name to options filters out every LSPs so there's nothing to filter by method.
+    local fix_has_lsp_bug = 'DOESNT_MATTER'
     vim.api.nvim_create_autocmd('BufWritePre', {
       pattern = '*',
       group = vim.api.nvim_create_augroup('conform-autosave', { clear = true }),
       callback = function(args)
         conform.format {
           bufnr = args.buf,
+          async = false,
+          name = fix_has_lsp_bug,
         }
       end,
     })
 
     vim.keymap.set({ 'n', 'v' }, '<leader>mf', function()
       conform.format {
-        lsp_fallback = true,
-        async = true,
-        timeout_ms = 1000,
+        async = false,
+        name = fix_has_lsp_bug,
       }
     end, { desc = '[F]ormat file or range (in visual mode)' })
   end,
