@@ -11,6 +11,10 @@ return {
         p = spec_treesitter { a = '@parameter.outer', i = '@parameter.inner' },
       },
       n_lines = 100,
+      mappings = {
+        goto_left = '[g',
+        goto_right = ']g',
+      },
     }
   end,
 }
