@@ -115,6 +115,13 @@ return { -- Fuzzy finder (files, lsp, etc)
     vim.keymap.set('n', '<leader>ff', function()
       builtin.git_files { show_untracked = true }
     end, { desc = '[S]earch [F]iles' })
+    vim.keymap.set('n', '<leader>gc', function()
+      builtin.git_files {
+        show_untracked = false,
+        recurse_submodules = false,
+        git_command = { 'git', 'diff', '--name-only' },
+      }
+    end, { desc = 'List git [c]hanged files' })
     vim.keymap.set('n', '<leader>fF', builtin.find_files, { desc = '[S]earch [F]iles' })
     vim.keymap.set('n', '<leader>fs', builtin.lsp_dynamic_workspace_symbols, { desc = '[S]earch [S]ymbols' })
     vim.keymap.set({ 'n', 'v' }, '<leader>fw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
