@@ -20,6 +20,8 @@ return {
     local telescopeConfig = require('telescope.config').values
     local whichKey = require 'which-key'
 
+    harpoon:setup {}
+
     vim.keymap.set('n', '<leader>ha', function()
       harpoon:list():add()
     end, { desc = '[A]dd file to harpoon' })
