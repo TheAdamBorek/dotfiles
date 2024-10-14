@@ -26,6 +26,8 @@ return {
         'cssls',
         'tailwindcss',
         'lua_ls',
+        'jsonls',
+        'yamlls',
       },
     }
 
