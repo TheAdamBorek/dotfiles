@@ -1,10 +1,10 @@
 return {
   'vim-test/vim-test',
   lazy = false,
-  enabled = false,
   dependencies = {
-    'preservim/vimux',
+    'kovidgoyal/kitty',
     'folke/which-key.nvim',
+    'tyewang/vimux-jest-test',
   },
   keys = {
     vim.keymap.set('n', '<leader>Tn', '<cmd>TestNearest<CR>'),
@@ -13,7 +13,8 @@ return {
     vim.keymap.set('n', '<leader>Tl', '<cmd>TestLast<CR>'),
   },
   opt = {},
-  config = function(_, opts)
+  config = function()
     vim.cmd 'let test#strategy = "vimux"'
+    vim.cmd 'let test#javascript#runner = "jest"'
   end,
 }
