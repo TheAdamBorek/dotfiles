@@ -10,11 +10,11 @@ return {
     { '<leader>rI', ':Refactor inline_func', mode = { 'n' }, desc = 'inline func' },
     { '<leader>rb', ':Refactor extract_block_to_file', mode = { 'n' }, desc = 'Extract block to a file' },
     -- stylua: ignore
-    { '<ledaer>rl', function() require('refactoring').debug.printf { below = false } end, mode = {'n', 'v'}, desc = '[L]og message' },
+    { '<leader>rl', function() require('refactoring').debug.printf { below = false } end, mode = {'n', 'v'}, desc = '[L]og message' },
     -- stylua: ignore
-    { '<ledaer>rp', function() require('refactoring').debug.print_var({}) end, mode = { 'n'},  desc = '[P]rint var' },
+    { '<leader>rp', function() require('refactoring').debug.print_var({}) end, mode = { 'n'},  desc = '[P]rint var' },
     -- stylua: ignore
-    { '<ledaer>rc', function() require('refactoring').debug.cleanup({}) end, mode = { 'n'},  desc = 'Clean debug print & logs' },
+    { '<leader>rc', function() require('refactoring').debug.cleanup({}) end, mode = { 'n'},  desc = 'Clean debug print & logs' },
   },
   opts = {},
   config = function(_, opts)
