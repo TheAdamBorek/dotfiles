@@ -2,9 +2,8 @@ return {
   'vim-test/vim-test',
   lazy = false,
   dependencies = {
-    'kovidgoyal/kitty',
+    'preservim/vimux',
     'folke/which-key.nvim',
-    'tyewang/vimux-jest-test',
   },
   keys = {
     vim.keymap.set('n', '<leader>Tn', '<cmd>TestNearest<CR>'),
