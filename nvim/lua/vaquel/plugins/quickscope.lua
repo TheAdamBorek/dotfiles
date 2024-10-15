@@ -1,5 +1,6 @@
 return {
   'unblevable/quick-scope',
+  enabled = false,
   config = function()
     -- Optional: Customize quick-scope settings here
     vim.cmd [[
