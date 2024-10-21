@@ -122,7 +122,8 @@ return { -- Fuzzy finder (files, lsp, etc)
         git_command = { 'git', 'diff', '--name-only' },
       }
     end, { desc = 'List git [c]hanged files' })
-    vim.keymap.set('n', '<leader>fF', builtin.find_files, { desc = '[S]earch [F]iles' })
+    -- stylua: ignore
+    vim.keymap.set('n', '<leader>fF', function() builtin.find_files { no_ignore = true, hidden = true } end, { desc = '[S]earch [F]iles' })
     vim.keymap.set('n', '<leader>fs', builtin.lsp_dynamic_workspace_symbols, { desc = '[S]earch [S]ymbols' })
     vim.keymap.set({ 'n', 'v' }, '<leader>fw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
     vim.keymap.set('n', '<leader>fg', require('telescope').extensions.live_grep_args.live_grep_args, { desc = '[S]earch by [G]rep with [b]lob' })

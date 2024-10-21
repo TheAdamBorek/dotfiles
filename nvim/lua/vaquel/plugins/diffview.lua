@@ -9,6 +9,6 @@ return {
   keys = {
     { '<leader>gq', mode = { 'n' }, '<cmd>DiffviewClose<CR>', desc = 'Close DiffView' },
     { '<leader>gd', mode = { 'n' }, '<cmd>DiffviewOpen<CR>', desc = 'Open [D]iffView' },
-    { '<leader>gf', mode = { 'n' }, '<cmd>DiffviewFileHistory %<CR>', desc = 'Open Git [f]ile history' },
+    { '<leader>gh', mode = { 'n' }, '<cmd>DiffviewFileHistory %<CR>', desc = 'Open Git file [h]istory' },
   },
 }
