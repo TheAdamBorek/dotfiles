@@ -15,7 +15,8 @@ return {
     lsp_file_methods = {
       -- Set to true to autosave buffers that are updated with LSP willRenameFiles
       -- Set to "unmodified" to only save unmodified buffers
-      autosave_changes = 'unmodified',
+      autosave_changes = true,
+      timeout_ms = 10000,
     },
     watch_for_changes = true,
     win_options = {

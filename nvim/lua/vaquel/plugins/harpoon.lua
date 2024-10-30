@@ -15,12 +15,18 @@ return {
   'ThePrimeagen/harpoon',
   branch = 'harpoon2',
   dependencies = { 'nvim-lua/plenary.nvim', 'nvim-telescope/telescope.nvim', 'folke/which-key.nvim' },
-  config = function()
+  opts = {
+    settings = {
+      -- save_on_toggle = true,
+      -- sync_on_ui_close = true,
+    },
+  },
+  config = function(_, opts)
     local harpoon = require 'harpoon'
     local telescopeConfig = require('telescope.config').values
     local whichKey = require 'which-key'
 
-    harpoon:setup {}
+    harpoon:setup(opts)
 
     vim.keymap.set('n', '<leader>ha', function()
       harpoon:list():add()

@@ -12,8 +12,8 @@ return {
       },
       n_lines = 100,
       mappings = {
-        goto_left = '[g',
-        goto_right = ']g',
+        goto_right = 'q',
+        goto_left = 'Q',
       },
     }
   end,
