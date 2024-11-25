@@ -77,6 +77,14 @@ return { -- Fuzzy finder (files, lsp, etc)
             ['<C-k>'] = actions.move_selection_previous,
             ['<C-j>'] = actions.move_selection_next,
             ['<C-q>'] = actions.send_selected_to_qflist + actions.open_qflist,
+            ['<Down>'] = actions.cycle_history_next,
+            ['<Up>'] = actions.cycle_history_prev,
+          },
+          n = {
+            ['<C-k>'] = actions.move_selection_previous,
+            ['<C-j>'] = actions.move_selection_next,
+            ['<Down>'] = actions.cycle_history_next,
+            ['<Up>'] = actions.cycle_history_prev,
           },
         },
         history = {
@@ -113,7 +121,12 @@ return { -- Fuzzy finder (files, lsp, etc)
     vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Search [h]elp' })
     vim.keymap.set('n', '<leader>fk', builtin.keymaps, { desc = 'Search [K]eymaps' })
     vim.keymap.set('n', '<leader>ff', function()
-      builtin.git_files { show_untracked = true }
+      local _, exit_code = os.execute 'git status'
+      if exit_code == 0 then
+        builtin.git_files { show_untracked = true }
+      else
+        builtin.find_files()
+      end
     end, { desc = 'Search [F]iles' })
     vim.keymap.set('n', '<leader>gc', function()
       builtin.git_files {
@@ -129,8 +142,8 @@ return { -- Fuzzy finder (files, lsp, etc)
     vim.keymap.set('n', '<leader>fg', require('telescope').extensions.live_grep_args.live_grep_args, { desc = 'Search by [G]rep with [b]lob' })
     vim.keymap.set('n', '<leader>fd', builtin.diagnostics, { desc = 'Search [D]iagnostics' })
     vim.keymap.set('n', '<leader>fr', builtin.resume, { desc = 'Search [R]esume' })
-    vim.keymap.set('n', '<leader>f.', builtin.oldfiles, { desc = 'Search Recent Files ("." for repeat)' })
-    vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+    vim.keymap.set('n', '<leader>f.', builtin.buffers, { desc = 'Search Recent Files ("." for repeat)' })
+    vim.keymap.set('n', '<leader><leader>', builtin.oldfiles, { desc = '[ ] Find existing buffers' })
 
     -- slightly advanced example of overriding default behavior and theme
     vim.keymap.set('n', '<leader>/', function()

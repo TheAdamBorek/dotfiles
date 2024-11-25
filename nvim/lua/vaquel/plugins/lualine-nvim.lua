@@ -11,7 +11,8 @@ return {
       },
       extensions = { 'nvim-tree' },
       sections = {
-        lualine_c = { { 'filename', path = 1 } },
+        lualine_b = { { 'filename', path = 1 } },
+        lualine_c = {},
         lualine_x = {
           {
             lazy_status.updates,
