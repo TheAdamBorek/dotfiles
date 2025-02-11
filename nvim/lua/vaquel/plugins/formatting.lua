@@ -3,7 +3,7 @@ return {
   event = { 'BufReadPre', 'BufNewFile' },
   config = function()
     local conform = require 'conform'
-    local jsFormatters = { 'prettierd', 'prettier', stop_after_first = true }
+    local jsFormatters = { 'prettier', stop_after_first = true }
 
     conform.setup {
       formatters_by_ft = {
@@ -21,6 +21,8 @@ return {
         liquid = jsFormatters,
         lua = { 'stylua' },
         python = { 'isort', 'black' },
+        svg = { 'xmlformatter' },
+        xml = { 'xmlformatter' },
       },
     }
 

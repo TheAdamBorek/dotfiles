@@ -26,6 +26,18 @@ return {
           vim.keymap.set(mode, key, action, { buffer = ev.buf, silent = true, desc = desc })
         end
 
+        local function goToNextDiagnosticError()
+          vim.diagnostic.goto_next {
+            severity = { vim.diagnostic.severity.ERROR },
+          }
+        end
+
+        local function goToPreviousDiagnosticError()
+          vim.diagnostic.goto_prev {
+            severity = { vim.diagnostic.severity.ERROR },
+          }
+        end
+
         -- set keybinds
         map('n', 'gr', '<cmd>Telescope lsp_references<CR>', 'Show LSP references') -- show definition, references
         map('n', 'gD', vim.lsp.buf.declaration, 'Go to declaration') -- go to declaration
@@ -34,10 +46,10 @@ return {
         map('n', 'gt', '<cmd>Telescope lsp_type_definitions<CR>', 'Show LSP type definitions') -- show lsp type definitions
         map({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, 'See available code actions') -- see available code actions, in visual mode will apply to selection
         map('n', '<leader>rr', vim.lsp.buf.rename, 'Smart [r]ename') -- smart rename
-        map('n', ']d', vim.diagnostic.goto_next, 'Go to next diagnostic') -- jump to next diagnostic in buffer
-        map('n', 'qd', vim.diagnostic.goto_next, 'Go to next diagnostic') -- jump to next diagnostic in buffer
-        map('n', '[d', vim.diagnostic.goto_prev, 'Go to previous diagnostic') -- jump to previous diagnostic in buffer
-        map('n', 'Qd', vim.diagnostic.goto_prev, 'Go to previous diagnostic') -- jump to previous diagnostic in buffer
+        map('n', ']d', goToNextDiagnosticError, 'Go to next diagnostic') -- jump to next diagnostic in buffer
+        map('n', 'qd', goToNextDiagnosticError, 'Go to next diagnostic') -- jump to next diagnostic in buffer
+        map('n', '[d', goToPreviousDiagnosticError, 'Go to previous diagnostic') -- jump to previous diagnostic in buffer
+        map('n', 'Qd', goToPreviousDiagnosticError, 'Go to previous diagnostic') -- jump to previous diagnostic in buffer
         map('n', 'K', vim.lsp.buf.hover, 'Show documentation for what is under cursor') -- show documentation for what is under cursor
         map('n', 'L', vim.diagnostic.open_float, 'Show line diagnostics') -- show diagnostics for line
       end,
@@ -54,17 +66,28 @@ return {
       vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = '' })
     end
 
+    lspconfig['sourcekit'].setup {
+      root_dir = lspconfig.util.root_pattern('.git', 'Podfile.lock', 'Package.swift', 'compile_commands.json'),
+      capabilities = vim.tbl_extend('force', cmp_nvim_lsp.default_capabilities(), {
+        workspace = {
+          didChangeWatchedFiled = {
+            dynamicRegistration = true,
+          },
+        },
+      }),
+    }
+
     mason_lspconfig.setup_handlers {
       -- default handler for installed servers
       function(server_name)
         lspconfig[server_name].setup {
-          capabilities = capabilities,
+          capabilities = cmp_nvim_lsp.default_capabilities(),
         }
       end,
       ['lua_ls'] = function()
         -- configure lua server (with special settings)
         lspconfig['lua_ls'].setup {
-          capabilities = capabilities,
+          capabilities = cmp_nvim_lsp.default_capabilities(),
           settings = {
             Lua = {
               workspace = {
@@ -86,23 +109,23 @@ return {
       end,
       ['ts_ls'] = function()
         local ts_lsp_config = require 'vaquel.plugins.lsp.ftplugin.typescript'
-        ts_lsp_config(capabilities)
+        ts_lsp_config(cmp_nvim_lsp.default_capabilities())
       end,
       ['eslint'] = function()
         lspconfig['eslint'].setup {
-          capabilities = capabilities,
+          capabilities = cmp_nvim_lsp.default_capabilities(),
           root_dir = require('vaquel.plugins.lsp.utils.attio-root-dir').attio_root_dir 'eslint',
         }
       end,
       ['tailwindcss'] = function()
         lspconfig['tailwindcss'].setup {
-          capabilities = capabilities,
+          capabilities = cmp_nvim_lsp.default_capabilities(),
           root_dir = require('vaquel.plugins.lsp.utils.attio-root-dir').attio_root_dir 'tailwindcss',
         }
       end,
       jsonls = function()
         lspconfig['jsonls'].setup {
-          capabilities = capabilities,
+          capabilities = cmp_nvim_lsp.default_capabilities(),
           filetypes = { 'json', 'jsonc' },
           settings = {
             json = {

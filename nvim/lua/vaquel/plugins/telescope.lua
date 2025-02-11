@@ -132,18 +132,19 @@ return { -- Fuzzy finder (files, lsp, etc)
       builtin.git_files {
         show_untracked = false,
         recurse_submodules = false,
-        git_command = { 'git', 'diff', '--name-only' },
+        git_command = { 'git', 'ls-files', '--modified', '--others', '--exclude-standard' },
       }
     end, { desc = 'List git [c]hanged files' })
     -- stylua: ignore
-    vim.keymap.set('n', '<leader>fF', function() builtin.find_files { no_ignore = true, hidden = true } end, { desc = 'Search [F]iles' })
-    vim.keymap.set('n', '<leader>fs', builtin.lsp_dynamic_workspace_symbols, { desc = 'Search Symbols' })
+    vim.keymap.set('n', '<leader>fF', function() builtin.find_files { hidden = true } end, { desc = 'Search [F]iles' })
+    vim.keymap.set('n', '<leader>fs', builtin.lsp_workspace_symbols, { desc = 'Search Symbols' })
     vim.keymap.set({ 'n', 'v' }, '<leader>fw', builtin.grep_string, { desc = 'Search current [W]ord' })
     vim.keymap.set('n', '<leader>fg', require('telescope').extensions.live_grep_args.live_grep_args, { desc = 'Search by [G]rep with [b]lob' })
     vim.keymap.set('n', '<leader>fd', builtin.diagnostics, { desc = 'Search [D]iagnostics' })
     vim.keymap.set('n', '<leader>fr', builtin.resume, { desc = 'Search [R]esume' })
     vim.keymap.set('n', '<leader>f.', builtin.buffers, { desc = 'Search Recent Files ("." for repeat)' })
-    vim.keymap.set('n', '<leader><leader>', builtin.oldfiles, { desc = '[ ] Find existing buffers' })
+    vim.keymap.set('n', '<leader><leader>', builtin.oldfiles, { desc = 'Find existing buffers' })
+    vim.keymap.set('n', '<leader>fc', builtin.command_history, { desc = '[C]ommand History' })
 
     -- slightly advanced example of overriding default behavior and theme
     vim.keymap.set('n', '<leader>/', function()

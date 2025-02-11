@@ -1,3 +1,4 @@
+local compileTypescript = require 'vaquel.tsc-compile-command'
 vim.api.nvim_create_user_command('VSCodeOpenIn', '!code . && code -g %', {})
 
 -- Copy relative path to clipboard
@@ -11,3 +12,5 @@ end, {})
 vim.api.nvim_create_user_command('AttioIconsRegex', function()
   vim.cmd [[silent! %s/stroke="#\?\w*"/stroke="var(--color)"/g | silent! %s/fill="[^none|white]#\?\w*"/fill="var(--color)"/g]]
 end, { bar = true })
+
+vim.api.nvim_create_user_command('TscCompile', compileTypescript, {})

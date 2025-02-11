@@ -10,11 +10,11 @@ return {
         enabled = false,
       },
       char = { -- Mode for 'f' and 'F'
-        enabled = true,
+        enabled = false,
         multi_line = false,
         autojump = true,
         label = { exclude = 'g' },
-        jump_labels = true,
+        jump_labels = false,
       },
     },
   },

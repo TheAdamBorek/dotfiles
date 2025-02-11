@@ -16,6 +16,7 @@ return { -- Useful plugin to show you pending keybinds.
       { '<leader>s', group = '[S]earch with Flash' },
       { '<leader>t', group = '[t]rouble' },
       { '<leader>T', group = '[T]ests' },
+      { 'gs', group = '[S]tring operations' },
     }
   end,
 }
