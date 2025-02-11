@@ -1,0 +1,5 @@
+theme = catppuccin-mocha
+window-padding-color = background
+font-thicken = true
+font-family = MesloLGS Nerd Font Mono
+font-size = 14
