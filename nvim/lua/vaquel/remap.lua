@@ -1,6 +1,5 @@
 vim.keymap.set('n', 'Q', '<Nop>')
 vim.keymap.set('i', 'jk', '<Esc>')
-vim.keymap.set('i', 'kj', '<Esc>')
 vim.keymap.set('n', '<leader><C-w>', '<cmd>w<CR>', { desc = 'Save the buffer', noremap = true })
 
 -- Keep cursor in the middle

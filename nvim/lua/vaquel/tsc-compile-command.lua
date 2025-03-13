@@ -1,7 +1,17 @@
 local Job = require 'plenary.job'
 local runtime_path_mapping = {
   ['@attio/mobile-app'] = 'packages/runtimes/mobile-app/',
+  ['@attio/mobile-web-view-harness'] = 'packages/runtimes/mobile-web-view-harness/',
   ['@attio/browser-extension'] = 'packages/runtimes/browser-extension/',
+  ['@attio/attio-web'] = 'packages/libraries/react/attio-web',
+  ['@attio/web-containers'] = 'packages/libraries/react/web-containers',
+  ['@attio/awac'] = 'packages/runtimes/awac/',
+  ['@attio/browser-extension-sidebar'] = 'packages/runtimes/browser-extension-sidebar/',
+  ['@attio/dev-tools-extension'] = 'packages/runtimes/dev-tools-extension/',
+  ['@attio/desktop-app'] = 'packages/runtimes/desktop-app/',
+  ['@attio/developer-portal'] = 'packages/runtimes/developer-portal/',
+  ['@attio/design'] = 'packages/runtimes/design/',
+  ['@attio/web-app'] = 'packages/runtimes/web-app/',
 }
 
 local function run_test_typescript_and_fill_qf()

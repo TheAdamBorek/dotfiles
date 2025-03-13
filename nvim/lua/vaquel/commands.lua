@@ -1,5 +1,6 @@
 local compileTypescript = require 'vaquel.tsc-compile-command'
 vim.api.nvim_create_user_command('VSCodeOpenIn', '!code . && code -g %', {})
+vim.api.nvim_create_user_command('CursorOpenIn', '!cursor . && cursor -g %', {})
 
 -- Copy relative path to clipboard
 vim.api.nvim_create_user_command('PathRelativeCopy', function()

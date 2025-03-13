@@ -17,8 +17,8 @@ return {
   dependencies = { 'nvim-lua/plenary.nvim', 'nvim-telescope/telescope.nvim', 'folke/which-key.nvim' },
   opts = {
     settings = {
-      -- save_on_toggle = true,
-      -- sync_on_ui_close = true,
+      save_on_toggle = true,
+      sync_on_ui_close = true,
     },
   },
   config = function(_, opts)

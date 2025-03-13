@@ -112,9 +112,26 @@ return {
         ts_lsp_config(cmp_nvim_lsp.default_capabilities())
       end,
       ['eslint'] = function()
+        local config_files = {
+          '.eslintrc',
+          '.eslintrc.js',
+          '.eslintrc.cjs',
+          '.eslintrc.yaml',
+          '.eslintrc.yml',
+          '.eslintrc.json',
+          'eslint.config.js',
+        }
+        local root_dir = require('lspconfig').util.root_pattern
         lspconfig['eslint'].setup {
           capabilities = cmp_nvim_lsp.default_capabilities(),
-          root_dir = require('vaquel.plugins.lsp.utils.attio-root-dir').attio_root_dir 'eslint',
+          root_dir = root_dir(vim.tbl_extend('keep', config_files, { '.git' })),
+          on_attach = function(client, bufnr)
+            local eslint_config_exists = require('vaquel.plugins.lsp.utils.eslint').does_eslint_config_exists(vim.fn.getcwd(), config_files)
+            if not eslint_config_exists then
+              vim.notify('didnt find eslint config file', vim.log.levels.WARN)
+              vim.lsp.buf_detach_client(bufnr, client.id)
+            end
+          end,
         }
       end,
       ['tailwindcss'] = function()
