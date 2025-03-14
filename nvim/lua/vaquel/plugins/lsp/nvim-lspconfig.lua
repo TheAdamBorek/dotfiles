@@ -120,6 +120,7 @@ return {
           '.eslintrc.yml',
           '.eslintrc.json',
           'eslint.config.js',
+          'eslint.config.mjs',
         }
         local root_dir = require('lspconfig').util.root_pattern
         lspconfig['eslint'].setup {
