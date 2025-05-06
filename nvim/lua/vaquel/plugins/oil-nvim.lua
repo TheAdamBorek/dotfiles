@@ -34,6 +34,15 @@ return {
       ['-'] = 'actions.parent',
       ['_'] = 'actions.open_cwd',
       ['`'] = 'actions.cd',
+      ['gy'] = {
+        callback = function()
+          local oil = require 'oil'
+          local path = oil.get_current_dir()
+          vim.fn.setreg('+', path)
+          vim.notify('Copied to clipboard: ' .. path)
+        end,
+        desc = 'Copy directory path to clipboard',
+      },
       ['gs'] = 'actions.change_sort',
       ['gx'] = 'actions.open_external',
       ['g.'] = 'actions.toggle_hidden',
