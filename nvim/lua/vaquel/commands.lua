@@ -14,4 +14,6 @@ vim.api.nvim_create_user_command('AttioIconsRegex', function()
   vim.cmd [[silent! %s/stroke="#\?\w*"/stroke="var(--color)"/g | silent! %s/fill="[^none|white]#\?\w*"/fill="var(--color)"/g]]
 end, { bar = true })
 
-vim.api.nvim_create_user_command('TscCompile', compileTypescript, {})
+vim.api.nvim_create_user_command('TscCompile', function(opts)
+  compileTypescript(opts.args ~= '' and opts.args or nil)
+end, { nargs = '?' })
