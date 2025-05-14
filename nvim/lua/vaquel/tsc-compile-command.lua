@@ -3,8 +3,8 @@ local runtime_path_mapping = {
   ['@attio/mobile-app'] = 'packages/runtimes/mobile-app/',
   ['@attio/mobile-web-view-harness'] = 'packages/runtimes/mobile-web-view-harness/',
   ['@attio/browser-extension'] = 'packages/runtimes/browser-extension/',
-  ['@attio/attio-web'] = 'packages/libraries/react/attio-web',
-  ['@attio/web-containers'] = 'packages/libraries/react/web-containers',
+  ['@attio/attio-web'] = 'packages/libraries/react/attio-web/',
+  ['@attio/web-containers'] = 'packages/libraries/react/web-containers/',
   ['@attio/awac'] = 'packages/runtimes/awac/',
   ['@attio/browser-extension-sidebar'] = 'packages/runtimes/browser-extension-sidebar/',
   ['@attio/dev-tools-extension'] = 'packages/runtimes/dev-tools-extension/',
@@ -12,6 +12,11 @@ local runtime_path_mapping = {
   ['@attio/developer-portal'] = 'packages/runtimes/developer-portal/',
   ['@attio/design'] = 'packages/runtimes/design/',
   ['@attio/web-app'] = 'packages/runtimes/web-app/',
+  ['@attio/api'] = 'packages/runtimes/api/',
+  ['@attio/attio-rich-text'] = 'packages/libraries/react/attio-rich-text/',
+  ['@attio/picasso'] = 'packages/libraries/react/picasso/',
+  ['@attio/react-utils'] = 'packages/libraries/react/react-utils/',
+  ['@attio/web-features'] = 'packages/libraries/react/web-features/',
 }
 
 -- Parse TSC output into quickfix entries
@@ -117,8 +122,14 @@ end
 
 -- Run TypeScript compilation and fill quickfix list
 local function run_test_typescript_and_fill_qf(workspace_name)
-  local notification_message = workspace_name and ('Running yarn workspace ' .. workspace_name .. ' test-typescript...') or 'Running yarn test-typescript...'
+  if workspace_name ~= nil and runtime_path_mapping[workspace_name] == nil then
+    vim.notify('Unknown yarn workspace name mapping: ' .. workspace_name, vim.log.levels.ERROR, {
+      timeout = 5000,
+    })
+    return
+  end
 
+  local notification_message = workspace_name and ('Running yarn workspace ' .. workspace_name .. ' test-typescript...') or 'Running yarn test-typescript...'
   local notification = vim.notify(notification_message, vim.log.levels.WARN, {
     timeout = false,
   })
@@ -160,10 +171,18 @@ local function run_test_typescript_and_fill_qf(workspace_name)
           title = title,
           items = qf_entries,
         })
-        vim.cmd 'copen'
+
+        if #qf_entries > 0 then
+          vim.cmd 'copen'
+        end
 
         if #unknown_path_mappings > 0 then
           vim.notify('Unknown path mappings: ' .. table.concat(unknown_path_mappings, ', '), vim.log.levels.WARN, {
+            replace = notification,
+            timeout = 5000,
+          })
+        elseif #qf_entries == 0 and #lines > 0 then
+          vim.notify('Got 0 tsc errors but some messages seems to be there...' .. return_val .. ',' .. table.concat(lines, '\n', 1, 10), vim.log.levels.ERROR, {
             replace = notification,
             timeout = 5000,
           })
@@ -188,4 +207,3 @@ end
 return function(workspace_name)
   run_test_typescript_and_fill_qf(workspace_name)
 end
-
