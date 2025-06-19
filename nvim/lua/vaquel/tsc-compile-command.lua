@@ -17,6 +17,8 @@ local runtime_path_mapping = {
   ['@attio/picasso'] = 'packages/libraries/react/picasso/',
   ['@attio/react-utils'] = 'packages/libraries/react/react-utils/',
   ['@attio/web-features'] = 'packages/libraries/react/web-features/',
+  ['@attio/mobile-picasso'] = 'packages/libraries/native/mobile-picasso/',
+  ['@attio/mobile-picasso-new'] = 'packages/libraries/native/mobile-picasso-new/',
 }
 
 -- Parse TSC output into quickfix entries
@@ -181,7 +183,7 @@ local function run_test_typescript_and_fill_qf(workspace_name)
             replace = notification,
             timeout = 5000,
           })
-        elseif #qf_entries == 0 and #lines > 0 then
+        elseif return_val ~= 0 and #qf_entries == 0 and #lines > 0 then
           vim.notify('Got 0 tsc errors but some messages seems to be there...' .. return_val .. ',' .. table.concat(lines, '\n', 1, 10), vim.log.levels.ERROR, {
             replace = notification,
             timeout = 5000,

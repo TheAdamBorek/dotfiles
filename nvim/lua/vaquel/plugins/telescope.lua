@@ -1,3 +1,5 @@
+local noOp = function() end
+
 return { -- Fuzzy finder (files, lsp, etc)
   'nvim-telescope/telescope.nvim',
   event = 'vimenter',
@@ -79,12 +81,14 @@ return { -- Fuzzy finder (files, lsp, etc)
             ['<C-q>'] = actions.send_selected_to_qflist + actions.open_qflist,
             ['<Down>'] = actions.cycle_history_next,
             ['<Up>'] = actions.cycle_history_prev,
+            ['<C-t>'] = noOp,
           },
           n = {
             ['<C-k>'] = actions.move_selection_previous,
             ['<C-j>'] = actions.move_selection_next,
             ['<Down>'] = actions.cycle_history_next,
             ['<Up>'] = actions.cycle_history_prev,
+            ['<C-t>'] = noOp,
           },
         },
         history = {

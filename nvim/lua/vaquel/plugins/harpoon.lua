@@ -35,54 +35,31 @@ return {
       harpoon:list():clear()
     end, { desc = '[C]lears harpoon list' })
 
-    vim.keymap.set('n', '<leader>1', function()
-      harpoon:list():select(1)
-    end, { desc = 'Opens 1th harpooned file' })
-    vim.keymap.set('n', '<leader>2', function()
-      harpoon:list():select(2)
-    end, { desc = 'Opens 2th harpooned file' })
-    vim.keymap.set('n', '<leader>3', function()
-      harpoon:list():select(3)
-    end, { desc = 'Opens 3th harpooned file' })
-    vim.keymap.set('n', '<leader>4', function()
-      harpoon:list():select(4)
-    end, { desc = 'Opens 4th harpooned file' })
-    vim.keymap.set('n', '<leader>5', function()
-      harpoon:list():select(5)
-    end, { desc = 'Opens 5th harpooned file' })
+    -- Helper functions to reduce repetition
+    local function setup_harpoon_select_keys(harpoon, prefix, count)
+      for i = 1, count do
+        local ordinal = (i == 1 and '1st') or (i == 2 and '2nd') or (i == 3 and '3rd') or (i .. 'th')
+        vim.keymap.set('n', prefix .. i % 10, function()
+          harpoon:list():select(i)
+        end, { desc = 'Opens ' .. ordinal .. ' harpooned file' })
+      end
+    end
 
-    vim.keymap.set('n', '<leader>h1', function()
-      harpoon:list():select(1)
-    end, { desc = 'Opens 1th harpooned file' })
-    vim.keymap.set('n', '<leader>h2', function()
-      harpoon:list():select(2)
-    end, { desc = 'Opens 2th harpooned file' })
-    vim.keymap.set('n', '<leader>h3', function()
-      harpoon:list():select(3)
-    end, { desc = 'Opens 3th harpooned file' })
-    vim.keymap.set('n', '<leader>h4', function()
-      harpoon:list():select(4)
-    end, { desc = 'Opens 4th harpooned file' })
-    vim.keymap.set('n', '<leader>h5', function()
-      harpoon:list():select(5)
-    end, { desc = 'Opens 5th harpooned file' })
+    local function setup_harpoon_replace_keys(harpoon, prefix, count)
+      for i = 1, count do
+        local ordinal = (i == 1 and '1st') or (i == 2 and '2nd') or (i == 3 and '3rd') or (i .. 'th')
+        vim.keymap.set('n', prefix .. i % 10, function()
+          harpoon:list():replace_at(i)
+        end, { desc = 'Replace ' .. ordinal .. ' harpooned file' })
+      end
+    end
 
-    --
-    vim.keymap.set('n', '<leader>hr1', function()
-      harpoon:list():replace_at(1)
-    end, { desc = 'Replace 1st harpooned file' })
-    vim.keymap.set('n', '<leader>hr2', function()
-      harpoon:list():replace_at(2)
-    end, { desc = 'Replace 2nd harpooned file' })
-    vim.keymap.set('n', '<leader>hr3', function()
-      harpoon:list():replace_at(3)
-    end, { desc = 'Replace 3rd harpooned file' })
-    vim.keymap.set('n', '<leader>hr4', function()
-      harpoon:list():replace_at(4)
-    end, { desc = 'Replace 4th harpooned file' })
-    vim.keymap.set('n', '<leader>hr5', function()
-      harpoon:list():replace_at(5)
-    end, { desc = 'Replace 5th harpooned file' })
+    -- Setup numeric shortcuts for selecting files
+    setup_harpoon_select_keys(harpoon, '<leader>', 10)
+    setup_harpoon_select_keys(harpoon, '<leader>h', 10)
+
+    -- Setup shortcuts for replacing files
+    setup_harpoon_replace_keys(harpoon, '<leader>hr', 10)
 
     whichKey.add {
       { '<leader>hr', group = '[R]eplace' },

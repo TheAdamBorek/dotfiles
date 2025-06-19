@@ -1,3 +1,11 @@
+local print_var_javascript = {
+  'console.debug(`%s: ${%s}`)',
+}
+
+local print_javascript = {
+  'console.debug("%s")',
+}
+
 return {
   'ThePrimeagen/refactoring.nvim',
   dependencies = { 'nvim-lua/plenary.nvim', 'nvim-treesitter/nvim-treesitter', 'folke/which-key.nvim' },
@@ -10,13 +18,42 @@ return {
     { '<leader>rI', ':Refactor inline_func', mode = { 'n' }, desc = 'inline func' },
     { '<leader>rb', ':Refactor extract_block_to_file', mode = { 'n' }, desc = 'Extract block to a file' },
     -- stylua: ignore
-    { '<leader>rl', function() require('refactoring').debug.printf { below = true } end, mode = {'n', 'v'}, desc = '[L]og message' },
+    { '<leader>rlm', function() require('refactoring').debug.printf { below = true } end, mode = {'n', 'v'}, desc = '[L]og [m]essage' },
+    {
+      '<leader>rlp',
+      function()
+        require('refactoring').debug.printf { below = true }
+      end,
+      mode = { 'n', 'v' },
+      desc = '[L]og [m]essage',
+    },
     -- stylua: ignore
-    { '<leader>rp', function() require('refactoring').debug.print_var({ below = true}) end, mode = { 'n'},  desc = '[P]rint var' },
+    { '<leader>rlv', function() require('refactoring').debug.print_var({ below = true}) end, mode = { 'n'},  desc = '[L]og var below' },
+    {
+      '<leader>rlV',
+      function()
+        require('refactoring').debug.print_var { below = false }
+      end,
+      mode = { 'n' },
+      desc = '[L]og var above',
+    },
     -- stylua: ignore
     { '<leader>rc', function() require('refactoring').debug.cleanup({}) end, mode = { 'n'},  desc = 'Clean debug print & logs' },
   },
-  opts = {},
+  opts = {
+    print_var_statements = {
+      typescript = print_var_javascript,
+      typescriptreact = print_var_javascript,
+      javascript = print_var_javascript,
+      javascriptreact = print_var_javascript,
+    },
+    printf_statements = {
+      typescript = print_javascript,
+      typescriptreact = print_javascript,
+      javascript = print_javascript,
+      javascriptreact = print_javascript,
+    },
+  },
   config = function(_, opts)
     require('which-key').add {
       { '<leader>r', group = '[R]efector' },

@@ -1,5 +1,5 @@
 return {
-  enabled = false,
+  enabled = true,
   'sindrets/diffview.nvim',
   lazy = false,
   opts = {
@@ -10,6 +10,6 @@ return {
   keys = {
     { '<leader>gq', mode = { 'n' }, '<cmd>DiffviewClose<CR>', desc = 'Close DiffView' },
     { '<leader>gd', mode = { 'n' }, '<cmd>DiffviewOpen<CR>', desc = 'Open [D]iffView' },
-    { '<leader>gh', mode = { 'n' }, '<cmd>DiffviewFileHistory % --grep=".*pull request.*"<CR>', desc = 'Open Git file [h]istory' },
+    { '<leader>gh', mode = { 'n' }, '<cmd>DiffviewFileHistory % --first-parent --grep=".*pull request.*"<CR>', desc = 'Open Git file [h]istory' },
   },
 }
