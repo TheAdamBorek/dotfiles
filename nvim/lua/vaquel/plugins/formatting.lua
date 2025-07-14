@@ -3,7 +3,7 @@ return {
   event = { 'BufReadPre', 'BufNewFile' },
   config = function()
     local conform = require 'conform'
-    local jsFormatters = { 'prettier', stop_after_first = true }
+    local jsFormatters = { 'biome' }
 
     conform.setup {
       formatters_by_ft = {

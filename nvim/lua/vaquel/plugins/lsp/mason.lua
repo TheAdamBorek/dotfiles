@@ -37,6 +37,7 @@ return {
         'stylua',
         'eslint',
         'xmlformatter',
+        'biome',
       },
     }
   end,

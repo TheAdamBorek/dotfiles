@@ -19,6 +19,7 @@ local runtime_path_mapping = {
   ['@attio/web-features'] = 'packages/libraries/react/web-features/',
   ['@attio/mobile-picasso'] = 'packages/libraries/native/mobile-picasso/',
   ['@attio/mobile-picasso-new'] = 'packages/libraries/native/mobile-picasso-new/',
+  ['@attio/mobile-features'] = 'packages/libraries/native/mobile-features/',
 }
 
 -- Parse TSC output into quickfix entries
