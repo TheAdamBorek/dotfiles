@@ -28,13 +28,13 @@ return {
 
         local function goToNextDiagnosticError()
           vim.diagnostic.goto_next {
-            severity = { vim.diagnostic.severity.ERROR },
+            severity = { vim.diagnostic.severity.ERROR, vim.diagnostic.severity.WARN },
           }
         end
 
         local function goToPreviousDiagnosticError()
           vim.diagnostic.goto_prev {
-            severity = { vim.diagnostic.severity.ERROR },
+            severity = { vim.diagnostic.severity.ERROR, vim.diagnostic.severity.WARN },
           }
         end
 
@@ -65,17 +65,6 @@ return {
       local hl = 'DiagnosticSign' .. type
       vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = '' })
     end
-
-    lspconfig['sourcekit'].setup {
-      root_dir = lspconfig.util.root_pattern('.git', 'Podfile.lock', 'Package.swift', 'compile_commands.json'),
-      capabilities = vim.tbl_extend('force', cmp_nvim_lsp.default_capabilities(), {
-        workspace = {
-          didChangeWatchedFiled = {
-            dynamicRegistration = true,
-          },
-        },
-      }),
-    }
 
     mason_lspconfig.setup_handlers {
       -- default handler for installed servers

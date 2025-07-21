@@ -146,8 +146,7 @@ return { -- Fuzzy finder (files, lsp, etc)
     vim.keymap.set('n', '<leader>fg', require('telescope').extensions.live_grep_args.live_grep_args, { desc = 'Search by [G]rep with [b]lob' })
     vim.keymap.set('n', '<leader>fd', builtin.diagnostics, { desc = 'Search [D]iagnostics' })
     vim.keymap.set('n', '<leader>fr', builtin.resume, { desc = 'Search [R]esume' })
-    vim.keymap.set('n', '<leader>f.', builtin.buffers, { desc = 'Search Recent Files ("." for repeat)' })
-    vim.keymap.set('n', '<leader><leader>', builtin.oldfiles, { desc = 'Find existing buffers' })
+    vim.keymap.set('n', '<leader>f.', builtin.oldfiles, { desc = 'Find existing buffers' })
     vim.keymap.set('n', '<leader>fc', builtin.command_history, { desc = '[C]ommand History' })
 
     -- slightly advanced example of overriding default behavior and theme

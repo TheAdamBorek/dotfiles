@@ -53,3 +53,5 @@ vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv")
 -- Map '\' to start and stop macro recording (like 'q' does by default)
 vim.api.nvim_set_keymap('n', '\\', 'q', { noremap = true })
 vim.api.nvim_set_keymap('n', 'q', '<Nop>', { noremap = true })
+
+vim.api.nvim_set_keymap('n', '<leader><leader>x', '<cmd>source %<CR>', { desc = 'Executes the current file' })

@@ -1,1 +1,2 @@
-require('vaquel.shared.js-ftplugin').apply()
+local javascriptPlugins = require 'vaquel.shared.ft-plugins.javascript'
+javascriptPlugins.apply()
