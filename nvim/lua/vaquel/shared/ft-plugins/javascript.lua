@@ -2,12 +2,12 @@ local M = {}
 
 local function setupBiomeFixAll()
   local conform = require 'conform'
-  vim.keymap.set('n', '<leader>ma', function()
+  vim.keymap.set('n', '<leader>cl', function()
     conform.format {
       async = false,
       formatters = { 'biome-check' },
     }
-  end, { desc = 'Fix all problems with Biome' })
+  end, { desc = 'Fix all [l]int problems with Biome' })
 end
 
 local function setup_biome_organize_imports_on_save()

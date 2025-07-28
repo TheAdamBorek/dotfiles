@@ -81,14 +81,12 @@ return { -- Fuzzy finder (files, lsp, etc)
             ['<C-q>'] = actions.send_selected_to_qflist + actions.open_qflist,
             ['<Down>'] = actions.cycle_history_next,
             ['<Up>'] = actions.cycle_history_prev,
-            ['<C-t>'] = noOp,
           },
           n = {
             ['<C-k>'] = actions.move_selection_previous,
             ['<C-j>'] = actions.move_selection_next,
             ['<Down>'] = actions.cycle_history_next,
             ['<Up>'] = actions.cycle_history_prev,
-            ['<C-t>'] = noOp,
           },
         },
         history = {
@@ -105,7 +103,7 @@ return { -- Fuzzy finder (files, lsp, etc)
           auto_quoting = true,
           mappings = {
             i = {
-              ['<C-t>'] = quote_prompt_with_file_type { 'ts', 'tsx' },
+              ['<C-g>'] = quote_prompt_with_file_type { 'ts', 'tsx' },
               ['<C-p>'] = liveGrepArgsActions.quote_prompt(),
             },
           },
@@ -141,7 +139,7 @@ return { -- Fuzzy finder (files, lsp, etc)
     end, { desc = 'List git [c]hanged files' })
     -- stylua: ignore
     vim.keymap.set('n', '<leader>fF', function() builtin.find_files { hidden = true } end, { desc = 'Search [F]iles' })
-    vim.keymap.set('n', '<leader>fs', builtin.lsp_workspace_symbols, { desc = 'Search Symbols' })
+    vim.keymap.set('n', '<leader>fs', builtin.lsp_dynamic_workspace_symbols, { desc = 'Search Symbols' })
     vim.keymap.set({ 'n', 'v' }, '<leader>fw', builtin.grep_string, { desc = 'Search current [W]ord' })
     vim.keymap.set('n', '<leader>fg', require('telescope').extensions.live_grep_args.live_grep_args, { desc = 'Search by [G]rep with [b]lob' })
     vim.keymap.set('n', '<leader>fd', builtin.diagnostics, { desc = 'Search [D]iagnostics' })

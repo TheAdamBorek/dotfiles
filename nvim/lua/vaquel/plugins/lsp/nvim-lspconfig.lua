@@ -73,6 +73,16 @@ return {
           capabilities = cmp_nvim_lsp.default_capabilities(),
         }
       end,
+      ['biome'] = function()
+        lspconfig['biome'].setup {
+          capabilities = cmp_nvim_lsp.default_capabilities(),
+          settings = {
+            biome = {
+              configurationPath = vim.fn.getcwd() .. '/biome.editor.jsonc',
+            },
+          },
+        }
+      end,
       ['lua_ls'] = function()
         -- configure lua server (with special settings)
         lspconfig['lua_ls'].setup {

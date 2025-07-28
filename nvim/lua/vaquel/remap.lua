@@ -55,3 +55,9 @@ vim.api.nvim_set_keymap('n', '\\', 'q', { noremap = true })
 vim.api.nvim_set_keymap('n', 'q', '<Nop>', { noremap = true })
 
 vim.api.nvim_set_keymap('n', '<leader><leader>x', '<cmd>source %<CR>', { desc = 'Executes the current file' })
+
+-- Tab management
+vim.api.nvim_set_keymap('n', '<C-t>n', '<cmd>tabnew<CR>', { desc = 'Open a new tab' })
+vim.api.nvim_set_keymap('n', '<C-t>q', '<cmd>tabclose<CR>', { desc = 'Close current tab' })
+vim.api.nvim_set_keymap('n', ']t', '<cmd>tabnext<CR>', { desc = 'Go to next tab' })
+vim.api.nvim_set_keymap('n', '[t', '<cmd>tabprevious<CR>', { desc = 'Go to previous tab' })

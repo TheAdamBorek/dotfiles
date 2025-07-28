@@ -30,7 +30,7 @@ return {
       },
       formatters = {
         ['biome-check'] = {
-          -- append_args = { '--unsafe' },
+          args = { 'check', '--write', '--unsafe', '--stdin-file-path', '$FILENAME' },
         },
       },
       format_on_save = {

@@ -18,19 +18,19 @@ return {
       end,
       desc = 'Puts my [t]odos to quickfix list',
     },
-    {
-      ']t',
-      function()
-        require('todo-comments').jump_next { keywords = { 'TODO_ADAM' } }
-      end,
-      { desc = 'Next todo comment' },
-    },
-    {
-      '[t',
-      function()
-        require('todo-comments').jump_prev { keywords = { 'TODO_ADAM' } }
-      end,
-      { desc = 'Previous todo comment' },
-    },
+    -- {
+    --   ']t',
+    --   function()
+    --     require('todo-comments').jump_next { keywords = { 'TODO_ADAM' } }
+    --   end,
+    --   { desc = 'Next todo comment' },
+    -- },
+    -- {
+    --   '[t',
+    --   function()
+    --     require('todo-comments').jump_prev { keywords = { 'TODO_ADAM' } }
+    --   end,
+    --   { desc = 'Previous todo comment' },
+    -- },
   },
 }
