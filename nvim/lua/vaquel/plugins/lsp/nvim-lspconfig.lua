@@ -3,7 +3,6 @@ return {
   event = { 'BufReadPre', 'BufNewFile' },
   dependencies = {
     'hrsh7th/cmp-nvim-lsp',
-    { 'williamboman/mason-lspconfig.nvim' },
     { 'antosha417/nvim-lsp-file-operations', config = true },
     { 'folke/lazydev.nvim', opts = {} },
   },
@@ -27,13 +26,15 @@ return {
         end
 
         local function goToNextDiagnosticError()
-          vim.diagnostic.goto_next {
+          vim.diagnostic.jump {
+            count = 1,
             severity = { vim.diagnostic.severity.ERROR, vim.diagnostic.severity.WARN },
           }
         end
 
         local function goToPreviousDiagnosticError()
-          vim.diagnostic.goto_prev {
+          vim.diagnostic.jump {
+            count = -1,
             severity = { vim.diagnostic.severity.ERROR, vim.diagnostic.severity.WARN },
           }
         end
@@ -66,156 +67,140 @@ return {
       vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = '' })
     end
 
-    mason_lspconfig.setup_handlers {
-      -- default handler for installed servers
-      function(server_name)
-        lspconfig[server_name].setup {
-          capabilities = cmp_nvim_lsp.default_capabilities(),
-        }
-      end,
-      ['biome'] = function()
-        lspconfig['biome'].setup {
-          capabilities = cmp_nvim_lsp.default_capabilities(),
-          settings = {
-            biome = {
-              configurationPath = vim.fn.getcwd() .. '/biome.editor.jsonc',
+    vim.lsp.config('*', {
+      capabilities = capabilities,
+      root_dir = vim.fn.getcwd(),
+    })
+    vim.lsp.config('biome', {
+      settings = {
+        biome = {
+          configurationPath = vim.fn.getcwd() .. '/biome.editor.jsonc',
+        },
+      },
+    })
+    vim.lsp.config('eslint', {
+      root_markers = {
+        '.eslintrc',
+        '.eslintrc.js',
+        '.eslintrc.cjs',
+        '.eslintrc.yaml',
+        '.eslintrc.yml',
+        '.eslintrc.json',
+        'eslint.config.js',
+        'eslint.config.mjs',
+      },
+    })
+    vim.lsp.config('lua_ls', {
+      settings = {
+        Lua = {
+          workspace = {
+            library = {
+              '${3rd}/luv/library',
+              unpack(vim.api.nvim_get_runtime_file('', true)),
             },
           },
-        }
-      end,
-      ['lua_ls'] = function()
-        -- configure lua server (with special settings)
-        lspconfig['lua_ls'].setup {
-          capabilities = cmp_nvim_lsp.default_capabilities(),
-          settings = {
-            Lua = {
-              workspace = {
-                library = {
-                  '${3rd}/luv/library',
-                  unpack(vim.api.nvim_get_runtime_file('', true)),
-                },
+          -- make the language server recognize "vim" global
+          diagnostics = {
+            globals = { 'vim' },
+          },
+          completion = {
+            callSnippet = 'Replace',
+          },
+        },
+      },
+    })
+
+    -- TypeScript server configuration with styled-components plugin
+    local function get_styled_components_plugin()
+      local npmRoot = string.gsub(vim.fn.system 'npm root -g', '\\n', '')
+      local styledComponentsPath = npmRoot .. '/@styled/typescript-styled-plugin'
+      if vim.fn.isdirectory(styledComponentsPath) ~= 1 then
+        return nil
+      end
+      return {
+        name = '@styled/typescript-styled-plugin',
+        location = styledComponentsPath,
+        languages = { 'javascript', 'javascriptreact', 'javascript.jsx', 'typescript', 'typescriptreact', 'typescript.tsx' },
+      }
+    end
+
+    vim.lsp.config('ts_ls', {
+      init_options = {
+        plugins = vim.tbl_filter(function(plugin)
+          return plugin ~= nil
+        end, { get_styled_components_plugin() }),
+      },
+    })
+    vim.lsp.config('jsonls', {
+      filetypes = { 'json', 'jsonc' },
+      settings = {
+        json = {
+          -- Schemas https://www.schemastore.org
+          schemas = {
+            {
+              fileMatch = { 'package.json' },
+              url = 'https://json.schemastore.org/package.json',
+            },
+            {
+              fileMatch = { 'tsconfig*.json' },
+              url = 'https://json.schemastore.org/tsconfig.json',
+            },
+            {
+              fileMatch = {
+                '.prettierrc',
+                '.prettierrc.json',
+                'prettier.config.json',
               },
-              -- make the language server recognize "vim" global
-              diagnostics = {
-                globals = { 'vim' },
+              url = 'https://json.schemastore.org/prettierrc.json',
+            },
+            {
+              fileMatch = { '.eslintrc', '.eslintrc.json' },
+              url = 'https://json.schemastore.org/eslintrc.json',
+            },
+            {
+              fileMatch = { '.babelrc', '.babelrc.json', 'babel.config.json' },
+              url = 'https://json.schemastore.org/babelrc.json',
+            },
+            {
+              fileMatch = { 'lerna.json' },
+              url = 'https://json.schemastore.org/lerna.json',
+            },
+            {
+              fileMatch = { 'now.json', 'vercel.json' },
+              url = 'https://json.schemastore.org/now.json',
+            },
+            {
+              fileMatch = {
+                '.stylelintrc',
+                '.stylelintrc.json',
+                'stylelint.config.json',
               },
-              completion = {
-                callSnippet = 'Replace',
-              },
+              url = 'http://json.schemastore.org/stylelintrc.json',
             },
           },
-        }
-      end,
-      ['ts_ls'] = function()
-        local ts_lsp_config = require 'vaquel.plugins.lsp.ftplugin.typescript'
-        ts_lsp_config(cmp_nvim_lsp.default_capabilities())
-      end,
-      ['eslint'] = function()
-        local config_files = {
-          '.eslintrc',
-          '.eslintrc.js',
-          '.eslintrc.cjs',
-          '.eslintrc.yaml',
-          '.eslintrc.yml',
-          '.eslintrc.json',
-          'eslint.config.js',
-          'eslint.config.mjs',
-        }
-        local root_dir = require('lspconfig').util.root_pattern
-        lspconfig['eslint'].setup {
-          capabilities = cmp_nvim_lsp.default_capabilities(),
-          root_dir = root_dir(vim.tbl_extend('keep', config_files, { '.git' })),
-          on_attach = function(client, bufnr)
-            local eslint_config_exists = require('vaquel.plugins.lsp.utils.eslint').does_eslint_config_exists(vim.fn.getcwd(), config_files)
-            if not eslint_config_exists then
-              vim.notify('didnt find eslint config file', vim.log.levels.WARN)
-              vim.lsp.buf_detach_client(bufnr, client.id)
-            end
-          end,
-        }
-      end,
-      ['tailwindcss'] = function()
-        lspconfig['tailwindcss'].setup {
-          capabilities = cmp_nvim_lsp.default_capabilities(),
-          root_dir = require('vaquel.plugins.lsp.utils.attio-root-dir').attio_root_dir 'tailwindcss',
-        }
-      end,
-      jsonls = function()
-        lspconfig['jsonls'].setup {
-          capabilities = cmp_nvim_lsp.default_capabilities(),
-          filetypes = { 'json', 'jsonc' },
-          settings = {
-            json = {
-              -- Schemas https://www.schemastore.org
-              schemas = {
-                {
-                  fileMatch = { 'package.json' },
-                  url = 'https://json.schemastore.org/package.json',
-                },
-                {
-                  fileMatch = { 'tsconfig*.json' },
-                  url = 'https://json.schemastore.org/tsconfig.json',
-                },
-                {
-                  fileMatch = {
-                    '.prettierrc',
-                    '.prettierrc.json',
-                    'prettier.config.json',
-                  },
-                  url = 'https://json.schemastore.org/prettierrc.json',
-                },
-                {
-                  fileMatch = { '.eslintrc', '.eslintrc.json' },
-                  url = 'https://json.schemastore.org/eslintrc.json',
-                },
-                {
-                  fileMatch = { '.babelrc', '.babelrc.json', 'babel.config.json' },
-                  url = 'https://json.schemastore.org/babelrc.json',
-                },
-                {
-                  fileMatch = { 'lerna.json' },
-                  url = 'https://json.schemastore.org/lerna.json',
-                },
-                {
-                  fileMatch = { 'now.json', 'vercel.json' },
-                  url = 'https://json.schemastore.org/now.json',
-                },
-                {
-                  fileMatch = {
-                    '.stylelintrc',
-                    '.stylelintrc.json',
-                    'stylelint.config.json',
-                  },
-                  url = 'http://json.schemastore.org/stylelintrc.json',
-                },
-              },
+        },
+      },
+    })
+    vim.lsp.config('yamlls', {
+      settings = {
+        yaml = {
+          -- Schemas https://www.schemastore.org
+          schemas = {
+            ['http://json.schemastore.org/gitlab-ci.json'] = { '.gitlab-ci.yml' },
+            ['https://json.schemastore.org/bamboo-spec.json'] = {
+              'bamboo-specs/*.{yml,yaml}',
             },
-          },
-        }
-      end,
-      yamlls = function()
-        lspconfig['yamlls'].setup {
-          settings = {
-            yaml = {
-              -- Schemas https://www.schemastore.org
-              schemas = {
-                ['http://json.schemastore.org/gitlab-ci.json'] = { '.gitlab-ci.yml' },
-                ['https://json.schemastore.org/bamboo-spec.json'] = {
-                  'bamboo-specs/*.{yml,yaml}',
-                },
-                ['https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json'] = {
-                  'docker-compose*.{yml,yaml}',
-                },
-                ['http://json.schemastore.org/github-workflow.json'] = '.github/workflows/*.{yml,yaml}',
-                ['http://json.schemastore.org/github-action.json'] = '.github/action.{yml,yaml}',
-                ['http://json.schemastore.org/prettierrc.json'] = '.prettierrc.{yml,yaml}',
-                ['http://json.schemastore.org/stylelintrc.json'] = '.stylelintrc.{yml,yaml}',
-                ['http://json.schemastore.org/circleciconfig'] = '.circleci/**/*.{yml,yaml}',
-              },
+            ['https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json'] = {
+              'docker-compose*.{yml,yaml}',
             },
+            ['http://json.schemastore.org/github-workflow.json'] = '.github/workflows/*.{yml,yaml}',
+            ['http://json.schemastore.org/github-action.json'] = '.github/action.{yml,yaml}',
+            ['http://json.schemastore.org/prettierrc.json'] = '.prettierrc.{yml,yaml}',
+            ['http://json.schemastore.org/stylelintrc.json'] = '.stylelintrc.{yml,yaml}',
+            ['http://json.schemastore.org/circleciconfig'] = '.circleci/**/*.{yml,yaml}',
           },
-        }
-      end,
-    }
+        },
+      },
+    })
   end,
 }
