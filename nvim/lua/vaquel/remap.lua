@@ -42,7 +42,10 @@ vim.keymap.set('n', '<leader>P', '"+P', { desc = 'Paste from the system clipboar
 vim.keymap.set('v', '<leader>p', '"+p', { desc = 'Paste from the system clipboard' })
 vim.keymap.set('n', '<leader>d', '"_d')
 vim.keymap.set('v', '<leader>d', '"_d')
-
+vim.keymap.set('n', '<leader>p', '"0p', { desc = 'Paste from last yanked' })
+vim.keymap.set('n', '<leader>P', '"0P', { desc = 'Paste from last yanked' })
+vim.keymap.set('v', '<leader>p', '"0p', { desc = 'Paste from last yanked' })
+vim.keymap.set('v', '<leader>P', '"0P', { desc = 'Paste from last yanked' })
 --
 vim.keymap.set('n', '<leader><C-s>', [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 

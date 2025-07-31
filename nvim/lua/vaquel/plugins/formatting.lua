@@ -9,6 +9,7 @@ return {
     conform.setup {
       default_format_opts = {
         async = false,
+        timeout_ms = 5000,
       },
       formatters_by_ft = {
         javascript = jsFormatters,
