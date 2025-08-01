@@ -40,17 +40,13 @@ return {
         end
 
         -- set keybinds
-        map('n', 'gr', '<cmd>Telescope lsp_references<CR>', 'Show LSP references') -- show definition, references
+        map('n', 'gr', Snacks.picker.lsp_references, 'Show LSP references') -- show definition, references
         map('n', 'gD', vim.lsp.buf.declaration, 'Go to declaration') -- go to declaration
-        map('n', 'gd', '<cmd>Telescope lsp_definitions<CR>', 'Show LSP definitions') -- show lsp definitions
-        map('n', 'gi', '<cmd>Telescope lsp_implementations<CR>', 'Show LSP implementations') -- show lsp implementations
-        map('n', 'gt', '<cmd>Telescope lsp_type_definitions<CR>', 'Show LSP type definitions') -- show lsp type definitions
+        map('n', 'gd', Snacks.picker.lsp_definitions, 'Show LSP definitions') -- show lsp definitions
         map({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, 'See available code actions') -- see available code actions, in visual mode will apply to selection
         map('n', '<leader>rr', vim.lsp.buf.rename, 'Smart [r]ename') -- smart rename
         map('n', ']d', goToNextDiagnosticError, 'Go to next diagnostic') -- jump to next diagnostic in buffer
-        map('n', 'qd', goToNextDiagnosticError, 'Go to next diagnostic') -- jump to next diagnostic in buffer
         map('n', '[d', goToPreviousDiagnosticError, 'Go to previous diagnostic') -- jump to previous diagnostic in buffer
-        map('n', 'Qd', goToPreviousDiagnosticError, 'Go to previous diagnostic') -- jump to previous diagnostic in buffer
         map('n', 'K', vim.lsp.buf.hover, 'Show documentation for what is under cursor') -- show documentation for what is under cursor
         map('n', 'L', vim.diagnostic.open_float, 'Show line diagnostics') -- show diagnostics for line
       end,
