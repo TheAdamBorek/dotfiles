@@ -53,9 +53,38 @@ local function setup_biome_organize_imports_on_save()
   })
 end
 
+local function setup_mini_ai_text_objects()
+  local mini_ai = require 'mini.ai'
+  local spec_treesitter = mini_ai.gen_spec.treesitter
+
+  mini_ai.setup {
+    custom_textobjects = {
+      f = spec_treesitter { a = { '@function.outer' }, i = '@function.inner' },
+      a = spec_treesitter {
+        -- Around: Full selection (e.g., entire prop/arg/property including comma)
+        a = {
+          '@prop.outer', -- JSX props
+          '@parameter.outer', -- Function call args + definition params (built-in)
+          '@property.outer', -- Object properties
+          '@element.outer', -- Array's element
+        },
+        -- Inner: Core content (e.g., excluding commas/type annotations)
+        i = {
+          '@prop.inner',
+          '@parameter.inner',
+          '@property.inner',
+          '@element.inner', -- Array's element
+        },
+      },
+      n_lines = 2,
+    },
+  }
+end
+
 M.apply = function()
   setupBiomeFixAll()
   setup_biome_organize_imports_on_save()
+  setup_mini_ai_text_objects()
 end
 
 return M

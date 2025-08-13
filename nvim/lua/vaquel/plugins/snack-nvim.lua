@@ -5,7 +5,8 @@ return {
   lazy = false,
   ---@type snacks.Config
   opts = {
-    bigfile = { enabled = true },
+    bigfile = { enabled = true, what = 'file', branch = 'master' },
+    gitbrowse = { enabled = true },
     -- explorer = { enabled = true },
     indent = { enabled = true, animate = {
       enabled = false,
@@ -28,6 +29,19 @@ return {
       debug = {
         scores = true,
       },
+      layout = {
+        preset = 'default',
+      },
+      win = {
+        input = {
+          keys = {
+            ['<Down>'] = { 'history_forward', mode = { 'i', 'n' } },
+            ['<Up>'] = { 'history_back', mode = { 'i', 'n' } },
+            ['<C-d>'] = { 'preview_scroll_down', mode = { 'i', 'n' } },
+            ['<C-u>'] = { 'preview_scroll_up', mode = { 'i', 'n' } },
+          },
+        },
+      },
     },
   },
   keys = {
@@ -36,7 +50,7 @@ return {
     { '<leader>fF', function() Snacks.picker.files() end, desc = '[F]ind [F]iles' },
     { '<leader>ff', function() Snacks.picker.git_files { untracked = true } end, desc = '[F]ind Git [f]iles' },
     { '<leader>fg', function() Snacks.picker.git_grep({untracked = true})  end, desc = 'Grep in [g]it' },
-    { '<leader>fs', function() Snacks.picker.lsp_type_definitions() end, desc = '[F]ind Type definitions' },
+    { '<leader>fs', function() Snacks.picker.lsp_workspace_symbols() end, desc = '[F]ind Type definitions' },
     { "<leader>fr", function() Snacks.picker.recent() end, desc = "Recent"},
     { "<leader>fk", function() Snacks.picker.keymaps() end, desc = "[F]ind [K]eymaps"},
     { "<leader>fh", function() Snacks.picker.help() end, desc = "[F]ind [H]elp"},
@@ -46,6 +60,7 @@ return {
     { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
     -- Git keymaps
     { '<leader>gt', function() Snacks.lazygit.open()end, desc = 'Open Lazy[G]it [t]ree' },
+    {'<leader>go', function() Snacks.gitbrowse.open() end, desc = "Open file in Git repo web browser"},
     -- Notifier keymaps
     { '<leader>nq', function() Snacks.notifier.hide() end, desc = '[N]otifier [Q]uit' },
     -- stylua: ignore end
