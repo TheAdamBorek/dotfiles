@@ -16,7 +16,7 @@ return {
       -- Set to true to autosave buffers that are updated with LSP willRenameFiles
       -- Set to "unmodified" to only save unmodified buffers
       autosave_changes = true,
-      timeout_ms = 10000,
+      timeout_ms = 60 * 1000,
     },
     watch_for_changes = true,
     win_options = {
@@ -53,5 +53,26 @@ return {
   config = function(_, opts)
     require('oil').setup(opts)
     vim.keymap.set('n', '-', '<cmd>Oil<CR>', { noremap = true })
+
+    local augroup = vim.api.nvim_create_augroup('oil-purge-buffers', { clear = true })
+    vim.api.nvim_create_autocmd('User', {
+      pattern = 'OilActionsPost',
+      group = augroup,
+      callback = function(e)
+        if e.data.actions == nil then
+          return
+        end
+        for _, action in ipairs(e.data.actions) do
+          if action.entry_type == 'file' and action.type == 'delete' then
+            local file = action.url:sub(7)
+            local bufnr = vim.fn.bufnr(file)
+
+            if bufnr >= 0 then
+              vim.api.nvim_buf_delete(bufnr, { force = true })
+            end
+          end
+        end
+      end,
+    })
   end,
 }
