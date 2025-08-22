@@ -40,7 +40,7 @@ local function setup_biome_organize_imports_on_save()
 
       local response = biome_lsp_client.request_sync('textDocument/codeAction', params, 5000, bufnr)
       local result, error = response.result, response.error
-      if result then
+      if result ~= nil then
         for _, action in ipairs(result) do
           if action.kind == 'source.organizeImports.biome' and action.edit ~= nil then
             vim.lsp.util.apply_workspace_edit(action.edit, 'utf-8')

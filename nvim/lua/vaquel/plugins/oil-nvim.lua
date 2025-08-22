@@ -1,6 +1,6 @@
 return {
   'stevearc/oil.nvim',
-  dependencies = { 'nvim-tree/nvim-web-devicons' },
+  dependencies = { 'nvim-tree/nvim-web-devicons', 'folke/snacks.nvim' },
   opts = {
     default_file_explorer = true,
     delete_to_trash = true,
@@ -13,6 +13,7 @@ return {
       end,
     },
     lsp_file_methods = {
+      enabled = false,
       -- Set to true to autosave buffers that are updated with LSP willRenameFiles
       -- Set to "unmodified" to only save unmodified buffers
       autosave_changes = true,
@@ -54,7 +55,7 @@ return {
     require('oil').setup(opts)
     vim.keymap.set('n', '-', '<cmd>Oil<CR>', { noremap = true })
 
-    local augroup = vim.api.nvim_create_augroup('oil-purge-buffers', { clear = true })
+    local augroup = vim.api.nvim_create_augroup('oil-actions-post', { clear = true })
     vim.api.nvim_create_autocmd('User', {
       pattern = 'OilActionsPost',
       group = augroup,
@@ -71,6 +72,16 @@ return {
               vim.api.nvim_buf_delete(bufnr, { force = true })
             end
           end
+        end
+      end,
+    })
+
+    vim.api.nvim_create_autocmd('User', {
+      pattern = 'OilActionsPost',
+      group = augroup,
+      callback = function(event)
+        if event.data.actions.type == 'move' then
+          Snacks.rename.on_rename_file(event.data.actions.src_url, event.data.actions.dest_url)
         end
       end,
     })

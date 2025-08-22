@@ -15,6 +15,9 @@ return {
     notify = { enabled = true },
     notifier = { enabled = true },
     quickfile = { enabled = true },
+    scratch = {
+      enabled = true,
+    },
     terminal = {
       enabled = true,
       bo = {
@@ -92,13 +95,14 @@ return {
   keys = {
     -- stylua: ignore start
     -- Picker keymaps
-    { '<leader>fF', function() Snacks.picker.files() end, desc = '[F]ind [F]iles' },
-    { '<leader>ff', function() Snacks.picker.git_files { untracked = true } end, desc = '[F]ind Git [f]iles' },
-    { '<leader>fg', function() Snacks.picker.git_grep({untracked = true})  end, desc = 'Grep in [g]it' },
+    { '<leader>fF', function() Snacks.picker.git_files({untracked = true}) end, desc = '[F]ind [F]iles' },
+    { '<leader>ff', function() Snacks.picker.files() end, desc = '[F]ind Git [f]iles' },
+    { '<leader>fg', function() Snacks.picker.grep()  end, desc = '[F]ind [G]rep' },
     { '<leader>fs', function() Snacks.picker.lsp_workspace_symbols() end, desc = '[F]ind Type definitions' },
     { "<leader>fr", function() Snacks.picker.recent() end, desc = "Recent"},
     { "<leader>fk", function() Snacks.picker.keymaps() end, desc = "[F]ind [K]eymaps"},
     { "<leader>fh", function() Snacks.picker.help() end, desc = "[F]ind [H]elp"},
+    { "<leader>ft", function() Snacks.picker.todo_comments({keywords = {'TODO', 'TODO_ADAM'}}) end, desc = "[F]ind [T]odos"},
     { "<leader>fw", function() Snacks.picker.grep_word() end, desc = "[F]ind Visual selection or [w]ord", mode = { "n", "x" } },
     { "<leader>fd", function() Snacks.picker.diagnostics() end, desc = "[F]ind workspace [d]iagnostics" },
     { "<leader>fb", function() Snacks.picker.buffers() end, desc = "[F]ind open [b]uffers" },
@@ -107,7 +111,13 @@ return {
     { '<leader>gt', function() Snacks.lazygit.open()end, desc = 'Open Lazy[G]it [t]ree' },
     {'<leader>go', function() Snacks.gitbrowse.open() end, desc = "Open file in Git repo web browser"},
     -- Notifier keymaps
+    -- Scratch keymaps
     { '<leader>nq', function() Snacks.notifier.hide() end, desc = '[N]otifier [Q]uit' },
+    { "<leader>.",  function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
+    { "<leader>S",  function() Snacks.scratch.select() end, desc = "Select Scratch Buffer" },
     -- stylua: ignore end
+  },
+  dependencies = {
+    'folke/todo-comments.nvim',
   },
 }

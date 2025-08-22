@@ -125,6 +125,13 @@ return {
         plugins = vim.tbl_filter(function(plugin)
           return plugin ~= nil
         end, { get_styled_components_plugin() }),
+        settings = {
+          typescript = {
+            tsserver = {
+              maxTsServerMemory = 6144, -- 6GB
+            },
+          },
+        },
       },
     })
     vim.lsp.config('jsonls', {

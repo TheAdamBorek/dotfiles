@@ -1,5 +1,5 @@
 local print_var_javascript = {
-  'console.debug(`%s: ${%s}`)',
+  'console.debug("%s ", %s)',
 }
 
 local print_javascript = {
