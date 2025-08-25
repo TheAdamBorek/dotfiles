@@ -128,7 +128,8 @@ return {
         settings = {
           typescript = {
             tsserver = {
-              maxTsServerMemory = 6144, -- 6GB
+              maxTsServerMemory = 8192,
+              nodePath = utils.cli_command 'command -v node',
             },
           },
         },

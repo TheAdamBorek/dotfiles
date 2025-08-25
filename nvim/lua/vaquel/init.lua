@@ -4,6 +4,7 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+utils = require 'vaquel.utils'
 require 'vaquel.lazy'
 require 'vaquel.remap'
 require 'vaquel.opt'
