@@ -1,0 +1,18 @@
+alias vim='nvim'
+alias aliases='cat ~/zshrc/aliases'
+alias killaudio='sudo pkill coreaudiod'
+alias rblue='blueutil -p 0 && sleep 1 && blueutil -p 1 && sleep 1 && sudo pkill coreaudiod'
+
+alias podi='bundle exec pod install'
+alias ddd='rm -rdf ~/Library/Developer/Xcode/DerivedData'
+alias adbtext='adb shell input text'
+
+alias fixJS='node ~/zshrc/scripts/delete-js-compile-from-ts.js'
+alias pho='cd ~/Developer/job/attio'
+alias ato='cd ~/Developer/job/attio'
+alias nukeNodeModules='find . -name node_modules -type d -prune -exec rm -rf '{}' +'
+alias resetWatchman='watchman watch-del /Users/adamborek/Developer/attio/Phoenix ; watchman watch-project /Users/adamborek/Developer/attio/Phoenix'
+
+alias updateGraphite='brew update && brew upgrade withgraphite/tap/graphite'
+alias ls='eza -alF --color=always --sort=name'
+

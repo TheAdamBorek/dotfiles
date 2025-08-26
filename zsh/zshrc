@@ -1,0 +1,89 @@
+export LANG=en_US.UTF-8
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+# Path to your oh-my-zsh installation.
+export ZSH=$HOME/.oh-my-zsh
+# fzf needs to defined after vi-mode as otherwise <C-r> doesn't work
+plugins=(git git-extras npm node web-search vi-mode fzf)
+export KEYTIMEOUT=1
+
+export PATH="$PATH:(brew --prefix coreutils)/libexec/gnubin"
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Adds NVM
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# place this after nvm initialization!
+autoload -U add-zsh-hook
+
+load-nvmrc() {
+  local nvmrc_path
+  nvmrc_path="$(nvm_find_nvmrc)"
+
+  if [ -n "$nvmrc_path" ]; then
+    local nvmrc_node_version
+    nvmrc_node_version=$(nvm version "$(cat "${nvmrc_path}")")
+
+    if [ "$nvmrc_node_version" = "N/A" ]; then
+      nvm install
+    elif [ "$nvmrc_node_version" != "$(nvm version)" ]; then
+      nvm use
+    fi
+  elif [ -n "$(PWD=$OLDPWD nvm_find_nvmrc)" ] && [ "$(nvm version)" != "$(nvm version default)" ]; then
+    echo "Reverting to nvm default version"
+    nvm use default
+  fi
+}
+
+add-zsh-hook chpwd load-nvmrc
+load-nvmrc
+#End of NVM
+
+source $ZSH/oh-my-zsh.sh
+source ~/.bash_profile
+source ~/dotfiles/zsh/aliases
+source ~/dotfiles/zsh/git_aliases
+
+## Requires installing https://github.com/zsh-users/zsh-autosuggestions/tree/master
+source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# Setup yazi & dependencies
+eval "$(zoxide init zsh)"
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+	yazi "$@" --cwd-file="$tmp"
+	if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		builtin cd -- "$cwd"
+	fi
+	rm -f -- "$tmp"
+}  
+
+# Enable starship shell prompt
+eval "$(starship init zsh)"
+
+### VIM MODE
+bindkey -v
+# Override the vi-yank widget to also copy to the system clipboard using pbcopy.
+function vi_yank_system_clipboard() {
+  zle vi-yank
+  print -n "$CUTBUFFER" | pbcopy
+}
+zle -N vi_yank_system_clipboard
+# Bind the widget to 'y' in vi command mode (vicmd keymap).
+bindkey -M vicmd 'y' vi_yank_system_clipboard
+### END OF VIM MODE
+
+# bun completions
+[ -s "/Users/adamborek/.bun/_bun" ] && source "/Users/adamborek/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
