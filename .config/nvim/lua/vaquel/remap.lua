@@ -65,3 +65,33 @@ vim.api.nvim_set_keymap('n', '<C-t>q', '<cmd>tabclose<CR>', { desc = 'Close curr
 vim.api.nvim_set_keymap('n', '<C-w>t', '<cmd>tabnew %<CR>', { desc = 'Open current buffer in new tab' })
 vim.api.nvim_set_keymap('n', ']t', '<cmd>tabnext<CR>', { desc = 'Go to next tab' })
 vim.api.nvim_set_keymap('n', '[t', '<cmd>tabprevious<CR>', { desc = 'Go to previous tab' })
+
+-- Mark setup
+-- Remap lowercase marks to uppercase (global) marks
+for c = string.byte 'a', string.byte 'z' do
+  local lower = string.char(c)
+  local upper = lower:upper()
+
+  -- Setting marks: ma -> mA
+  vim.keymap.set('n', 'm' .. lower, function()
+    vim.cmd('normal! m' .. upper)
+  end, {
+    noremap = true,
+    silent = true,
+  })
+
+  -- Jumping to marks: 'a -> 'A (linewise)
+  vim.keymap.set('n', "'" .. lower, function()
+    local pos = vim.fn.getpos("'" .. upper)
+    if pos[2] == 0 then
+      print('Mark ' .. upper .. ' not set')
+    else
+      vim.cmd("normal! '" .. upper)
+    end
+  end, {
+    noremap = true,
+    silent = true,
+  })
+end
+
+vim.keymap.set('n', '<leader>md', '<cmd>delmarks A-Z<CR>', { desc = 'Delete all global marks' })

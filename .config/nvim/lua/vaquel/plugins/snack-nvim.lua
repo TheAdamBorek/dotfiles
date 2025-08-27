@@ -110,7 +110,7 @@ return {
     { "<leader>:", function() Snacks.picker.command_history() end, desc = "Command History" },
     -- Git keymaps
     { '<leader>gt', function() Snacks.lazygit.open()end, desc = 'Open Lazy[G]it [t]ree' },
-    {'<leader>go', function() Snacks.gitbrowse.open() end, desc = "Open file in Git repo web browser"},
+    {'<leader>go', function() Snacks.gitbrowse.open() end, desc = "Open file in Git repo web browser", mode = {"n", "v"}},
     -- Notifier keymaps
     -- Scratch keymaps
     { '<leader>nq', function() Snacks.notifier.hide() end, desc = '[N]otifier [Q]uit' },
