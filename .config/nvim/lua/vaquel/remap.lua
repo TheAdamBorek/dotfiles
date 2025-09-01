@@ -71,13 +71,12 @@ vim.api.nvim_set_keymap('n', '[t', '<cmd>tabprevious<CR>', { desc = 'Go to previ
 for c = string.byte 'a', string.byte 'z' do
   local lower = string.char(c)
   local upper = lower:upper()
-
   -- Setting marks: ma -> mA
   vim.keymap.set('n', 'm' .. lower, function()
+    print('Mapping mark ' .. upper)
     vim.cmd('normal! m' .. upper)
   end, {
     noremap = true,
-    silent = true,
   })
 
   -- Jumping to marks: 'a -> 'A (linewise)
@@ -90,7 +89,6 @@ for c = string.byte 'a', string.byte 'z' do
     end
   end, {
     noremap = true,
-    silent = true,
   })
 end
 

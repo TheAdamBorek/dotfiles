@@ -1,12 +1,16 @@
 local M = {}
 
-local function setupBiomeFixAll()
+local function biome_fix_all()
   local conform = require 'conform'
+  conform.format {
+    async = false,
+    formatters = { 'biome-check' },
+  }
+end
+
+local function setup_biome_keymaps()
   vim.keymap.set('n', '<leader>cl', function()
-    conform.format {
-      async = false,
-      formatters = { 'biome-check' },
-    }
+    biome_fix_all()
   end, { desc = 'Fix all [l]int problems with Biome' })
 end
 
@@ -81,10 +85,37 @@ local function setup_mini_ai_text_objects()
   }
 end
 
+local function setup_attio_import_command()
+  local imports = {
+    utils = 'import * as AttioUtils from "@attio/attio-utils";',
+    react = 'import * as AttioReact from "@attio/attio-react";',
+  }
+
+  vim.api.nvim_create_user_command('AttioImport', function(opts)
+    local filetype = vim.bo.filetype
+    if filetype ~= 'typescript' and filetype ~= 'typescriptreact' then
+      vim.notify('ImportAttio can only be used in TypeScript files', vim.log.levels.WARN)
+      return
+    end
+
+    local import = imports[opts.args]
+    if not import then
+      vim.notify('Invalid import type. Valid types are: utils, react', vim.log.levels.ERROR)
+      return
+    end
+
+    vim.api.nvim_buf_set_lines(0, 0, 0, false, {
+      import,
+    })
+    biome_fix_all()
+  end, { nargs = 1 })
+end
+
 M.apply = function()
-  setupBiomeFixAll()
+  setup_biome_keymaps()
   setup_biome_organize_imports_on_save()
   setup_mini_ai_text_objects()
+  setup_attio_import_command()
 end
 
 return M
