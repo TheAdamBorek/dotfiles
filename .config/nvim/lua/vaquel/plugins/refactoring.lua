@@ -46,6 +46,7 @@ return {
       typescriptreact = print_var_javascript,
       javascript = print_var_javascript,
       javascriptreact = print_var_javascript,
+      lua = { "vim.notify('%s ' .. vim.inspect(%s))" },
     },
     printf_statements = {
       typescript = print_javascript,
