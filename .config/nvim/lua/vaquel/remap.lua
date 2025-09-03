@@ -79,13 +79,25 @@ for c = string.byte 'a', string.byte 'z' do
     noremap = true,
   })
 
-  -- Jumping to marks: 'a -> 'A (linewise)
+  -- Jumping to marks: 'a -> `A (exact position)
   vim.keymap.set('n', "'" .. lower, function()
     local pos = vim.fn.getpos("'" .. upper)
     if pos[2] == 0 then
       print('Mark ' .. upper .. ' not set')
     else
-      vim.cmd("normal! '" .. upper)
+      vim.cmd('normal! `' .. upper)
+    end
+  end, {
+    noremap = true,
+  })
+
+  -- Jumping to marks: `a -> `A (exact position)
+  vim.keymap.set('n', '`' .. lower, function()
+    local pos = vim.fn.getpos("'" .. upper)
+    if pos[2] == 0 then
+      print('Mark ' .. upper .. ' not set')
+    else
+      vim.cmd('normal! `' .. upper)
     end
   end, {
     noremap = true,

@@ -13,6 +13,7 @@ end
 
 return {
   'ThePrimeagen/harpoon',
+  enabled = false, -- I've stopped using it. Trying out using global marks instead
   branch = 'harpoon2',
   dependencies = { 'nvim-lua/plenary.nvim', 'nvim-telescope/telescope.nvim', 'folke/which-key.nvim' },
   opts = {
