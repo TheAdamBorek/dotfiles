@@ -5,7 +5,7 @@ return {
   lazy = false,
   ---@type snacks.Config
   opts = {
-    bigfile = { enabled = true, what = 'file', branch = 'master' },
+    bigfile = { enabled = true, what = 'file', branch = 'master', size = 1 * 1024 * 1024 },
     gitbrowse = { enabled = true },
     -- explorer = { enabled = true },
     indent = { enabled = true, animate = {

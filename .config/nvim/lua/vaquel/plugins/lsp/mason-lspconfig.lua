@@ -30,6 +30,7 @@ return {
         'stylua',
         'xmlformatter',
         'biome',
+        'fixjson',
       },
     }
   end,
