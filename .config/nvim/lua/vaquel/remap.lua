@@ -73,8 +73,8 @@ for c = string.byte 'a', string.byte 'z' do
   local upper = lower:upper()
   -- Setting marks: ma -> mA
   vim.keymap.set('n', 'm' .. lower, function()
-    print('Mapping mark ' .. upper)
     vim.cmd('normal! m' .. upper)
+    print('Mark ' .. upper .. ' set')
   end, {
     noremap = true,
   })
