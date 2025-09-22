@@ -6,7 +6,7 @@ vim.g.maplocalleader = ' '
 
 utils = require 'vaquel.utils'
 require 'vaquel.lazy'
-require 'vaquel.remap'
+require 'vaquel.keymap'
 require 'vaquel.opt'
 require 'vaquel.commands'
 require 'vaquel.autocmd'

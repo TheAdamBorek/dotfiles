@@ -1,6 +1,7 @@
 return {
   'neovim/nvim-lspconfig',
   event = { 'BufReadPre', 'BufNewFile' },
+  version = '*', -- recommended, use latest release instead of latest commit
   dependencies = {
     'hrsh7th/cmp-nvim-lsp',
     { 'antosha417/nvim-lsp-file-operations', config = true },
