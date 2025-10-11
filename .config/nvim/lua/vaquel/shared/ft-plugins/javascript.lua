@@ -15,6 +15,12 @@ local function setup_biome_keymaps()
 end
 
 local function setup_biome_organize_imports_on_save()
+  local biomeClient = vim.lsp.get_clients({ name = 'biome' })[1]
+  if biomeClient == nil then
+    -- Don't register the autocmd if Biome LSP is not active
+    return
+  end
+
   vim.api.nvim_create_autocmd('BufWritePre', {
     desc = 'Organize imports with Biome on save',
     pattern = { '*.js', '*.jsx', '*.ts', '*.tsx' },
@@ -22,6 +28,7 @@ local function setup_biome_organize_imports_on_save()
     callback = function(args)
       local bufnr = args.buf
       local biome_lsp_client = vim.lsp.get_clients({ bufnr = bufnr, name = 'biome' })[1]
+
       local start_pos = { line = 0, character = 0 }
       local end_pos = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
       local end_line = #end_pos

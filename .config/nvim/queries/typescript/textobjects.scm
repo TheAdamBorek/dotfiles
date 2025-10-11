@@ -1,12 +1,12 @@
 ;; Object Properties (e.g., foo: "something" in { foo: "something" })
 (pair
   key: (_) @property.inner
-  value: (_) @property.inner) @property.outer
+  value: (_) @property.inner)
 
 ;; Optional: Capture trailing comma for clean deletion
 (object
-  (pair) @property.outer
-  . ["," @property.outer._end]?)
+  ((pair) 
+  . [","]? ) @property.outer)
 
 ;; Function Parameter Destructuring (e.g., {emailBodyHtml, className} in function params)
 (object_pattern
@@ -24,14 +24,15 @@
 
 ;; Optional: Capture trailing comma for destructured imports
 (named_imports
-  (import_specifier) @property.outer
-  . ["," @property.outer._end]?)
+  (import_specifier) @property.inner
+  . ["," @property.outer]?)
 
 ;; Array Elements
 (array
-  (_) @element.inner) @element.outer
+  (_) @element.inner)
 
-;; With comma handling for clean deletion  
+;; Array Elements with comma handling
 (array
   (_) @element.outer
-  . ["," @element.outer._end]?)
+  ["," @element.outer]?)
+
