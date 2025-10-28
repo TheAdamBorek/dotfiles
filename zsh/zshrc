@@ -87,3 +87,6 @@ bindkey -M vicmd 'y' vi_yank_system_clipboard
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+# Set up for tmuxinator
+export EDITOR='nvim'

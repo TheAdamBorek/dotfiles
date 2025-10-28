@@ -50,6 +50,7 @@ brew_packages=(
   "stow"
   "lua"
   "eza"
+  "tmuxinator"
 )
 
 # Iterate through the list and attempt to install each package
@@ -61,7 +62,6 @@ yazi_installed=($(brew list | grep "yazi") == *"yazi"*)
 if [[ $yazi_installed == 0 ]]; then
   echo "Do you want to install Yazi - terminal file explorer? (y/n)"
   read answer
-  if [[ $answer == "y" || $answer == "Y" ]]; then
     echo "Installing Yazi & it's plugins:"
     install_brew_package 'yazi' 1
     yazi_plugins=(
@@ -78,10 +78,9 @@ if [[ $yazi_installed == 0 ]]; then
       install_brew_package $plugin
     done
     echo "End of Yazi plugins."
-  fi
 else
   echo "Yazi is already installed."
 fi
-install_package "tmux plugin manager" "git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm"
+install_package "tmux plugin manager" "git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm" 1
 
 echo "Installation process completed."
