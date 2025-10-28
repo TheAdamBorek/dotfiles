@@ -1,0 +1,4 @@
+[dotnet]
+  disabled = true
+[golang]
+  disabled = true
