@@ -14,6 +14,7 @@ return {
       'lua_ls',
       'jsonls',
       'yamlls',
+      'bashls',
     },
     automatic_enable = true,
   },
