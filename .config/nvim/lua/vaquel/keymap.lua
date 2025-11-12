@@ -105,3 +105,24 @@ vim.api.nvim_set_keymap('n', '[t', '<cmd>tabprevious<CR>', { desc = 'Go to previ
 -- end
 
 vim.keymap.set('n', '<leader>md', '<cmd>delmarks A-Z<CR>', { desc = 'Delete all global marks' })
+
+--- Quickfix list management
+vim.keymap.set('n', '<leader>qa', ":call setqflist([{'bufnr': bufnr('%'), 'lnum': line('.'), 'col': col('.'), 'text': getline('.')}], 'a') | copen<CR>", {
+  desc = 'Add current line to Quickfix list',
+})
+
+vim.keymap.set('n', '<leader>qc', '<cmd>cexpr([]) | cclose<CR>', {
+  desc = 'Clear the Quickfix list',
+})
+
+vim.keymap.set('n', '<leader>qdf', function()
+  local qflist = vim.fn.getqflist()
+  local current_buf = vim.fn.bufnr '%'
+  local filtered = vim.tbl_filter(function(item)
+    return item.bufnr ~= current_buf
+  end, qflist)
+  vim.fn.setqflist(filtered, 'r')
+  print 'Removed current file from Quickfix list'
+end, {
+  desc = 'Delete current file from Quickfix list',
+})
