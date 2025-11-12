@@ -2,3 +2,7 @@ IdleCallback
 fixedRequestIdleCallback
 requestIdleCallback
 Attio
+timestamp
+toLocaleTimeString
+tabId
+UUID
