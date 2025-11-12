@@ -18,7 +18,14 @@ return {
     dependencies = { 'folke/snacks.nvim' },
     config = true,
     keys = {
-      { '<leader>ac', '<cmd>ClaudeCode<cr>', desc = 'Toggle Claude' },
+      {
+        '<leader>ac',
+        function()
+          vim.cmd 'ClaudeCode'
+          vim.cmd 'wincmd ='
+        end,
+        desc = 'Toggle Claude',
+      },
       { '<leader>af', '<cmd>ClaudeCodeFocus<cr>', desc = 'Focus Claude' },
       { '<leader>ar', '<cmd>ClaudeCode --resume<cr>', desc = 'Resume Claude' },
       { '<leader>aC', '<cmd>ClaudeCode --continue<cr>', desc = 'Continue Claude' },
