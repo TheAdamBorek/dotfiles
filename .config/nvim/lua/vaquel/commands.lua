@@ -1,4 +1,5 @@
-local compileTypescript = require 'vaquel.tsc-compile-command'
+local load_nx_errors_to_qf = require 'vaquel.load-nx-errors-to-qf-list'
+
 vim.api.nvim_create_user_command('VSCodeOpenIn', '!code . && code -g %', {})
 vim.api.nvim_create_user_command('CursorOpenIn', '!cursor . && cursor -g %', {})
 
@@ -14,6 +15,6 @@ vim.api.nvim_create_user_command('AttioIconsRegex', function()
   vim.cmd [[silent! %s/stroke="#\?\w*"/stroke="var(--color)"/g | silent! %s/fill="[^none|white]#\?\w*"/fill="var(--color)"/g]]
 end, { bar = true })
 
-vim.api.nvim_create_user_command('TscCompile', function(opts)
-  compileTypescript(opts.args ~= '' and opts.args or nil)
+vim.api.nvim_create_user_command('NxReadErrors', function()
+  load_nx_errors_to_qf()
 end, { nargs = '?' })
