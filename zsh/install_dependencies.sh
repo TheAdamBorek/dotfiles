@@ -41,7 +41,7 @@ brew_packages=(
   "lazygit"
   "1password-cli"
   "git-delta"
-  "tree-sitter"
+  "tree-sitter-cli"
   "starship"
   "llm"
   "jesseduffield/lazydocker/lazydocker"
