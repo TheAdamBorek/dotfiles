@@ -32,6 +32,7 @@ return {
         'xmlformatter',
         'biome',
         'fixjson',
+        'superhtml',
       },
     }
   end,

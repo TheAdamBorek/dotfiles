@@ -18,7 +18,7 @@ return {
         javascriptreact = jsFormatters,
         typescriptreact = jsFormatters,
         css = jsFormatters,
-        html = jsFormatters,
+        html = { 'superhtml' },
         yaml = jsFormatters,
         markdown = jsFormatters,
         graphql = jsFormatters,
