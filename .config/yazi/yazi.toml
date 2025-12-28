@@ -5,5 +5,5 @@ edit = [
   { run = 'code -w "%*"', block = true,  desc = "code (block)", for = "windows" },
 ]
 
-[manager]
+[mgr]
   show_hidden = true
