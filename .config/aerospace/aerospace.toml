@@ -242,3 +242,10 @@ automatically-unhide-macos-hidden-apps = false
     if.app-id = 'com.figma.Desktop'
     run = 'move-node-to-workspace F'
 
+[[on-window-detected]]
+    if.app-id = 'com.nozbe4mac'
+    run = 'move-node-to-workspace N'
+
+[[on-window-detected]]
+    if.app-id = 'com.evernote.Evernote'
+    run = 'move-node-to-workspace N'
