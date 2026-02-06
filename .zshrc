@@ -1,5 +1,4 @@
 source ~/dotfiles/zsh/zshrc
-alias claude="/Users/adamborek/.claude/local/claude"
 
 # Safe-chain from Aikido
 # Before using safe-chain you may need to unsource this and install safe-chain first.
