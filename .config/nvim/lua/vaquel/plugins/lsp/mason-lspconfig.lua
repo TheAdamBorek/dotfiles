@@ -15,6 +15,7 @@ return {
       'jsonls',
       'yamlls',
       'bashls',
+      'astro',
     },
     automatic_enable = true,
   },

@@ -136,6 +136,13 @@ return {
         },
       },
     })
+    vim.lsp.config('astro', {
+      init_options = {
+        typescript = {
+          tsdk = vim.fs.normalize 'node_modules/typescript/lib',
+        },
+      },
+    })
     vim.lsp.config('jsonls', {
       filetypes = { 'json', 'jsonc' },
       settings = {
