@@ -14,5 +14,6 @@ alias nukeNodeModules='find . -name node_modules -type d -prune -exec rm -rf '{}
 alias resetWatchman='watchman watch-del /Users/adamborek/Developer/attio/Phoenix ; watchman watch-project /Users/adamborek/Developer/attio/Phoenix'
 
 alias updateGraphite='brew update && brew upgrade withgraphite/tap/graphite'
+alias iosdevices='~/dotfiles/zsh/scripts/ios-devices.sh'
 alias ls='eza -alF --color=always --sort=name'
 
