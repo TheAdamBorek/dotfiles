@@ -8,13 +8,6 @@ return {
     { 'folke/lazydev.nvim', opts = {} },
   },
   config = function()
-    -- import lspconfig plugin
-    local lspconfig = require 'lspconfig'
-
-    -- import mason_lspconfig plugin
-    local mason_lspconfig = require 'mason-lspconfig'
-
-    -- import cmp-nvim-lsp plugin
     local cmp_nvim_lsp = require 'cmp_nvim_lsp'
 
     vim.api.nvim_create_autocmd('LspAttach', {
@@ -66,7 +59,6 @@ return {
 
     vim.lsp.config('*', {
       capabilities = capabilities,
-      root_dir = vim.fn.getcwd(),
     })
     vim.lsp.config('biome', {
       settings = {
@@ -109,7 +101,7 @@ return {
 
     -- TypeScript server configuration with styled-components plugin
     local function get_styled_components_plugin()
-      local npmRoot = string.gsub(vim.fn.system 'npm root -g', '\\n', '')
+      local npmRoot = string.gsub(vim.fn.system 'npm root -g', '\n', '')
       local styledComponentsPath = npmRoot .. '/@styled/typescript-styled-plugin'
       if vim.fn.isdirectory(styledComponentsPath) ~= 1 then
         return nil
@@ -126,14 +118,7 @@ return {
         plugins = vim.tbl_filter(function(plugin)
           return plugin ~= nil
         end, { get_styled_components_plugin() }),
-        settings = {
-          typescript = {
-            tsserver = {
-              maxTsServerMemory = 8192,
-              nodePath = utils.cli_command 'command -v node',
-            },
-          },
-        },
+        maxTsServerMemory = 8192,
       },
     })
     vim.lsp.config('astro', {
