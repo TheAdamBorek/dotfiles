@@ -75,7 +75,7 @@ return {
       'nvim-lua/plenary.nvim',
       'MunifTanjim/nui.nvim',
       'saghen/blink.cmp', -- autocompletion for avante commands and mentions
-      'stevearc/dressing.nvim', -- for input provider dressing
+      'folke/noice.nvim', -- for input UI
       'echasnovski/mini.icons',
       -- { -- This breaks text pasting - Adam (14 07 2025)
       --   -- support for image pasting

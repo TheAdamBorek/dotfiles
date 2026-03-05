@@ -37,7 +37,9 @@ return {
         map('n', 'gD', vim.lsp.buf.declaration, 'Go to declaration') -- go to declaration
         map('n', 'gd', Snacks.picker.lsp_definitions, 'Show LSP definitions') -- show lsp definitions
         map({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, 'See available code actions') -- see available code actions, in visual mode will apply to selection
-        vim.keymap.set('n', '<leader>rr', function() return ':IncRename ' .. vim.fn.expand('<cword>') end, { buffer = ev.buf, expr = true, desc = 'Smart [r]ename' })
+        vim.keymap.set('n', '<leader>rr', function()
+          return ':IncRename ' .. vim.fn.expand '<cword>'
+        end, { expr = true, desc = 'Smart [r]ename' })
         map('n', ']d', goToNextDiagnosticError, 'Go to next diagnostic') -- jump to next diagnostic in buffer
         map('n', '[d', goToPreviousDiagnosticError, 'Go to previous diagnostic') -- jump to previous diagnostic in buffer
         map('n', 'K', vim.lsp.buf.hover, 'Show documentation for what is under cursor') -- show documentation for what is under cursor
