@@ -12,6 +12,14 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+-- Reload buffers when files change on disk (e.g. when Claude modifies files externally)
+-- autoread alone doesn't detect changes; checktime forces Neovim to check file timestamps
+vim.api.nvim_create_autocmd({ 'FocusGained', 'BufEnter', 'CursorHold' }, {
+  desc = 'Reload buffers when file changed on disk',
+  group = vim.api.nvim_create_augroup('vaquel-checktime', { clear = true }),
+  command = 'checktime',
+})
+
 -- Update global marks when leaving buffer
 vim.api.nvim_create_autocmd('BufLeave', {
   desc = 'Update global marks to current position when leaving buffer',
