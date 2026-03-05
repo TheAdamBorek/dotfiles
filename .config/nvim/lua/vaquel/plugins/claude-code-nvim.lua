@@ -74,9 +74,9 @@ return {
       'nvim-treesitter/nvim-treesitter',
       'nvim-lua/plenary.nvim',
       'MunifTanjim/nui.nvim',
-      'hrsh7th/nvim-cmp', -- autocompletion for avante commands and mentions
+      'saghen/blink.cmp', -- autocompletion for avante commands and mentions
       'stevearc/dressing.nvim', -- for input provider dressing
-      'nvim-tree/nvim-web-devicons', -- or echasnovski/mini.icons
+      'echasnovski/mini.icons',
       -- { -- This breaks text pasting - Adam (14 07 2025)
       --   -- support for image pasting
       --   'HakonHarnes/img-clip.nvim',

@@ -3,12 +3,10 @@ return {
   event = { 'BufReadPre', 'BufNewFile' },
   version = '*', -- recommended, use latest release instead of latest commit
   dependencies = {
-    'hrsh7th/cmp-nvim-lsp',
     { 'antosha417/nvim-lsp-file-operations', config = true },
     { 'folke/lazydev.nvim', opts = {} },
   },
   config = function()
-    local cmp_nvim_lsp = require 'cmp_nvim_lsp'
     local config = require 'vaquel.config'
 
     vim.api.nvim_create_autocmd('LspAttach', {
@@ -39,16 +37,13 @@ return {
         map('n', 'gD', vim.lsp.buf.declaration, 'Go to declaration') -- go to declaration
         map('n', 'gd', Snacks.picker.lsp_definitions, 'Show LSP definitions') -- show lsp definitions
         map({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, 'See available code actions') -- see available code actions, in visual mode will apply to selection
-        map('n', '<leader>rr', vim.lsp.buf.rename, 'Smart [r]ename') -- smart rename
+        vim.keymap.set('n', '<leader>rr', function() return ':IncRename ' .. vim.fn.expand('<cword>') end, { buffer = ev.buf, expr = true, desc = 'Smart [r]ename' })
         map('n', ']d', goToNextDiagnosticError, 'Go to next diagnostic') -- jump to next diagnostic in buffer
         map('n', '[d', goToPreviousDiagnosticError, 'Go to previous diagnostic') -- jump to previous diagnostic in buffer
         map('n', 'K', vim.lsp.buf.hover, 'Show documentation for what is under cursor') -- show documentation for what is under cursor
         map('n', 'L', vim.diagnostic.open_float, 'Show line diagnostics') -- show diagnostics for line
       end,
     })
-
-    -- used to enable autocompletion (assign to every lsp server config)
-    local capabilities = cmp_nvim_lsp.default_capabilities()
 
     -- Change the Diagnostic symbols in the sign column (gutter)
     -- (not in youtube nvim video)
@@ -58,9 +53,6 @@ return {
       vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = '' })
     end
 
-    vim.lsp.config('*', {
-      capabilities = capabilities,
-    })
     vim.lsp.config('biome', {
       settings = {
         biome = {

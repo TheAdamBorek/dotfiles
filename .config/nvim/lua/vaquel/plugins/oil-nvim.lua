@@ -1,6 +1,6 @@
 return {
   'stevearc/oil.nvim',
-  dependencies = { 'nvim-tree/nvim-web-devicons', 'folke/snacks.nvim' },
+  dependencies = { 'echasnovski/mini.icons', 'folke/snacks.nvim' },
   opts = {
     default_file_explorer = true,
     delete_to_trash = true,
