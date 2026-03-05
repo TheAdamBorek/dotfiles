@@ -1,5 +1,6 @@
 -- Configuration: Update this path to your TypeScript output file
 local TSC_OUTPUT_FILE = '/Users/adamborek/Library/Logs/vaquel/nx-last-command-logs.txt'
+local config = require('vaquel.config')
 
 local runtime_path_mapping = {
   ['@attio/mobile-app'] = 'packages/runtimes/mobile-app/',
@@ -54,6 +55,10 @@ local function resolve_path(package_path, relative_path)
   resolved = resolved .. rest_path
 
   return resolved
+end
+
+local function strip_ansi(str)
+  return str:gsub('\27%[[%d;]*m', '')
 end
 
 -- Parse TypeScript output into quickfix entries
@@ -144,6 +149,74 @@ local function parse_tsc_output(lines)
   return qf_entries, unknown_workspaces
 end
 
+-- Parse tsgo output (colon-separated format with ANSI codes)
+local function parse_tsgo_output(lines)
+  local qf_entries = {}
+  local current_workspace = nil
+  local current_entry = nil
+  local unknown_workspaces = {}
+
+  local error_pattern = '^(.+):(%d+):(%d+) %- error TS%d+: (.+)$'
+  local continuation_pattern = '^%s+(.+)$'
+
+  for _, raw_line in ipairs(lines) do
+    local line = strip_ansi(raw_line)
+
+    local workspace, target = line:match '^> nx run (@[^:]+):([^%s]+)'
+    local is_typescript_target = target and (target == 'check-typescript' or target == 'build-typescript')
+
+    if workspace and is_typescript_target then
+      current_workspace = workspace
+      if current_entry then
+        table.insert(qf_entries, current_entry)
+        current_entry = nil
+      end
+    elseif line:match '^> nx run' then
+      current_workspace = nil
+      if current_entry then
+        table.insert(qf_entries, current_entry)
+        current_entry = nil
+      end
+    elseif current_workspace then
+      local filename, lnum, col, msg = line:match(error_pattern)
+
+      if filename and lnum and col and msg then
+        if current_entry then
+          table.insert(qf_entries, current_entry)
+        end
+
+        local package_path = runtime_path_mapping[current_workspace]
+        if package_path then
+          current_entry = {
+            filename = package_path .. filename,
+            lnum = tonumber(lnum),
+            col = tonumber(col),
+            text = msg,
+          }
+        else
+          if not vim.tbl_contains(unknown_workspaces, current_workspace) then
+            table.insert(unknown_workspaces, current_workspace)
+          end
+          current_entry = nil
+        end
+      else
+        local continuation_text = line:match(continuation_pattern)
+        if continuation_text and current_entry then
+          current_entry.text = current_entry.text .. ' ' .. continuation_text
+        elseif line ~= '' and current_entry then
+          current_entry.text = current_entry.text .. ' ' .. line
+        end
+      end
+    end
+  end
+
+  if current_entry then
+    table.insert(qf_entries, current_entry)
+  end
+
+  return qf_entries, unknown_workspaces
+end
+
 -- Load TypeScript errors from file and populate quickfix list
 local function load_nx_errors_to_qf_list()
   -- Check if file exists
@@ -158,7 +231,12 @@ local function load_nx_errors_to_qf_list()
   local lines = vim.fn.readfile(TSC_OUTPUT_FILE)
 
   -- Parse errors
-  local qf_entries, unknown_workspaces = parse_tsc_output(lines)
+  local qf_entries, unknown_workspaces
+  if config.use_tsgo then
+    qf_entries, unknown_workspaces = parse_tsgo_output(lines)
+  else
+    qf_entries, unknown_workspaces = parse_tsc_output(lines)
+  end
 
   -- Set quickfix list
   vim.fn.setqflist({}, ' ', {
