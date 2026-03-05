@@ -5,20 +5,25 @@ return {
     'neovim/nvim-lspconfig',
     'WhoIsSethDaniel/mason-tool-installer.nvim',
   },
-  opts = {
-    ensure_installed = {
-      'ts_ls',
-      'html',
-      'cssls',
-      'tailwindcss',
-      'lua_ls',
-      'jsonls',
-      'yamlls',
-      'bashls',
-      'astro',
-    },
-    automatic_enable = true,
-  },
+  opts = function()
+    local config = require 'vaquel.config'
+    return {
+      ensure_installed = {
+        config.use_tsgo and 'tsgo' or 'ts_ls',
+        'html',
+        'cssls',
+        'tailwindcss',
+        'lua_ls',
+        'jsonls',
+        'yamlls',
+        'bashls',
+        'astro',
+      },
+      automatic_enable = {
+        exclude = { config.use_tsgo and 'ts_ls' or 'tsgo' },
+      },
+    }
+  end,
   config = function(_, opts)
     local mason_lspconfig = require 'mason-lspconfig'
     local mason_tool_installer = require 'mason-tool-installer'

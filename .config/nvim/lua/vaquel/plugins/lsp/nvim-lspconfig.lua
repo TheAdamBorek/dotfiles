@@ -9,6 +9,7 @@ return {
   },
   config = function()
     local cmp_nvim_lsp = require 'cmp_nvim_lsp'
+    local config = require 'vaquel.config'
 
     vim.api.nvim_create_autocmd('LspAttach', {
       group = vim.api.nvim_create_augroup('UserLspConfig', {}),
@@ -113,14 +114,23 @@ return {
       }
     end
 
-    vim.lsp.config('ts_ls', {
-      init_options = {
-        plugins = vim.tbl_filter(function(plugin)
-          return plugin ~= nil
-        end, { get_styled_components_plugin() }),
-        maxTsServerMemory = 8192,
-      },
-    })
+    if not config.use_tsgo then
+      vim.lsp.config('ts_ls', {
+        init_options = {
+          plugins = vim.tbl_filter(function(plugin)
+            return plugin ~= nil
+          end, { get_styled_components_plugin() }),
+          maxTsServerMemory = 8192,
+        },
+      })
+    end
+    if config.use_tsgo then
+      vim.lsp.config('tsgo', {
+        cmd = { 'tsgo', '--lsp', '--stdio' },
+        filetypes = { 'typescript', 'typescriptreact', 'typescript.tsx' },
+        root_markers = { 'tsconfig.json' },
+      })
+    end
     vim.lsp.config('astro', {
       init_options = {
         typescript = {
