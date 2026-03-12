@@ -96,8 +96,8 @@ return {
   keys = {
     -- stylua: ignore start
     -- Picker keymaps
-    { '<leader>fF', function() Snacks.picker.git_files({untracked = true}) end, desc = '[F]ind [F]iles' },
-    { '<leader>ff', function() Snacks.picker.files({hidden = true}) end, desc = '[F]ind Git [f]iles' },
+    { '<leader>fF', function() Snacks.picker.files({hidden = true, ignored = true}) end, desc = '[F]ind All [F]iles' },
+    { '<leader>ff', function() Snacks.picker.files({hidden = true}) end, desc = '[F]ind [f]iles' },
     { '<leader>fg', function() Snacks.picker.grep({hidden = true})  end, desc = '[F]ind [G]rep' },
     { '<leader>fs', function() Snacks.picker.lsp_workspace_symbols() end, desc = '[F]ind Type definitions' },
     { "<leader>fr", function() Snacks.picker.recent({hidden = true}) end, desc = "Recent"},

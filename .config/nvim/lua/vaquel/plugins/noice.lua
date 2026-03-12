@@ -17,12 +17,7 @@ return {
       command_palette = true,
       long_message_to_split = true,
       lsp_doc_border = false,
-      inc_rename = false,
-    },
-    -- Making the IncRename to open Snakcs input instead of Noice's default popup
-    routes = {
-      { filter = { event = 'cmdline', find = '^:IncRename' }, opts = { skip = true } },
-      { filter = { event = 'msg_show', min_height = 20 }, opts = { enter = true }, view = 'split' },
+      inc_rename = true,
     },
   },
 }
