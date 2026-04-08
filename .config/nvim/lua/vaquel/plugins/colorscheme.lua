@@ -17,6 +17,7 @@ return {
   config = function()
     require('catppuccin').setup {
       flavour = 'latte',
+      transparent_background = true,
       auto_integrations = true,
     }
     vim.cmd.colorscheme 'catppuccin'

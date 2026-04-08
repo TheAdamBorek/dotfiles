@@ -216,7 +216,7 @@ automatically-unhide-macos-hidden-apps = false
 
 [[on-window-detected]]
     if.app-id = 'com.google.Chrome'
-    run = 'move-node-to-workspace D'
+    run = 'move-node-to-workspace B'
 
 [[on-window-detected]]
     if.app-id = 'app.zen-browser.zen'
@@ -249,3 +249,7 @@ automatically-unhide-macos-hidden-apps = false
 [[on-window-detected]]
     if.app-id = 'com.microsoft.Outlook'
     run = 'move-node-to-workspace M'
+
+[[on-window-detected]]
+    if.app-id = 'com.pais.handy'
+    run = 'layout floating'

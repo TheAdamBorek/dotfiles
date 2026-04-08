@@ -28,15 +28,15 @@ function install_brew() {
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)";
 }
 
-function install_nvm() {
-    sh "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash"
+function install_fnm() {
+    brew install fnm
 }
 
 try_install_zsh
 setup_bash_profile
 install_rvm
 install_brew
-install_nvm
+install_fnm
 
 source "~/.bash_profile"
 sh "~/zshrc/install_dependencies.sh"

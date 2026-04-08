@@ -3,7 +3,6 @@ source ~/dotfiles/zsh/zshrc
 # Safe-chain from Aikido
 # Before using safe-chain you may need to unsource this and install safe-chain first.
 # npm install -g @aikidosec/safe-chain
-source ~/.safe-chain/scripts/init-posix.sh # Safe-chain Zsh initialization script
 
 # pnpm
 export PNPM_HOME="/Users/adamborek/Library/pnpm"
@@ -12,3 +11,4 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
+source ~/.safe-chain/scripts/init-posix.sh # Safe-chain Zsh initialization script

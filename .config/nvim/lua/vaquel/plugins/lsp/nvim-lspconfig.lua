@@ -125,6 +125,31 @@ return {
         root_markers = { 'tsconfig.json' },
       })
     end
+    vim.lsp.config('cssls', {
+      settings = {
+        css = {
+          lint = {
+            unknownAtRules = 'ignore',
+          },
+        },
+      },
+    })
+    vim.lsp.config('tailwindcss', {
+      settings = {
+        tailwindCSS = {
+          validate = true,
+          lint = {
+            cssConflict = 'warning',
+            invalidApply = 'error',
+            invalidConfigPath = 'error',
+            invalidScreen = 'error',
+            invalidTailwindDirective = 'error',
+            invalidVariant = 'error',
+            suggestCanonicalClasses = 'warning',
+          },
+        },
+      },
+    })
     vim.lsp.config('astro', {
       init_options = {
         typescript = {
@@ -203,5 +228,22 @@ return {
         },
       },
     })
+    local XCODE_DEV = '/Applications/Xcode261.app/Contents/Developer'
+    local XCODE_TC = XCODE_DEV .. '/Toolchains/XcodeDefault.xctoolchain'
+
+    -- local cmp_caps = require('cmp_nvim_lsp').default_capabilities()
+    local cmp_caps = {}
+
+    vim.lsp.config('sourcekit', {
+      cmd = { XCODE_TC .. '/usr/bin/sourcekit-lsp' }, -- Xcode toolchain override
+      filetypes = { 'swift' },
+      single_file_support = true,
+      offset_encoding = 'utf-16',
+      capabilities = vim.tbl_deep_extend('force', cmp_caps, {
+        general = { positionEncodings = { 'utf-16' } },
+        workspace = { didChangeWatchedFiles = { dynamicRegistration = true } },
+      }),
+    })
+    vim.lsp.enable 'sourcekit'
   end,
 }
