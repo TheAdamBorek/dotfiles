@@ -17,3 +17,6 @@ alias updateGraphite='brew update && brew upgrade withgraphite/tap/graphite'
 alias iosdevices='~/dotfiles/zsh/scripts/ios-devices.sh'
 alias ls='eza -alF --color=always --sort=name'
 
+upper() { if [ $# -gt 0 ]; then printf '%s' "$*"; else cat; fi | tr '[:lower:]' '[:upper:]'; }
+lower() { if [ $# -gt 0 ]; then printf '%s' "$*"; else cat; fi | tr '[:upper:]' '[:lower:]'; }
+
