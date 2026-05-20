@@ -106,6 +106,7 @@ vim.api.nvim_set_keymap('n', '[t', '<cmd>tabprevious<CR>', { desc = 'Go to previ
 
 vim.keymap.set('n', '<leader>md', '<cmd>delmarks A-Z<CR>', { desc = 'Delete all global marks' })
 vim.keymap.set({ 'n', 'v' }, '<leader>my', '<cmd>PathRelativeCopy<CR>', { desc = 'Docu[m]ent [y]ank path' })
+vim.keymap.set('n', '<leader>me', '<cmd>e!<CR>', { desc = 'Reload buffer discarding changes' })
 
 --- Quickfix list management
 vim.keymap.set('n', '<leader>qa', ":call setqflist([{'bufnr': bufnr('%'), 'lnum': line('.'), 'col': col('.'), 'text': getline('.')}], 'a') | copen<CR>", {
