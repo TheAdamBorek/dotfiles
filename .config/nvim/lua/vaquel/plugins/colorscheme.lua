@@ -19,6 +19,9 @@ return {
       flavour = 'latte',
       transparent_background = true,
       auto_integrations = true,
+      integrations = {
+        lualine = {},
+      },
     }
     vim.cmd.colorscheme 'catppuccin'
   end,
