@@ -8,7 +8,10 @@ local print_javascript = {
 
 return {
   'ThePrimeagen/refactoring.nvim',
-  dependencies = { 'nvim-lua/plenary.nvim', 'nvim-treesitter/nvim-treesitter', 'folke/which-key.nvim' },
+  dependencies = {
+    'lewis6991/async.nvim',
+  },
+  lazy = false,
   event = 'BufEnter',
   keys = {
     { '<leader>re', ':Refactor extract ', mode = { 'v' }, desc = 'Extract' },
