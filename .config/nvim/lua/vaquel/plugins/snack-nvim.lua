@@ -112,6 +112,7 @@ return {
     { '<leader>gt', function() Snacks.lazygit.open()end, desc = 'Open Lazy[G]it [t]ree' },
     {'<leader>go', function() Snacks.gitbrowse.open({ branch = "master" }) end, desc = "Open file in Git repo web browser", mode = {"n", "v"}},
     -- Notifier keymaps
+    {'<leader>fn', function () Snacks.notifier.show_history() end, desc = 'Open [n]otify history finder'},
     -- Scratch keymaps
     { '<leader>nq', function() Snacks.notifier.hide() end, desc = '[N]otifier [Q]uit' },
     { "<leader>.",  function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },

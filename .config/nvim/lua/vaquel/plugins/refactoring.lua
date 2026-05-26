@@ -9,7 +9,8 @@ local print_javascript = {
 return {
   'ThePrimeagen/refactoring.nvim',
   dependencies = {
-    'lewis6991/async.nvim',
+    'nvim-lua/plenary.nvim',
+    'nvim-treesitter/nvim-treesitter',
   },
   lazy = false,
   event = 'BufEnter',
