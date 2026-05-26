@@ -61,3 +61,5 @@ nvim/spell/en.utf-8.add.spl
 tmux/plugins/tpm_plugins
 .config/chromium/NativeMessagingHosts/pl.com.kir.szafirhost.json
 .config/google-chrome/NativeMessagingHosts/pl.com.kir.szafirhost.json
+.config/nvim/lazy-lock.json.audit-backup
+node_modules/
