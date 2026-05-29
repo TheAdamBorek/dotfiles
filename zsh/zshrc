@@ -17,6 +17,7 @@ plugins=(git git-extras npm node web-search vi-mode fzf)
 export KEYTIMEOUT=1
 
 export PATH="$HOME/.local/bin:$PATH"
+export PATH="$PATH:$HOME/.local/share/bob/nvim-bin"
 export PATH="$PATH:(brew --prefix coreutils)/libexec/gnubin"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 

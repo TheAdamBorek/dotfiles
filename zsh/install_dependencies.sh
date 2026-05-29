@@ -53,6 +53,7 @@ brew_packages=(
   "eza"
   "tmuxinator"
   "fnm"
+  "bob"
 )
 
 # Iterate through the list and attempt to install each package
