@@ -5,6 +5,15 @@ return {
     local lualine = require 'lualine'
     local lazy_status = require 'lazy.status' -- to configure lazy pending updates count
 
+    local function show_macro_recording()
+      local recording_register = vim.fn.reg_recording()
+      if recording_register == '' then
+        return ''
+      else
+        return 'Recording @' .. recording_register
+      end
+    end
+
     lualine.setup {
       options = {
         theme = 'catppuccin-nvim',
@@ -20,7 +29,13 @@ return {
             end,
           },
         },
-        lualine_c = {},
+        lualine_c = {
+          {
+            'macro-recording',
+            fmt = show_macro_recording,
+            color = { fg = '#ff9e64', gui = 'bold' },
+          },
+        },
         lualine_z = {
           {
             'lsp_status',
@@ -55,5 +70,26 @@ return {
         },
       },
     }
+
+    -- Refresh the statusline immediately when macro recording starts/stops
+    vim.api.nvim_create_autocmd('RecordingEnter', {
+      callback = function()
+        lualine.refresh { place = { 'statusline' } }
+      end,
+    })
+
+    vim.api.nvim_create_autocmd('RecordingLeave', {
+      callback = function()
+        -- reg_recording() is still set during RecordingLeave, so defer the refresh
+        local timer = vim.uv.new_timer()
+        timer:start(
+          50,
+          0,
+          vim.schedule_wrap(function()
+            lualine.refresh { place = { 'statusline' } }
+          end)
+        )
+      end,
+    })
   end,
 }
