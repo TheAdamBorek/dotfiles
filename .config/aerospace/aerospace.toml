@@ -1,6 +1,16 @@
 
 # After that, you can edit ~/.aerospace.toml to your liking
 
+# Config version for compatibility and deprecations.
+# Version 2 requires persistent workspaces to be declared explicitly.
+config-version = 2
+
+persistent-workspaces = [
+    '1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'I', 'M', 'N', 'O',
+    'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+]
+
 # You can use it to add commands that run after AeroSpace startup.
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
 after-startup-command = []
@@ -252,5 +262,18 @@ automatically-unhide-macos-hidden-apps = false
     run = 'move-node-to-workspace M'
 
 [[on-window-detected]]
+    if.app-id = 'com.openai.codex'
+    run = 'move-node-to-workspace A'
+
+[[on-window-detected]]
     if.app-id = 'com.pais.handy'
     run = 'layout floating'
+
+[[on-window-detected]]
+    if.app-id = 'com.gather.GatherV2'
+    if.window-title-regex-substring = '^Picture-in-picture Window$'
+    run = 'layout floating'
+
+[[on-window-detected]]
+    if.app-id = 'com.gather.GatherV2'
+    run = ['move-node-to-workspace G', 'layout tiling']
