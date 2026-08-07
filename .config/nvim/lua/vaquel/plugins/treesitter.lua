@@ -23,7 +23,6 @@ return { -- Highlight, edit, and navigate code
       'gitignore',
       'css',
       'styled',
-      'swift',
       'objc',
     },
     -- Autoinstall languages that are not installed
