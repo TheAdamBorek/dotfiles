@@ -44,6 +44,15 @@ function y() {
 	rm -f -- "$tmp"
 }  
 
+function sysreport() {
+  echo "=== System ==="
+  top -l 1 -n 0 | grep -E "Load Avg|CPU usage|PhysMem"
+  echo "\n=== Top CPU ==="
+  ps -Ao pid,%cpu,%mem,comm -r | head -8
+  echo "\n=== Top Memory ==="
+  ps -Ao pid,%cpu,%mem,comm -m | head -8
+}
+
 # Enable starship shell prompt
 eval "$(starship init zsh)"
 
