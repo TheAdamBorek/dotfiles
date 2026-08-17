@@ -63,3 +63,14 @@ tmux/plugins/tpm_plugins
 .config/google-chrome/NativeMessagingHosts/pl.com.kir.szafirhost.json
 .config/nvim/lazy-lock.json.audit-backup
 node_modules/
+# herdr writes runtime state into its config dir; only config.toml is worth tracking
+.config/herdr/*.log
+.config/herdr/*session.json
+.config/herdr/.plugins.lock
+# raycast dumps re-downloadable extension bundles here (like node_modules); real settings live in ~/Library
+.config/raycast/
+# gh: track config.yml, ignore hosts.yml (account-specific, and where an oauth token would land)
+.config/gh/hosts.yml
+/.config/moshi
+/.config/git
+/.config/gh
