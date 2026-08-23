@@ -1,3 +1,6 @@
+# Cross-platform shell config. Anything that differs between macOS and Linux
+# lives in zsh/os/<uname>.zsh, which is sourced below.
+
 #Those exports fixes Python for installing xmlformatter in Mason (nvim)
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
@@ -18,23 +21,29 @@ export KEYTIMEOUT=1
 
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$PATH:$HOME/.local/share/bob/nvim-bin"
-export PATH="$PATH:(brew --prefix coreutils)/libexec/gnubin"
+
+# Per-OS setup: PATH additions, clipboard, plugin locations, sysreport.
+# Must run before oh-my-zsh so PATH is complete by the time plugins load.
+ZSH_OS_FILE="$HOME/dotfiles/zsh/os/$(uname -s | tr '[:upper:]' '[:lower:]').zsh"
+[ -f "$ZSH_OS_FILE" ] && source "$ZSH_OS_FILE"
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Adds fnm (fast node manager)
-eval "$(fnm env --use-on-cd --shell zsh)"
+command -v fnm >/dev/null && eval "$(fnm env --use-on-cd --shell zsh)"
 
 source $ZSH/oh-my-zsh.sh
-source ~/.bash_profile
+# .bash_profile holds device-specific settings and is not tracked in dotfiles
+[ -f ~/.bash_profile ] && source ~/.bash_profile
 source ~/dotfiles/zsh/aliases
 source ~/dotfiles/zsh/git_aliases
 
 ## Requires installing https://github.com/zsh-users/zsh-autosuggestions/tree/master
-source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+[ -f "$ZSH_AUTOSUGGESTIONS" ] && source "$ZSH_AUTOSUGGESTIONS"
+[ -f "$ZSH_SYNTAX_HIGHLIGHTING" ] && source "$ZSH_SYNTAX_HIGHLIGHTING"
 
 # Setup yazi & dependencies
-eval "$(zoxide init zsh)"
+command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
 	yazi "$@" --cwd-file="$tmp"
@@ -44,24 +53,16 @@ function y() {
 	rm -f -- "$tmp"
 }  
 
-function sysreport() {
-  echo "=== System ==="
-  top -l 1 -n 0 | grep -E "Load Avg|CPU usage|PhysMem"
-  echo "\n=== Top CPU ==="
-  ps -Ao pid,%cpu,%mem,comm -r | head -8
-  echo "\n=== Top Memory ==="
-  ps -Ao pid,%cpu,%mem,comm -m | head -8
-}
-
 # Enable starship shell prompt
-eval "$(starship init zsh)"
+command -v starship >/dev/null && eval "$(starship init zsh)"
 
 ### VIM MODE
 bindkey -v
-# Override the vi-yank widget to also copy to the system clipboard using pbcopy.
+# Override the vi-yank widget to also copy to the system clipboard.
+# clipboard_copy is defined per-OS (pbcopy on macOS, wl-copy on Wayland).
 function vi_yank_system_clipboard() {
   zle vi-yank
-  print -n "$CUTBUFFER" | pbcopy
+  print -n "$CUTBUFFER" | clipboard_copy
 }
 zle -N vi_yank_system_clipboard
 # Bind the widget to 'y' in vi command mode (vicmd keymap).
@@ -69,11 +70,23 @@ bindkey -M vicmd 'y' vi_yank_system_clipboard
 ### END OF VIM MODE
 
 # bun completions
-[ -s "/Users/adamborek/.bun/_bun" ] && source "/Users/adamborek/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+# pnpm ($PNPM_HOME is set per-OS)
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+
+# Safe-chain from Aikido
+# Before using safe-chain you may need to unsource this and install safe-chain first.
+# npm install -g @aikidosec/safe-chain
+[ -f ~/.safe-chain/scripts/init-posix.sh ] && source ~/.safe-chain/scripts/init-posix.sh
 
 # Set up for tmuxinator
 export EDITOR='nvim'

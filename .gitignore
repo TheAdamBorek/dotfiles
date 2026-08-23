@@ -56,21 +56,21 @@ tags
 [._]*.un~
 
 # End of https://www.toptal.com/developers/gitignore/api/vim,macos
-nvim/spell/en.utf-8.add
-nvim/spell/en.utf-8.add.spl
+shared/.config/nvim/spell/en.utf-8.add
+shared/.config/nvim/spell/en.utf-8.add.spl
 tmux/plugins/tpm_plugins
-.config/chromium/NativeMessagingHosts/pl.com.kir.szafirhost.json
-.config/google-chrome/NativeMessagingHosts/pl.com.kir.szafirhost.json
-.config/nvim/lazy-lock.json.audit-backup
+shared/.config/chromium/NativeMessagingHosts/pl.com.kir.szafirhost.json
+shared/.config/google-chrome/NativeMessagingHosts/pl.com.kir.szafirhost.json
+shared/.config/nvim/lazy-lock.json.audit-backup
 node_modules/
 # herdr writes runtime state into its config dir; only config.toml is worth tracking
-.config/herdr/*.log
-.config/herdr/*session.json
-.config/herdr/.plugins.lock
+shared/.config/herdr/*.log
+shared/.config/herdr/*session.json
+shared/.config/herdr/.plugins.lock
 # raycast dumps re-downloadable extension bundles here (like node_modules); real settings live in ~/Library
-.config/raycast/
+shared/.config/raycast/
 # gh: track config.yml, ignore hosts.yml (account-specific, and where an oauth token would land)
-.config/gh/hosts.yml
-/.config/moshi
-/.config/git
-/.config/gh
+shared/.config/gh/hosts.yml
+/shared/.config/moshi
+/shared/.config/git
+/shared/.config/gh
