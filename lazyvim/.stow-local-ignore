@@ -1,0 +1,4 @@
+\.DS_Store
+# theme.lua is OS-specific: a symlink into Omarchy state on Linux, a static
+# file on macOS. It lives in linux/ and macos/, never here.
+theme\.lua
