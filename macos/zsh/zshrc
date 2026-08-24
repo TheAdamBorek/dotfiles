@@ -1,5 +1,5 @@
-# Cross-platform shell config. Anything that differs between macOS and Linux
-# lives in zsh/os/<uname>.zsh, which is sourced below.
+# macOS-only shell config. Linux is not on zsh, so this file no longer branches
+# on `uname` -- the macOS-specific setup is inline below.
 
 #Those exports fixes Python for installing xmlformatter in Mason (nvim)
 export LANG="en_US.UTF-8"
@@ -22,10 +22,32 @@ export KEYTIMEOUT=1
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$PATH:$HOME/.local/share/bob/nvim-bin"
 
-# Per-OS setup: PATH additions, clipboard, plugin locations, sysreport.
+# macOS setup: PATH additions, clipboard, plugin locations, sysreport.
 # Must run before oh-my-zsh so PATH is complete by the time plugins load.
-ZSH_OS_FILE="$HOME/dotfiles/zsh/os/$(uname -s | tr '[:upper:]' '[:lower:]').zsh"
-[ -f "$ZSH_OS_FILE" ] && source "$ZSH_OS_FILE"
+if command -v brew >/dev/null; then
+  BREW_PREFIX="$(brew --prefix)"
+  # GNU coreutils under their unprefixed names (gls, gsed... -> ls, sed...)
+  export PATH="$PATH:$BREW_PREFIX/opt/coreutils/libexec/gnubin"
+
+  ZSH_AUTOSUGGESTIONS="$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+  ZSH_SYNTAX_HIGHLIGHTING="$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+fi
+
+export PNPM_HOME="$HOME/Library/pnpm"
+
+function clipboard_copy() { pbcopy; }
+
+function sysreport() {
+  echo "=== System ==="
+  top -l 1 -n 0 | grep -E "Load Avg|CPU usage|PhysMem"
+  echo "\n=== Top CPU ==="
+  ps -Ao pid,%cpu,%mem,comm -r | head -8
+  echo "\n=== Top Memory ==="
+  ps -Ao pid,%cpu,%mem,comm -m | head -8
+}
+
+# lazygit defaults to ~/Library/Application Support on macOS; use the XDG path
+export LG_CONFIG_FILE="$HOME/.config/lazygit/config.yml"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
@@ -35,8 +57,8 @@ command -v fnm >/dev/null && eval "$(fnm env --use-on-cd --shell zsh)"
 source $ZSH/oh-my-zsh.sh
 # .bash_profile holds device-specific settings and is not tracked in dotfiles
 [ -f ~/.bash_profile ] && source ~/.bash_profile
-source ~/dotfiles/zsh/aliases
-source ~/dotfiles/zsh/git_aliases
+source ~/dotfiles/macos/zsh/aliases
+source ~/dotfiles/macos/zsh/git_aliases
 
 ## Requires installing https://github.com/zsh-users/zsh-autosuggestions/tree/master
 [ -f "$ZSH_AUTOSUGGESTIONS" ] && source "$ZSH_AUTOSUGGESTIONS"
@@ -59,7 +81,7 @@ command -v starship >/dev/null && eval "$(starship init zsh)"
 ### VIM MODE
 bindkey -v
 # Override the vi-yank widget to also copy to the system clipboard.
-# clipboard_copy is defined per-OS (pbcopy on macOS, wl-copy on Wayland).
+# clipboard_copy wraps pbcopy; it is defined near the top of this file.
 function vi_yank_system_clipboard() {
   zle vi-yank
   print -n "$CUTBUFFER" | clipboard_copy
@@ -76,7 +98,7 @@ bindkey -M vicmd 'y' vi_yank_system_clipboard
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
-# pnpm ($PNPM_HOME is set per-OS)
+# pnpm ($PNPM_HOME is set above)
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;

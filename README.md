@@ -16,11 +16,11 @@ that aren't tracked here.
 
 | Path      | Stowed | Contents                                              |
 | --------- | ------ | ----------------------------------------------------- |
-| `shared/` | yes    | ghostty, yazi, starship, lazygit, tmux entry point, `.zshrc`, `.claude` |
+| `shared/` | yes    | ghostty, yazi, starship, lazygit, `.claude`            |
 | `lazyvim/`| yes    | nvim (LazyVim), minus `theme.lua`                      |
-| `macos/`  | yes    | aerospace, nvim `theme.lua`                            |
+| `macos/`  | yes    | aerospace, nvim `theme.lua`, `.zshrc`, `.tmux.conf`    |
 | `linux/`  | yes    | Hyprland/Omarchy config, nvim `theme.lua`              |
-| `zsh/`    | no     | sourced by `~/.zshrc` via `~/dotfiles/zsh/zshrc`       |
+| `macos/zsh/` | no  | sourced by `~/.zshrc` via `~/dotfiles/macos/zsh/zshrc` |
 | `tmux/`   | no     | sourced by `~/.tmux.conf` via absolute paths           |
 | `scripts/`, `kinesis/` | no | not config; run or referenced directly     |
 
@@ -29,12 +29,14 @@ serves as this repo's project instructions and as `~/.claude/CLAUDE.md`.
 
 ## OS differences
 
-Shell config is a program, so it branches at runtime instead of being duplicated:
-`zsh/zshrc` is shared and sources `zsh/os/darwin.zsh` or `zsh/os/linux.zsh` based
-on `uname -s`. Those files own the Homebrew vs pacman paths, `pbcopy` vs `wl-copy`,
-`PNPM_HOME`, and the BSD vs GNU `sysreport`.
+Config formats without conditionals (aerospace, hypr) go in the OS package.
 
-Config formats without conditionals (aerospace, hypr) go in the OS package instead.
+zsh is macOS-only, so the whole shell config lives in `macos/zsh/` and no longer
+branches on `uname` — the Homebrew paths, `pbcopy`, `PNPM_HOME` and the BSD
+`sysreport` are inline in `macos/zsh/zshrc`. `macos/.stow-local-ignore` keeps
+`macos/zsh/` out of `~`: it is sourced by absolute path from `~/.zshrc`, never
+symlinked. The Linux half is recoverable with
+`git log --diff-filter=D -- zsh/os/linux.zsh`.
 
 nvim's `theme.lua` is also split by OS, for a less obvious reason. On Omarchy it
 must be a symlink to `~/.local/state/omarchy/current/theme/neovim.lua`: lazy.nvim

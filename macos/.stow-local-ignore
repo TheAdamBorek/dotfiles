@@ -1,0 +1,4 @@
+\.DS_Store
+# zsh/ is not stowed: .zshrc sources it by absolute path, so it must stay in the
+# repo rather than get linked into ~/. Same arrangement as the old top-level zsh/.
+^zsh$
