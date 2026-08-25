@@ -43,7 +43,7 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 # You can effectively turn off macOS "Hide application" (cmd-h) feature by toggling this flag
 # Useful if you don't use this macOS feature, but accidentally hit cmd-h or cmd-alt-h key
 # Also see: https://nikitabobko.github.io/AeroSpace/goodies#disable-hide-app
-automatically-unhide-macos-hidden-apps = false
+automatically-unhide-macos-hidden-apps = true
 
 # Possible values: (qwerty|dvorak|colemak)
 # See https://nikitabobko.github.io/AeroSpace/guide#key-mapping
@@ -102,6 +102,10 @@ automatically-unhide-macos-hidden-apps = false
     # See: https://nikitabobko.github.io/AeroSpace/commands#layout
     # Toggles between tiles and accordion (first layout that isn't the current one wins)
     cmd-shift-l = 'layout tiles accordion'
+
+    # Swallow macOS "Hide application". AeroSpace registers this as a global
+    # hotkey, so the frontmost app never sees the keydown. Empty array = no-op.
+    cmd-h = []
 
     cmd-shift-r = 'reload-config'
 
@@ -189,17 +193,17 @@ automatically-unhide-macos-hidden-apps = false
     # alt-ctrl-shift-y = 'move-node-to-workspace Y'
     # alt-ctrl-shift-z = 'move-node-to-workspace Z'
 
-    cmd-f = 'fullscreen'
+    cmd-shift-f = 'fullscreen'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#exec-and-forget
     # -n forces a new window instead of just activating an existing one
-    # (each cmd-enter spawns a separate Ghostty process)
-    cmd-enter = 'exec-and-forget open -na Ghostty'
+    # (each cmd-ctrl-enter spawns a separate Ghostty process)
+    cmd-ctrl-enter = 'exec-and-forget open -na Ghostty'
     # Zen is Firefox-based, so -n alone just activates the running instance and
     # drags focus to whatever workspace its window sits in. Bare --new-window
     # (no URL) makes it spawn the window before activating, so AeroSpace places
     # it in the focused workspace like Ghostty.
-    cmd-shift-enter = 'exec-and-forget open -na Zen --args --new-window'
+    cmd-ctrl-shift-enter = 'exec-and-forget open -na Zen --args --new-window'
     # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
     # alt-ctrl-tab = 'workspace-back-and-forth'
     # See: https://nikitabobko.github.io/AeroSpace/commands#move-workspace-to-monitor
