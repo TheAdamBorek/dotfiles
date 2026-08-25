@@ -4,3 +4,7 @@ font-thicken = true
 font-family = MesloLGS Nerd Font Mono
 font-size = 14
 quit-after-last-window-closed = true
+
+# tmux owns splits inside Ghostty, so free up cmd+d instead of opening a
+# Ghostty split on top of the tmux panes.
+keybind = super+d=unbind
