@@ -8,6 +8,10 @@ stow shared lazyvim macos    # macOS
 stow shared lazyvim linux    # Omarchy / Arch
 ```
 
+On macOS also run `./macos/macos-defaults.sh` once, then log out and back in.
+It sets the preferences that live in the `defaults` database rather than in a
+file, so stow has nothing to symlink.
+
 `.stowrc` sets `--no-folding`, so stow links individual files rather than
 symlinking whole directories — safe to stow into `~/.config` alongside configs
 that aren't tracked here.
@@ -21,6 +25,7 @@ that aren't tracked here.
 | `macos/`  | yes    | aerospace, nvim `theme.lua`, `.zshrc`, `.tmux.conf`    |
 | `linux/`  | yes    | Hyprland/Omarchy config, nvim `theme.lua`              |
 | `macos/zsh/` | no  | sourced by `~/.zshrc` via `~/dotfiles/macos/zsh/zshrc` |
+| `macos/macos-defaults.sh` | no | `defaults write` settings; run once per machine |
 | `tmux/`   | no     | sourced by `~/.tmux.conf` via absolute paths           |
 | `scripts/`, `kinesis/` | no | not config; run or referenced directly     |
 

@@ -2,3 +2,5 @@
 # zsh/ is not stowed: .zshrc sources it by absolute path, so it must stay in the
 # repo rather than get linked into ~/. Same arrangement as the old top-level zsh/.
 ^zsh$
+# macos-defaults.sh is a script to run, not config to link into ~.
+^macos-defaults\.sh$
