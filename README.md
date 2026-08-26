@@ -12,6 +12,12 @@ On macOS also run `./macos/macos-defaults.sh` once, then log out and back in.
 It sets the preferences that live in the `defaults` database rather than in a
 file, so stow has nothing to symlink.
 
+Agent skills need one symlink stow cannot make (see "Agent skills" below):
+
+```sh
+mkdir -p ~/.agents && ln -s ~/dotfiles/.agents/skills ~/.agents/skills
+```
+
 `.stowrc` sets `--no-folding`, so stow links individual files rather than
 symlinking whole directories — safe to stow into `~/.config` alongside configs
 that aren't tracked here.
@@ -28,9 +34,37 @@ that aren't tracked here.
 | `macos/macos-defaults.sh` | no | `defaults write` settings; run once per machine |
 | `tmux/`   | no     | sourced by `~/.tmux.conf` via absolute paths           |
 | `scripts/`, `kinesis/` | no | not config; run or referenced directly     |
+| `.agents/` | no    | agent skills; the real files, linked into `~/.agents`  |
 
 `.claude` at the repo root is a symlink into `shared/.claude` so the same file
 serves as this repo's project instructions and as `~/.claude/CLAUDE.md`.
+
+## Agent skills
+
+`.agents/skills/` at the repo root holds the real skill files. Two agents read
+them, by different paths:
+
+| Consumer    | Path                | How it gets there              |
+| ----------- | ------------------- | ------------------------------ |
+| Codex       | `~/.agents/skills`  | one symlink, made by hand      |
+| Claude Code | `~/.claude/skills`  | stowed per file, as usual      |
+
+`shared/.claude/skills` is a symlink to `../../.agents/skills`, so stow walks
+into it and links each file individually the way it does everywhere else. Adding
+a skill under `.agents/skills/` and re-running `stow shared` is enough for Claude
+Code; Codex picks it up with no re-stow at all.
+
+Codex needs the hand-made symlink because it will not follow a symlinked
+`SKILL.md` — a skill whose `SKILL.md` is a link is skipped silently, so stow's
+`--no-folding` file links are invisible to it. It does follow symlinked
+*directories*, which is why linking the whole `skills` root works and why
+`.agents/` has to sit outside the stow packages.
+
+Skills carry an optional `agents/openai.yaml` alongside `SKILL.md`. It is a Codex
+extension, not part of the Agent Skills spec, and Claude Code ignores it. Note
+that `allow_implicit_invocation: false` there is the Codex spelling of
+`disable-model-invocation: true` in the `SKILL.md` frontmatter — set both, or the
+skill stays model-invocable on one side only.
 
 ## OS differences
 
