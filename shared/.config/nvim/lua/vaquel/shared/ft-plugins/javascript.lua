@@ -14,6 +14,8 @@ local function setup_biome_keymaps()
   end, { desc = 'Fix all [l]int problems with Biome' })
 end
 
+local ORGANIZE_IMPORTS_KIND = 'source.organizeImports.biome'
+
 local function setup_biome_organize_imports_on_save()
   vim.api.nvim_create_autocmd('BufWritePre', {
     desc = 'Organize imports with Biome on save',
@@ -27,13 +29,21 @@ local function setup_biome_organize_imports_on_save()
         return
       end
 
-      local start_pos = { line = 0, character = 0 }
-      local end_pos = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-      local end_line = #end_pos
+      -- Biome registers codeAction support dynamically, and only once its initial
+      -- project scan finishes (~20s in the attio monorepo). Requests sent before
+      -- that come back with an empty action list, so bail out loudly instead of
+      -- silently leaving the imports alone.
+      if not biome_lsp_client:supports_method('textDocument/codeAction', bufnr) then
+        vim.notify("Couldn't biome on save. Biome is still scanning the project", vim.log.levels.WARN)
+        return
+      end
 
+      local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
       local range = {
-        start = start_pos,
-        ['end'] = { line = end_line - 1, character = #end_pos[end_line] },
+        start = { line = 0, character = 0 },
+        -- Biome only offers the action when the requested range covers the whole
+        -- import block, so always ask for the entire buffer.
+        ['end'] = { line = #lines - 1, character = #lines[#lines] },
       }
 
       local params = {
@@ -42,21 +52,38 @@ local function setup_biome_organize_imports_on_save()
         },
         context = {
           diagnostics = {},
-          only = { 'source.organizeImports.biome' },
+          only = { ORGANIZE_IMPORTS_KIND },
         },
         range = range,
       }
 
-      local response = biome_lsp_client.request_sync('textDocument/codeAction', params, 5000, bufnr)
-      local result, error = response.result, response.error
-      if result ~= nil then
-        for _, action in ipairs(result) do
-          if action.kind == 'source.organizeImports.biome' and action.edit ~= nil then
-            vim.lsp.util.apply_workspace_edit(action.edit, 'utf-8')
+      local function fail(err)
+        vim.notify('Failed to organize imports with Biome:\n\n' .. vim.inspect(err), vim.log.levels.WARN)
+      end
+
+      local response = biome_lsp_client:request_sync('textDocument/codeAction', params, 5000, bufnr)
+      if response == nil or response.err ~= nil then
+        fail(response and response.err or 'request timed out')
+        return
+      end
+
+      for _, action in ipairs(response.result or {}) do
+        if action.kind == ORGANIZE_IMPORTS_KIND then
+          local edit = action.edit
+          -- Biome 2.x returns code actions unresolved: the workspace edit only
+          -- shows up after a codeAction/resolve round-trip.
+          if edit == nil then
+            local resolved = biome_lsp_client:request_sync('codeAction/resolve', action, 5000, bufnr)
+            if resolved == nil or resolved.err ~= nil then
+              fail(resolved and resolved.err or 'resolve timed out')
+              return
+            end
+            edit = resolved.result and resolved.result.edit
+          end
+          if edit ~= nil then
+            vim.lsp.util.apply_workspace_edit(edit, biome_lsp_client.offset_encoding)
           end
         end
-      else
-        vim.notify('Failed to organize imports with Biome:\n\n' .. vim.inspect(error), vim.log.levels.WARN)
       end
     end,
   })

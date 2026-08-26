@@ -42,7 +42,10 @@ return {
     local tools = {
       'stylua',
       'xmlformatter',
-      'biome',
+      -- Pinned rather than tracking latest: the mason binary is the fallback for
+      -- projects without a local @biomejs/biome, so keep it on the same version
+      -- attio pins. 2.5.10 is out but too new for Artifactory's 7-day curation.
+      { 'biome', version = '2.5.5' },
       'fixjson',
       'superhtml',
     }
