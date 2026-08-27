@@ -12,7 +12,7 @@ set -euo pipefail
 # Key repeat. Both values are counts of 15ms ticks. KeyRepeat 1 is below the
 # floor of the System Settings slider (which stops at 2), so touching that
 # slider silently resets this — re-run the script if it ever feels sluggish.
-defaults write -g KeyRepeat -int 1          # 15ms between repeats, ~66 chars/sec
+defaults write -g KeyRepeat -int 3         # 15ms between repeats, ~66 chars/sec
 defaults write -g InitialKeyRepeat -int 15  # 225ms before the repeat kicks in
 
 # Hold a key to repeat it instead of opening the accent-character popup.
