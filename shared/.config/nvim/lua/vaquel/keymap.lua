@@ -109,6 +109,58 @@ vim.keymap.set({ 'n', 'v' }, '<leader>my', '<cmd>PathRelativeCopy<CR>', { desc =
 vim.keymap.set('n', '<leader>me', '<cmd>e!<CR>', { desc = 'Reload buffer discarding changes' })
 
 --- Quickfix list management
+local function load_git_changes_to_quickfix()
+  local root_result = vim.system({ 'git', 'rev-parse', '--show-toplevel' }, { text = true }):wait()
+  if root_result.code ~= 0 then
+    vim.notify('Not inside a Git repository', vim.log.levels.WARN)
+    return
+  end
+
+  local git_root = vim.trim(root_result.stdout or '')
+  local status_result = vim.system({ 'git', 'status', '--porcelain=v1', '-z', '--untracked-files=all' }, { cwd = git_root }):wait()
+  if status_result.code ~= 0 then
+    vim.notify(vim.trim(status_result.stderr or 'Could not read Git status'), vim.log.levels.ERROR)
+    return
+  end
+
+  local fields = vim.split(status_result.stdout or '', '\0', { plain = true, trimempty = true })
+  local items = {}
+  local index = 1
+
+  while index <= #fields do
+    local field = fields[index]
+    local status = field:sub(1, 2)
+    local path = field:sub(4)
+
+    table.insert(items, {
+      filename = vim.fs.joinpath(git_root, path),
+      lnum = 1,
+      col = 1,
+      text = status,
+    })
+
+    -- Rename and copy records contain the old path as a second NUL-delimited field.
+    index = index + (status:find('[RC]') and 2 or 1)
+  end
+
+  vim.fn.setqflist({}, ' ', {
+    title = 'Git changed files',
+    items = items,
+  })
+
+  if #items == 0 then
+    vim.cmd 'cclose'
+    vim.notify('No changed Git files')
+    return
+  end
+
+  vim.cmd 'copen'
+end
+
+vim.keymap.set('n', '<leader>gqc', load_git_changes_to_quickfix, {
+  desc = '[G]it changed files to [Q]uickfix',
+})
+
 vim.keymap.set('n', '<leader>qa', ":call setqflist([{'bufnr': bufnr('%'), 'lnum': line('.'), 'col': col('.'), 'text': getline('.')}], 'a') | copen<CR>", {
   desc = 'Add current line to Quickfix list',
 })
