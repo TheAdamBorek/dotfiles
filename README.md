@@ -1,11 +1,12 @@
 # dotfiles
 
-Stow packages. `shared` is always stowed; add exactly one OS package.
+Stow packages. `shared` is always stowed; add one Neovim package and one OS
+package.
 
 ```sh
 cd ~/dotfiles
-stow shared lazyvim macos    # macOS
-stow shared lazyvim linux    # Omarchy / Arch
+stow shared nvim macos        # macOS with the custom Neovim config
+stow shared lazyvim omarchy   # Omarchy with LazyVim
 ```
 
 On macOS also run `./macos/macos-defaults.sh` once, then log out and back in.
@@ -22,14 +23,28 @@ mkdir -p ~/.agents && ln -s ~/dotfiles/.agents/skills ~/.agents/skills
 symlinking whole directories — safe to stow into `~/.config` alongside configs
 that aren't tracked here.
 
+## Switching Neovim configs
+
+Run either command from `~/dotfiles`. Each command removes the other package
+and stows the selected one in a single transaction.
+
+```sh
+stow -D lazyvim -S nvim  # use the custom config
+stow -D nvim -S lazyvim  # use LazyVim
+```
+
+The OS package stays stowed during the switch, so its matching `theme.lua`
+continues to apply.
+
 ## Layout
 
 | Path      | Stowed | Contents                                              |
 | --------- | ------ | ----------------------------------------------------- |
 | `shared/` | yes    | ghostty, yazi, starship, lazygit, `.claude`            |
-| `lazyvim/`| yes    | nvim (LazyVim), minus `theme.lua`                      |
+| `nvim/`   | choice | custom nvim config                                     |
+| `lazyvim/`| choice | LazyVim config, minus `theme.lua`                      |
 | `macos/`  | yes    | aerospace, nvim `theme.lua`, `.zshrc`, `.tmux.conf`    |
-| `linux/`  | yes    | Hyprland/Omarchy config, nvim `theme.lua`              |
+| `omarchy/`| yes    | Hyprland/Omarchy config, nvim `theme.lua`              |
 | `macos/zsh/` | no  | sourced by `~/.zshrc` via `~/dotfiles/macos/zsh/zshrc` |
 | `macos/macos-defaults.sh` | no | `defaults write` settings; run once per machine |
 | `tmux/`   | no     | sourced by `~/.tmux.conf` via absolute paths           |
@@ -83,5 +98,5 @@ polls that path with `fs_stat` every 2s, and `omarchy-theme-set` repointing
 `current` changes the resolved mtime, which fires `LazyReload`, which is what
 `omarchy-theme-hotreload.lua` listens for. A single tracked file branching on
 `vim.fn.has("mac")` would never change its own mtime and would silently break
-theme hot-reload. So `linux/` holds the symlink, `macos/` holds a plain file, and
+theme hot-reload. So `omarchy/` holds the symlink, `macos/` holds a plain file, and
 `lazyvim/.stow-local-ignore` keeps a stray copy out of the shared package.
