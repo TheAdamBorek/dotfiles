@@ -16,7 +16,7 @@ return {
 
     lualine.setup {
       options = {
-        theme = 'catppuccin-nvim',
+        theme = 'auto',
       },
       extensions = { 'nvim-tree' },
       sections = {

@@ -55,12 +55,19 @@ return {
       vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = '' })
     end
 
+    -- Point biome at an editor-only config when the project keeps one next to its biome.json.
+    -- This has to be conditional and resolved from the LSP root rather than the cwd: handed a path
+    -- that doesn't exist, biome logs "couldn't find a configuration" and unregisters formatting,
+    -- code actions and diagnostics, so the server attaches and then does nothing at all.
     vim.lsp.config('biome', {
-      settings = {
-        biome = {
-          configurationPath = vim.fn.getcwd() .. '/biome.editor.jsonc',
-        },
-      },
+      settings = { biome = {} },
+      before_init = function(params, client_config)
+        local root = client_config.root_dir or params.rootPath
+        local editor_config = root and vim.fs.joinpath(root, 'biome.editor.jsonc')
+        if editor_config and vim.uv.fs_stat(editor_config) then
+          client_config.settings.biome.configurationPath = editor_config
+        end
+      end,
     })
     vim.lsp.config('eslint', {
       root_markers = {

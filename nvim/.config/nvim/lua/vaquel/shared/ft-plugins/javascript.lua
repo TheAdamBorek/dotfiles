@@ -1,17 +1,29 @@
 local M = {}
 
-local function biome_fix_all()
+local oxc = require 'vaquel.shared.oxc'
+
+-- `oxlint --fix` followed by a format is the oxfmt-project equivalent of
+-- `biome check --write --unsafe`: lint autofixes first, then oxfmt, which also sorts the imports.
+local function fix_all()
   local conform = require 'conform'
+  if oxc.formats_with_oxfmt() then
+    conform.format {
+      async = false,
+      formatters = { 'oxlint' },
+    }
+    conform.format { async = false }
+    return
+  end
   conform.format {
     async = false,
     formatters = { 'biome-check' },
   }
 end
 
-local function setup_biome_keymaps()
+local function setup_fix_all_keymap()
   vim.keymap.set('n', '<leader>cl', function()
-    biome_fix_all()
-  end, { desc = 'Fix all [l]int problems with Biome' })
+    fix_all()
+  end, { desc = 'Fix all [l]int problems' })
 end
 
 local ORGANIZE_IMPORTS_KIND = 'source.organizeImports.biome'
@@ -23,6 +35,12 @@ local function setup_biome_organize_imports_on_save()
     group = vim.api.nvim_create_augroup('biome-organize-imports-on-save', { clear = true }),
     callback = function(args)
       local bufnr = args.buf
+      -- In an oxfmt repo import sorting is part of formatting on save (oxfmt.editor.config.ts),
+      -- and biome's LSP isn't even running, so this would only warn on every save.
+      if oxc.formats_with_oxfmt(bufnr) then
+        return
+      end
+
       local biome_lsp_client = vim.lsp.get_clients({ bufnr = bufnr, name = 'biome' })[1]
       if biome_lsp_client == nil then
         vim.notify("Couldn't biome on save. LSP client not found", vim.log.levels.WARN)
@@ -139,12 +157,12 @@ local function setup_attio_import_command()
     vim.api.nvim_buf_set_lines(0, 0, 0, false, {
       import,
     })
-    biome_fix_all()
+    fix_all()
   end, { nargs = 1 })
 end
 
 M.apply = function()
-  setup_biome_keymaps()
+  setup_fix_all_keymap()
   setup_biome_organize_imports_on_save()
   setup_mini_ai_text_objects()
   setup_attio_import_command()
