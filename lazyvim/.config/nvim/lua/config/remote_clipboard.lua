@@ -1,9 +1,9 @@
 -- Clipboard for sessions whose yanks may need to reach another machine:
 -- every copy is emitted as OSC 52 (inside tmux this becomes a tmux buffer,
 -- rebroadcast to every attached client, local or SSH). Paste prefers the
--- local Wayland clipboard when one is available, so content copied in other
--- apps remains pasteable; without a display, paste is an OSC 52 query that
--- tmux (or the terminal) answers.
+-- local system clipboard when one is available (Wayland via wl-paste, macOS
+-- via pbpaste), so content copied in other apps remains pasteable; without
+-- one, paste is an OSC 52 query that tmux (or the terminal) answers.
 local M = {}
 
 local function proc_lines(pid, file)
@@ -40,6 +40,61 @@ local function ancestor_process_named(name)
   return false
 end
 
+local function executables(...)
+  for _, name in ipairs({ ... }) do
+    if vim.fn.executable(name) ~= 1 then
+      return false
+    end
+  end
+  return true
+end
+
+local function run(cmd, lines)
+  vim.fn.system(cmd, lines)
+end
+
+local function read(cmd)
+  local lines = vim.fn.systemlist(cmd, "", 1)
+  return vim.v.shell_error == 0 and lines or {}
+end
+
+-- The clipboard of the display this session is attached to, if there is one.
+-- Returns { copy = fn(register, lines), paste = fn(register) -> lines } or nil.
+function M.local_clipboard(in_ssh)
+  if vim.env.WAYLAND_DISPLAY ~= nil and executables("wl-copy", "wl-paste") then
+    return {
+      copy = function(register, lines)
+        local cmd = { "wl-copy", "--sensitive", "--type", "text/plain" }
+        if register == "*" then
+          cmd[#cmd + 1] = "--primary"
+        end
+        run(cmd, lines)
+      end,
+      paste = function(register)
+        local cmd = { "wl-paste", "--no-newline" }
+        if register == "*" then
+          cmd[#cmd + 1] = "--primary"
+        end
+        return read(cmd)
+      end,
+    }
+  end
+
+  -- Over SSH into a Mac, pbcopy/pbpaste would hit the remote Mac's pasteboard
+  -- rather than the one in front of the user, so only use them locally.
+  -- macOS has a single pasteboard: "*" and "+" are the same thing.
+  if vim.fn.has("mac") == 1 and not in_ssh and executables("pbcopy", "pbpaste") then
+    return {
+      copy = function(_, lines)
+        run({ "pbcopy" }, lines)
+      end,
+      paste = function()
+        return read({ "pbpaste" })
+      end,
+    }
+  end
+end
+
 function M.setup()
   local in_tmux = vim.env.TMUX ~= nil
   local in_ssh = vim.env.SSH_TTY ~= nil or vim.env.SSH_CONNECTION ~= nil
@@ -50,20 +105,14 @@ function M.setup()
   end
 
   local osc52 = require("vim.ui.clipboard.osc52")
-  local has_wayland = vim.env.WAYLAND_DISPLAY ~= nil
-    and vim.fn.executable("wl-copy") == 1
-    and vim.fn.executable("wl-paste") == 1
+  local system = M.local_clipboard(in_ssh)
 
   local function copy(register)
     local emit = osc52.copy(register)
 
     return function(lines)
-      if has_wayland then
-        local cmd = { "wl-copy", "--sensitive", "--type", "text/plain" }
-        if register == "*" then
-          cmd[#cmd + 1] = "--primary"
-        end
-        vim.fn.system(cmd, lines)
+      if system then
+        system.copy(register, lines)
       end
 
       if vim.g.omarchy_remote_clipboard_osc52 ~= false then
@@ -73,18 +122,12 @@ function M.setup()
   end
 
   local function paste(register)
-    if not has_wayland then
+    if not system then
       return osc52.paste(register)
     end
 
     return function()
-      local cmd = { "wl-paste", "--no-newline" }
-      if register == "*" then
-        cmd[#cmd + 1] = "--primary"
-      end
-
-      local lines = vim.fn.systemlist(cmd, "", 1)
-      return vim.v.shell_error == 0 and lines or {}
+      return system.paste(register)
     end
   end
 

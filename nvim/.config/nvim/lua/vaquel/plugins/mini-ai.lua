@@ -1,6 +1,7 @@
 return {
   'echasnovski/mini.ai',
-  dependencies = { 'nvim-treesitter/nvim-treesitter-textobjects' },
+  -- `main` matches the nvim-treesitter `main` branch; only its textobject queries are used here
+  dependencies = { { 'nvim-treesitter/nvim-treesitter-textobjects', branch = 'main' } },
   config = function()
     local mini_ai = require 'mini.ai'
     local spec_treesitter = mini_ai.gen_spec.treesitter
