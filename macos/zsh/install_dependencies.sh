@@ -37,6 +37,8 @@ brew_packages=(
   "fnm"                                     # fast Node version manager
   "bob"                                     # Neovim version manager
   "gh"                                      # GitHub CLI (PRs, issues, auth)
+  "rbenv"
+  "ruby-build"
   # Yazi terminal file explorer and its dependencies
   "yazi"                                    # blazing-fast terminal file manager
   "ffmpegthumbnailer"                       # video thumbnails in Yazi previews

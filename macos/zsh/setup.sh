@@ -20,10 +20,6 @@ function setup_bash_profile() {
     fi
 }
 
-function install_rvm() {
-    sh "curl -sSL https://get.rvm.io | bash -s stable"
-}
-
 function install_brew() {
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)";
 }
@@ -34,7 +30,6 @@ function install_fnm() {
 
 try_install_zsh
 setup_bash_profile
-install_rvm
 install_brew
 install_fnm
 

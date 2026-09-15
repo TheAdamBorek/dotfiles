@@ -4,7 +4,6 @@
 
 alias gmr='git merge --no-ff'
 alias ga='git add -A :/'
-alias gp='ruby ~/zshrc/git_push_current.rb'
 alias gl='git log'
 alias gs='git status'
 alias gd='git diff'
@@ -24,4 +23,4 @@ alias gamend='git commit --amend'
 alias glg1='git lg1'
 alias glg2='git lg2'
 alias glg='git lg'
-alias gpurge='ruby ~/zshrc/scripts/git_purge.rb'
+alias gpurge='ruby ~/dotfiles/macos/zsh/scripts/git_purge.rb'
