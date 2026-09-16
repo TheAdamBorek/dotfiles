@@ -4,6 +4,9 @@
 
 vim.keymap.set("i", "jk", "<Esc>", { desc = "Escape insert mode" })
 
+vim.keymap.set({ "n", "x" }, "<leader>y", '"+y', { desc = "Yank to system clipboard" })
+vim.keymap.set({ "n", "x" }, "<leader>p", '"+p', { desc = "Paste from system clipboard" })
+
 vim.keymap.set("n", "<leader>md", "<cmd>delmarks A-Z<CR>", { desc = "Delete all global marks" })
 
 vim.keymap.set({ "n", "x" }, "<leader>my", function()
