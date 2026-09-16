@@ -113,5 +113,4 @@ esac
 # npm install -g @aikidosec/safe-chain
 [ -f ~/.safe-chain/scripts/init-posix.sh ] && source ~/.safe-chain/scripts/init-posix.sh
 
-# Set up for tmuxinator
 export EDITOR='nvim'

@@ -43,11 +43,11 @@ continues to apply.
 | `shared/` | yes    | ghostty, yazi, starship, lazygit, `.claude`            |
 | `nvim/`   | choice | custom nvim config                                     |
 | `lazyvim/`| choice | LazyVim config, minus `theme.lua`                      |
-| `macos/`  | yes    | aerospace, nvim `theme.lua`, `.zshrc`, `.tmux.conf`    |
+| `macos/`  | yes    | aerospace, nvim `theme.lua`, `.zshrc`                  |
 | `omarchy/`| yes    | Hyprland/Omarchy config, nvim `theme.lua`              |
 | `macos/zsh/` | no  | sourced by `~/.zshrc` via `~/dotfiles/macos/zsh/zshrc` |
 | `macos/macos-defaults.sh` | no | `defaults write` settings; run once per machine |
-| `tmux/`   | no     | sourced by `~/.tmux.conf` via absolute paths           |
+| `tmux/`   | no     | unused; kept as a backup, see "tmux" below             |
 | `scripts/`, `kinesis/` | no | not config; run or referenced directly     |
 | `.agents/` | no    | agent skills; the real files, linked into `~/.agents`  |
 
@@ -80,6 +80,23 @@ extension, not part of the Agent Skills spec, and Claude Code ignores it. Note
 that `allow_implicit_invocation: false` there is the Codex spelling of
 `disable-model-invocation: true` in the `SKILL.md` frontmatter — set both, or the
 skill stays model-invocable on one side only.
+
+## tmux
+
+Replaced by herdr. Nothing stows it: `tmux/` is a plain top-level directory and
+the `macos/.tmux.conf` symlink that used to link it into `~` is gone, so a fresh
+`stow macos` leaves no tmux config behind.
+
+The config is kept as a working backup. To use it again:
+
+```sh
+brew install tmux
+ln -s ~/dotfiles/tmux/tmux.conf ~/.tmux.conf
+git submodule update --init tmux/plugins/tpm   # if not already checked out
+```
+
+`tmux.conf` refers to its scripts, themes and tpm by absolute `$HOME/dotfiles/tmux/`
+paths, so the directory has to keep that name and location for the backup to work.
 
 ## OS differences
 
