@@ -3,9 +3,10 @@
 -- <leader>ad opens the diff in codediff.nvim. Against the working tree its
 -- right-hand pane is the real, writable file buffer, so the comment binding
 -- below works straight from the diff -- no jumping to the source first.
--- <leader>ac drops an `AI_REVIEW:` comment above the current line, using the
--- comment syntax of the language at that spot -- `// ...` in TS, `# ...` in
--- Ruby, `{/* ... */}` between JSX children.
+-- <leader>ac opens a new `AI_REVIEW:` comment line above the current line and
+-- drops you into insert mode there, so the comment is edited in the buffer
+-- rather than a popup. It uses the comment syntax of the language at that spot
+-- -- `// ...` in TS, `# ...` in Ruby, `{/* ... */}` between JSX children.
 -- <leader>af lists every `AI_REVIEW:` comment in the project in a Snacks picker.
 
 local KEYWORD = "AI_REVIEW"
@@ -54,17 +55,18 @@ local function add_comment()
     vim.api.nvim_win_set_cursor(0, { lnum, 0 })
   end
 
-  -- Resolve up front: vim.ui.input is async and the cursor may move meanwhile.
   local cs = commentstring(lnum)
   local indent = vim.fn.getline(lnum):match("^%s*")
 
-  vim.ui.input({ prompt = "AI review: " }, function(text)
-    if not text or vim.trim(text) == "" then
-      return
-    end
-    local comment = indent .. cs:format(("%s: %s"):format(KEYWORD, vim.trim(text)))
-    vim.api.nvim_buf_set_lines(0, lnum - 1, lnum - 1, false, { comment })
-  end)
+  -- Split around the `%s` so the cursor can sit between the two halves: at the
+  -- end of `// AI_REVIEW: `, but *inside* `{/* AI_REVIEW:  */}`.
+  local prefix, suffix = cs:match("^(.-)%%s(.*)$")
+  prefix = indent .. (prefix or "") .. KEYWORD .. ": "
+  suffix = suffix or ""
+
+  vim.api.nvim_buf_set_lines(0, lnum - 1, lnum - 1, false, { prefix .. suffix })
+  vim.api.nvim_win_set_cursor(0, { lnum, #prefix })
+  vim.cmd(suffix == "" and "startinsert!" or "startinsert")
 end
 
 return {
