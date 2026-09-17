@@ -193,6 +193,11 @@ automatically-unhide-macos-hidden-apps = true
     # alt-ctrl-shift-y = 'move-node-to-workspace Y'
     # alt-ctrl-shift-z = 'move-node-to-workspace Z'
 
+    # Zoom the focused window to fill the workspace. AeroSpace grabs cmd-enter as
+    # a global hotkey, so apps that bind it to macOS-native fullscreen (Ghostty,
+    # Zen) never see the keydown - no separate Space, no animation, and the
+    # window stays a normal AeroSpace node. Press again to un-zoom.
+    cmd-enter = 'fullscreen'
     cmd-shift-f = 'fullscreen'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#exec-and-forget

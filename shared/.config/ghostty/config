@@ -5,6 +5,15 @@ font-family = MesloLGS Nerd Font Mono
 font-size = 14
 quit-after-last-window-closed = true
 
+# Split the two Option keys. Ghostty's unset default resolves to "alt" only for
+# U.S. Standard / U.S. International; the active layout here is Polish Pro, so
+# Option was producing unicode and no <a-*> binding ever reached nvim. "left"
+# gives terminal programs a real Alt while right Option keeps typing the Polish
+# diacritics (option-a -> a-ogonek, option-l -> l-stroke, ...).
+# On the Kinesis the left Alt is the physical left Win key - see
+# kinesis/layout1.txt, which maps [lwin]>[lalt].
+macos-option-as-alt = left
+
 # tmux owns splits inside Ghostty, so free up cmd+d instead of opening a
 # Ghostty split on top of the tmux panes.
 keybind = super+d=unbind
