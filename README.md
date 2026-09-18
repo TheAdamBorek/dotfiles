@@ -44,7 +44,7 @@ continues to apply.
 | `nvim/`   | choice | custom nvim config                                     |
 | `lazyvim/`| choice | LazyVim config, minus `theme.lua`                      |
 | `macos/`  | yes    | aerospace, nvim `theme.lua`, `.zshrc`                  |
-| `omarchy/`| yes    | Hyprland/Omarchy config, nvim `theme.lua`              |
+| `omarchy/`| yes    | Hyprland/Omarchy config, OS-specific nvim plugins       |
 | `macos/zsh/` | no  | sourced by `~/.zshrc` via `~/dotfiles/macos/zsh/zshrc` |
 | `macos/macos-defaults.sh` | no | `defaults write` settings; run once per machine |
 | `tmux/`   | no     | unused; kept as a backup, see "tmux" below             |
@@ -117,3 +117,8 @@ polls that path with `fs_stat` every 2s, and `omarchy-theme-set` repointing
 `vim.fn.has("mac")` would never change its own mtime and would silently break
 theme hot-reload. So `omarchy/` holds the symlink, `macos/` holds a plain file, and
 `lazyvim/.stow-local-ignore` keeps a stray copy out of the shared package.
+
+The Ruby LSP launcher override also lives in `omarchy/`. Mason generated its
+launcher with `/usr/bin/ruby` on this machine, so the override starts it through
+`mise` and enables the Rails hover fix. macOS does not load this override unless
+the same problem is confirmed there.
