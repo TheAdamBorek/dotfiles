@@ -3,11 +3,26 @@
 Stow packages. `shared` is always stowed; add one Neovim package and one OS
 package.
 
+For a new Mac cloned to `~/dotfiles`, run the bootstrap instead of stowing by
+hand:
+
+```sh
+./macos/zsh/setup.sh
+```
+
+It installs the Homebrew dependencies, stows `shared`, `nvim` and `macos`, then
+uses mise to install the global development tools.
+
+To manage the Stow packages manually instead:
+
 ```sh
 cd ~/dotfiles
 stow shared nvim macos        # macOS with the custom Neovim config
 stow shared lazyvim omarchy   # Omarchy with LazyVim
 ```
+
+After a manual macOS Stow run, use `~/.local/bin/mise install` to install the
+tools declared in the global config.
 
 On macOS also run `./macos/macos-defaults.sh` once, then log out and back in.
 It sets the preferences that live in the `defaults` database rather than in a
@@ -43,7 +58,7 @@ continues to apply.
 | `shared/` | yes    | ghostty, yazi, starship, lazygit, `.claude`            |
 | `nvim/`   | choice | custom nvim config                                     |
 | `lazyvim/`| choice | LazyVim config, minus `theme.lua`                      |
-| `macos/`  | yes    | aerospace, nvim `theme.lua`, `.zshrc`                  |
+| `macos/`  | yes    | aerospace, mise, nvim `theme.lua`, `.zshrc`             |
 | `omarchy/`| yes    | Hyprland/Omarchy config, OS-specific nvim plugins       |
 | `macos/zsh/` | no  | sourced by `~/.zshrc` via `~/dotfiles/macos/zsh/zshrc` |
 | `macos/macos-defaults.sh` | no | `defaults write` settings; run once per machine |
@@ -103,11 +118,16 @@ paths, so the directory has to keep that name and location for the backup to wor
 Config formats without conditionals (aerospace, hypr) go in the OS package.
 
 zsh is macOS-only, so the whole shell config lives in `macos/zsh/` and no longer
-branches on `uname` — the Homebrew paths, `pbcopy`, `PNPM_HOME` and the BSD
-`sysreport` are inline in `macos/zsh/zshrc`. `macos/.stow-local-ignore` keeps
+branches on `uname` — the Homebrew paths, `pbcopy` and the BSD `sysreport` are
+inline in `macos/zsh/zshrc`. `macos/.stow-local-ignore` keeps
 `macos/zsh/` out of `~`: it is sourced by absolute path from `~/.zshrc`, never
 symlinked. The Linux half is recoverable with
 `git log --diff-filter=D -- zsh/os/linux.zsh`.
+
+macOS uses mise as the only development-tool version manager. Its global config
+lives in `macos/.config/mise/config.toml` and supplies Node LTS, pnpm 11 plus
+the latest stable Ruby, Bun and Neovim. Project configs and idiomatic version
+files override those defaults after `mise activate zsh` runs.
 
 nvim's `theme.lua` is also split by OS, for a less obvious reason. On Omarchy it
 must be a symlink to `~/.local/state/omarchy/current/theme/neovim.lua`: lazy.nvim

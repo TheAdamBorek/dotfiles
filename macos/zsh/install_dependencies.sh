@@ -33,11 +33,7 @@ brew_packages=(
   "stow"                                    # symlink manager for dotfiles
   "lua"                                     # Lua interpreter (Neovim config, etc.)
   "eza"                                     # modern ls replacement (icons, git status, tree)
-  "fnm"                                     # fast Node version manager
-  "bob"                                     # Neovim version manager
   "gh"                                      # GitHub CLI (PRs, issues, auth)
-  "rbenv"
-  "ruby-build"
   # Yazi terminal file explorer and its dependencies
   "yazi"                                    # blazing-fast terminal file manager
   "ffmpegthumbnailer"                       # video thumbnails in Yazi previews
