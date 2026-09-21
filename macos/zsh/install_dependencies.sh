@@ -19,11 +19,12 @@ brew_packages=(
   "zsh-syntax-highlighting"                 # colors the command line, red for invalid commands
   "ripgrep"                                 # fast recursive grep (rg), respects .gitignore
   "fzf"                                     # fuzzy finder for files, history, anything piped in
-  "tmux"                                    # terminal multiplexer: panes, windows, persistent sessions
   "herdr"                                   # agent multiplexer: workspaces, tabs, panes
   "lazygit"                                 # terminal UI for git
   "1password-cli"                           # 1Password from the terminal (op), secrets/env injection
   "git-delta"                               # syntax-highlighted, side-by-side git diffs
+  "git-lfs"                                 # large-file storage; .gitconfig declares the lfs filter as required
+  "pinentry-mac"                            # GPG passphrase prompt; without it every signed commit fails
   "tree-sitter-cli"                         # parser generator/CLI, used by Neovim for syntax
   "starship"                                # cross-shell prompt (the fancy prompt line)
   "jesseduffield/lazydocker/lazydocker"     # terminal UI for docker/docker-compose
@@ -32,6 +33,7 @@ brew_packages=(
   "tlrc"                                    # tldr client: concise, example-first man pages
   "stow"                                    # symlink manager for dotfiles
   "lua"                                     # Lua interpreter (Neovim config, etc.)
+  "coreutils"                               # GNU coreutils; zshrc puts its gnubin on PATH ahead of the BSD tools
   "eza"                                     # modern ls replacement (icons, git status, tree)
   "gh"                                      # GitHub CLI (PRs, issues, auth)
   # Yazi terminal file explorer and its dependencies
@@ -44,8 +46,12 @@ brew_packages=(
   "zoxide"                                  # smarter cd that learns your most-used dirs
   "imagemagick"                             # image conversion/preview (convert, magick)
   "font-symbols-only-nerd-font"             # glyphs/icons used by eza, starship, yazi
+  "font-meslo-lg-nerd-font"                 # patched Meslo; the terminal font behind those glyphs
   "raycast"                                 # Spotlight replacement: launcher, clipboard history, window mgmt
   "ghostty"                                 # GPU-accelerated terminal emulator
+  "karabiner-elements"                      # keyboard remapper (no tracked config; starts from defaults)
+  "nikitabobko/tap/aerospace"               # tiling window manager for macos/.config/aerospace; third-party tap,
+                                            # so the name is qualified to auto-tap on a fresh machine
 )
 
 for package in "${brew_packages[@]}"; do

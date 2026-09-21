@@ -1,7 +1,7 @@
 # dotfiles
 
 Stow packages. `shared` is always stowed; add one Neovim package and one OS
-package.
+package. `attio` is an extra opt-in package, stowed only on work machines.
 
 For a new Mac cloned to `~/dotfiles`, run the bootstrap instead of stowing by
 hand:
@@ -19,6 +19,7 @@ To manage the Stow packages manually instead:
 cd ~/dotfiles
 stow shared nvim macos        # macOS with the custom Neovim config
 stow shared lazyvim omarchy   # Omarchy with LazyVim
+stow attio                    # on top of either, on an Attio machine
 ```
 
 After a manual macOS Stow run, use `~/.local/bin/mise install` to install the
@@ -55,11 +56,12 @@ continues to apply.
 
 | Path      | Stowed | Contents                                              |
 | --------- | ------ | ----------------------------------------------------- |
-| `shared/` | yes    | ghostty, yazi, starship, lazygit, `.claude`            |
+| `shared/` | yes    | ghostty, yazi, starship, lazygit, `.claude`, `.codex`  |
 | `nvim/`   | choice | custom nvim config                                     |
 | `lazyvim/`| choice | LazyVim config, minus `theme.lua`                      |
-| `macos/`  | yes    | aerospace, mise, nvim `theme.lua`, `.zshrc`             |
+| `macos/`  | yes    | aerospace, mise, nvim `theme.lua`, `.zshrc`            |
 | `omarchy/`| yes    | Hyprland/Omarchy config, OS-specific nvim plugins       |
+| `attio/`  | opt-in | work machines only: GnuPG config for the work key      |
 | `macos/zsh/` | no  | sourced by `~/.zshrc` via `~/dotfiles/macos/zsh/zshrc` |
 | `macos/macos-defaults.sh` | no | `defaults write` settings; run once per machine |
 | `tmux/`   | no     | unused; kept as a backup, see "tmux" below             |
@@ -95,6 +97,72 @@ extension, not part of the Agent Skills spec, and Claude Code ignores it. Note
 that `allow_implicit_invocation: false` there is the Codex spelling of
 `disable-model-invocation: true` in the `SKILL.md` frontmatter — set both, or the
 skill stays model-invocable on one side only.
+
+## Claude Code settings
+
+`shared/.claude/settings.json` stows to `~/.claude/settings.json`: reasoning
+effort, vim editor mode, fullscreen TUI, the enabled plugins and the read-deny
+list that keeps agents out of keys and `.env` files.
+
+Unlike Codex's `config.toml` this one is safe to symlink. Claude Code writes to
+it only when a setting actually changes, and nothing machine-local lands in it:
+project trust and history live in `~/.claude.json`, and per-project overrides in
+`settings.local.json`, which `~/.gitignore` already excludes globally.
+
+## Codex config
+
+`~/.codex` holds two tracked files, and only one of them is a symlink.
+
+| File                        | Stowed | Why                                       |
+| --------------------------- | ------ | ----------------------------------------- |
+| `shared/.codex/AGENTS.md`   | yes    | hand-written, Codex only reads it         |
+| `shared/.codex/config.toml` | no     | Codex rewrites it; tracked as a reference |
+
+Codex writes back to `config.toml` on every session: `[projects]` trust levels,
+`[hooks.state]` hashes, `[tui]` nux counters, and `[marketplaces]`/`[mcp_servers]`
+paths pinned to the installed ChatGPT.app build. Symlinking it into the repo
+would mean a dirty worktree after every session and every project path visited
+ending up in git history, so `shared/.stow-local-ignore` keeps it out of the
+stow run. The tracked copy holds only the portable keys — model, personality,
+approvals, desktop preferences, enabled plugins. On a new machine, let Codex
+generate its own `config.toml` on first run, then merge these keys into it.
+
+## GnuPG
+
+`attio/` is stowed only on Attio work machines, on top of the usual packages:
+
+```sh
+stow attio
+```
+
+It holds the GnuPG config for the work signing key, and nothing else so far:
+
+| File                          | Contents                                      |
+| ----------------------------- | --------------------------------------------- |
+| `attio/.gnupg/gpg.conf`       | `default-key` fingerprint, `auto-key-retrieve` |
+| `attio/.gnupg/dirmngr.conf`   | keyserver URL                                  |
+| `attio/.gnupg/gpg-agent.conf` | cache TTLs, Homebrew `pinentry-mac` path       |
+
+None of it is secret — two timeouts, a URL, a binary path and a public key
+fingerprint. **The private key is not in this repo and must never be.** It
+lives in `~/.gnupg/private-keys-v1.d/` and moves between machines out of band.
+
+The package assumes macOS, because `gpg-agent.conf` names the Homebrew
+`pinentry-mac`. That holds while Attio machines are Macs; if it stops holding,
+split the file per-OS the way `theme.lua` is split rather than branching inside
+it.
+
+Two things a fresh machine needs beyond these files:
+
+- `~/.gnupg` must be mode 0700 or gpg refuses to use it, and stow creates
+  missing directories with the default umask. `setup.sh` calls
+  `prepare_gnupg_home` before stowing, so a bootstrapped Mac is already fine.
+  Stowing `attio` on a machine that never ran the bootstrap needs
+  `mkdir -p ~/.gnupg && chmod 700 ~/.gnupg` first.
+- The key passphrase lives in the macOS login keychain, put there by
+  `pinentry-mac` — not in this repo. Signing is prompt-free on an existing
+  machine only because that keychain entry exists; a new Mac needs the
+  passphrase supplied separately.
 
 ## tmux
 

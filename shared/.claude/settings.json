@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "read": {
+      "deny": [
+        "**/*bash_profile*",
+        "**/.env*",
+        "**/*.pem",
+        "**/*.key",
+        "**/secrets/**",
+        "**/credentials/**",
+        "**/*.vars",
+        "**/*.secret",
+        "**/*_rsa",
+        "**/*_ed25519",
+        "**/id_rsa*",
+        "**/id_ed25519*",
+        "**/.ssh/**"
+      ]
+    }
+  },
+  "enabledPlugins": {
+    "figma@claude-plugins-official": true,
+    "linear@claude-plugins-official": true,
+    "notion@claude-plugins-official": true,
+    "slack@claude-plugins-official": true
+  },
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "xhigh",
+  "tui": "fullscreen",
+  "autoMemoryEnabled": false,
+  "skipWorkflowUsageWarning": true,
+  "theme": "auto",
+  "editorMode": "vim",
+  "autoCompactEnabled": false,
+  "useAutoModeDuringPlan": false
+}

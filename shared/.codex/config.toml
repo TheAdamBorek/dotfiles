@@ -1,0 +1,72 @@
+# Reference copy of the portable half of ~/.codex/config.toml. NOT stowed --
+# see shared/.stow-local-ignore for why. On a new machine, merge these keys into
+# the config.toml that Codex generates on first run.
+#
+# Everything Codex writes back itself is left out on purpose: [projects] trust
+# levels, [hooks.state] hashes, [marketplaces] and [mcp_servers] (absolute paths
+# into ChatGPT.app, pinned to a build number), and the [tui] nux counters.
+
+model = "gpt-6-astra"
+model_reasoning_effort = "xhigh"
+personality = "pragmatic"
+service_tier = "flex"
+approvals_reviewer = "auto_review"
+
+[features]
+js_repl = false
+
+[notice]
+hide_rate_limit_model_nudge = true
+
+[desktop]
+conversationDetailMode = "STEPS_COMMANDS"
+followUpQueueMode = "queue"
+dock-icon-preference = "codex-system"
+show-context-window-usage = true
+show-ultra-in-model-picker-slider = false
+enabled-reasoning-efforts = ["low", "medium", "high", "xhigh", "ultra"]
+
+[desktop.open-in-target-preferences]
+global = "vscode"
+
+[desktop.open-in-target-preferences.perPath]
+"/Users/adamborek/Developer/job/attio" = "ghostty"
+
+[plugins."browser@openai-bundled"]
+enabled = true
+
+[plugins."chrome@openai-bundled"]
+enabled = true
+
+[plugins."codex-app-tools@openai-bundled"]
+enabled = true
+
+[plugins."computer-use@openai-bundled"]
+enabled = true
+
+[plugins."unified-computer-use@openai-bundled"]
+enabled = true
+
+[plugins."visualize@openai-bundled"]
+enabled = true
+
+[plugins."github@openai-curated"]
+enabled = true
+
+[plugins."linear@openai-curated"]
+enabled = true
+
+[plugins."documents@openai-primary-runtime"]
+enabled = true
+
+[plugins."pdf@openai-primary-runtime"]
+enabled = true
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = true
+
+[plugins."template-creator@openai-primary-runtime"]
+enabled = true

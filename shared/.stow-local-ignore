@@ -1,1 +1,7 @@
 \.DS_Store
+# Codex rewrites config.toml on every session -- trust levels, hook hashes, nux
+# counters, build-pinned plugin paths. A symlink here would put that churn (and
+# every project path visited) into git, so the tracked copy is a reference to
+# merge by hand, not a link. AGENTS.md is hand-written and does get stowed.
+# Stow anchors ignore patterns itself, so no ^ or $ here.
+\.codex/config\.toml

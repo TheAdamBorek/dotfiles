@@ -54,6 +54,15 @@ install_oh_my_zsh() {
     "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 }
 
+prepare_gnupg_home() {
+  # The bootstrap does not stow `attio`, but it prepares the directory that
+  # package targets. Stow creates missing target directories with the default
+  # umask, and gpg refuses to use a homedir that is group- or world-readable,
+  # so a later `stow attio` would land its configs somewhere gpg ignores.
+  mkdir -p "$HOME/.gnupg"
+  chmod 700 "$HOME/.gnupg"
+}
+
 install_mise() {
   if [[ ! -x "$HOME/.local/bin/mise" ]]; then
     curl -fsSL https://mise.run | sh
@@ -66,9 +75,11 @@ install_homebrew
 /bin/bash "$SCRIPT_DIR/install_dependencies.sh"
 
 cd "$REPO_DIR"
+prepare_gnupg_home
 stow shared nvim macos
 
 install_oh_my_zsh
 install_mise
 
 echo "Setup complete. Start a new login shell with: exec zsh -l"
+echo "On an Attio machine, also run: stow attio"
