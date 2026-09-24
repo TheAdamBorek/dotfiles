@@ -54,19 +54,19 @@ continues to apply.
 
 ## Layout
 
-| Path      | Stowed | Contents                                              |
-| --------- | ------ | ----------------------------------------------------- |
-| `shared/` | yes    | ghostty, yazi, starship, lazygit, `.claude`, `.codex`  |
-| `nvim/`   | choice | custom nvim config                                     |
-| `lazyvim/`| choice | LazyVim config, minus `theme.lua`                      |
-| `macos/`  | yes    | aerospace, mise, nvim `theme.lua`, `.zshrc`            |
-| `omarchy/`| yes    | Hyprland/Omarchy config, OS-specific nvim plugins       |
-| `attio/`  | opt-in | work machines only: GnuPG config for the work key      |
-| `macos/zsh/` | no  | sourced by `~/.zshrc` via `~/dotfiles/macos/zsh/zshrc` |
-| `macos/macos-defaults.sh` | no | `defaults write` settings; run once per machine |
-| `tmux/`   | no     | unused; kept as a backup, see "tmux" below             |
-| `scripts/`, `kinesis/` | no | not config; run or referenced directly     |
-| `.agents/` | no    | agent skills; the real files, linked into `~/.agents`  |
+| Path                      | Stowed | Contents                                                    |
+| ------------------------- | ------ | ----------------------------------------------------------- |
+| `shared/`                 | yes    | ghostty, yazi, starship, lazygit, `.claude`, `.codex`       |
+| `nvim/`                   | choice | custom nvim config                                          |
+| `lazyvim/`                | choice | LazyVim config, minus `theme.lua`                           |
+| `macos/`                  | yes    | aerospace, mise, nvim `theme.lua`, `.zshrc`, `t3-open-nvim` |
+| `omarchy/`                | yes    | Hyprland/Omarchy config, OS-specific nvim plugins           |
+| `attio/`                  | opt-in | work machines only: GnuPG config for the work key           |
+| `macos/zsh/`              | no     | sourced by `~/.zshrc` via `~/dotfiles/macos/zsh/zshrc`      |
+| `macos/macos-defaults.sh` | no     | `defaults write` settings; run once per machine             |
+| `tmux/`                   | no     | unused; kept as a backup, see "tmux" below                  |
+| `scripts/`, `kinesis/`    | no     | not config; run or referenced directly                      |
+| `.agents/`                | no     | agent skills; the real files, linked into `~/.agents`       |
 
 `.claude` at the repo root is a symlink into `shared/.claude` so the same file
 serves as this repo's project instructions and as `~/.claude/CLAUDE.md`.
@@ -76,10 +76,10 @@ serves as this repo's project instructions and as `~/.claude/CLAUDE.md`.
 `.agents/skills/` at the repo root holds the real skill files. Two agents read
 them, by different paths:
 
-| Consumer    | Path                | How it gets there              |
-| ----------- | ------------------- | ------------------------------ |
-| Codex       | `~/.agents/skills`  | one symlink, made by hand      |
-| Claude Code | `~/.claude/skills`  | stowed per file, as usual      |
+| Consumer    | Path               | How it gets there         |
+| ----------- | ------------------ | ------------------------- |
+| Codex       | `~/.agents/skills` | one symlink, made by hand |
+| Claude Code | `~/.claude/skills` | stowed per file, as usual |
 
 `shared/.claude/skills` is a symlink to `../../.agents/skills`, so stow walks
 into it and links each file individually the way it does everywhere else. Adding
@@ -89,7 +89,7 @@ Code; Codex picks it up with no re-stow at all.
 Codex needs the hand-made symlink because it will not follow a symlinked
 `SKILL.md` — a skill whose `SKILL.md` is a link is skipped silently, so stow's
 `--no-folding` file links are invisible to it. It does follow symlinked
-*directories*, which is why linking the whole `skills` root works and why
+_directories_, which is why linking the whole `skills` root works and why
 `.agents/` has to sit outside the stow packages.
 
 Skills carry an optional `agents/openai.yaml` alongside `SKILL.md`. It is a Codex
@@ -127,6 +127,35 @@ stow run. The tracked copy holds only the portable keys — model, personality,
 approvals, desktop preferences, enabled plugins. On a new machine, let Codex
 generate its own `config.toml` on first run, then merge these keys into it.
 
+## T3 Code
+
+T3 Code keeps its settings in `~/.t3/userdata/settings.json`, and like Codex's
+`config.toml` it is not tracked: the app rewrites it with model selections,
+provider instances and per-project state keyed by machine-local project IDs.
+
+What is tracked is the logic behind its one custom action, "Open in nvim",
+which opens a new Ghostty window in the thread's worktree and starts nvim
+there. The script is split per OS and stows to the same path on both:
+
+| File                              | How it opens Ghostty             |
+| --------------------------------- | -------------------------------- |
+| `macos/.local/bin/t3-open-nvim`   | Ghostty AppleScript API (1.3+)   |
+| `omarchy/.local/bin/t3-open-nvim` | `ghostty --working-directory -e` |
+
+On a new machine, add the action once as a default project action in T3's
+settings (`defaultProjectScripts` in `settings.json`), with the same command on
+both OSes:
+
+```sh
+"$HOME/.local/bin/t3-open-nvim"; exit
+```
+
+T3 runs actions in a new terminal tab whose cwd is the worktree, so the script
+defaults to `$PWD`. The trailing `exit` ends that tab's shell, which makes T3
+close the tab. A project with its own action list does not inherit the default
+one and needs the action added to its list as well. On macOS, the first run
+asks for permission to let T3 Code control Ghostty.
+
 ## GnuPG
 
 `attio/` is stowed only on Attio work machines, on top of the usual packages:
@@ -137,8 +166,8 @@ stow attio
 
 It holds the GnuPG config for the work signing key, and nothing else so far:
 
-| File                          | Contents                                      |
-| ----------------------------- | --------------------------------------------- |
+| File                          | Contents                                       |
+| ----------------------------- | ---------------------------------------------- |
 | `attio/.gnupg/gpg.conf`       | `default-key` fingerprint, `auto-key-retrieve` |
 | `attio/.gnupg/dirmngr.conf`   | keyserver URL                                  |
 | `attio/.gnupg/gpg-agent.conf` | cache TTLs, Homebrew `pinentry-mac` path       |

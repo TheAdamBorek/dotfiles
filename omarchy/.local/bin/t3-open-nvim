@@ -1,0 +1,10 @@
+#!/bin/sh
+# Opens a new Ghostty window in the given directory (default: cwd) and starts
+# nvim there. Backs the "Open in nvim" action in T3 Code; see README.
+#
+# nvim runs inside a shell that replaces itself with $SHELL afterwards, so
+# quitting nvim leaves a shell in the directory. setsid detaches Ghostty from
+# the T3 terminal, which the action closes right after this returns.
+dir=${1:-$PWD}
+setsid -f ghostty --working-directory="$dir" \
+  -e sh -c 'nvim; exec "${SHELL:-bash}" -l' >/dev/null 2>&1
