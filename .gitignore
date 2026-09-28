@@ -74,3 +74,5 @@ shared/.config/gh/hosts.yml
 /shared/.config/moshi
 /shared/.config/git
 /shared/.config/gh
+# argent skills are installed and refreshed by `argent init` / `argent update` via ~/.agents/skills
+.agents/skills/argent-*/

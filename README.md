@@ -222,9 +222,10 @@ symlinked. The Linux half is recoverable with
 `git log --diff-filter=D -- zsh/os/linux.zsh`.
 
 macOS uses mise as the only development-tool version manager. Its global config
-lives in `macos/.config/mise/config.toml` and supplies Node LTS, pnpm 11 plus
-the latest stable Ruby, Bun and Neovim. Project configs and idiomatic version
-files override those defaults after `mise activate zsh` runs.
+lives in `macos/.config/mise/config.toml` and supplies Node LTS, pnpm 11,
+Neovim 0.12.5 (pinned: a new release can break the editor) plus the latest
+stable Ruby and Bun. Project configs and idiomatic version files override
+those defaults after `mise activate zsh` runs.
 
 nvim's `theme.lua` is also split by OS, for a less obvious reason. On Omarchy it
 must be a symlink to `~/.local/state/omarchy/current/theme/neovim.lua`: lazy.nvim

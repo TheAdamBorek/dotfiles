@@ -102,6 +102,8 @@ automatically-unhide-macos-hidden-apps = true
     # See: https://nikitabobko.github.io/AeroSpace/commands#layout
     # Toggles between tiles and accordion (first layout that isn't the current one wins)
     cmd-shift-l = 'layout tiles accordion'
+    # Toggles the focused window between floating and tiling (Omarchy: super-t)
+    cmd-ctrl-t = 'layout floating tiling'
 
     # Swallow macOS "Hide application". AeroSpace registers this as a global
     # hotkey, so the frontmost app never sees the keydown. Empty array = no-op.

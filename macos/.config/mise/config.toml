@@ -3,7 +3,8 @@ node = "lts"
 ruby = "latest"
 bun = "latest"
 pnpm = "11"
-"aqua:neovim/neovim" = "latest"
+"aqua:neovim/neovim" = "0.12.5"
+"npm:@swmansion/argent" = "latest"
 
 [settings]
 idiomatic_version_file_enable_tools = ["node", "ruby", "bun", "pnpm"]

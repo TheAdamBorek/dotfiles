@@ -16,7 +16,10 @@
         "**/id_ed25519*",
         "**/.ssh/**"
       ]
-    }
+    },
+    "allow": [
+      "mcp__argent"
+    ]
   },
   "enabledPlugins": {
     "figma@claude-plugins-official": true,
