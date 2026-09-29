@@ -79,15 +79,27 @@ serves as this repo's project instructions and as `~/.claude/CLAUDE.md`.
 `.agents/skills/` at the repo root holds the real skill files. Two agents read
 them, by different paths:
 
-| Consumer    | Path               | How it gets there         |
-| ----------- | ------------------ | ------------------------- |
-| Codex       | `~/.agents/skills` | one symlink, made by hand |
-| Claude Code | `~/.claude/skills` | stowed per file, as usual |
+| Consumer    | Path               | How it gets there             |
+| ----------- | ------------------ | ----------------------------- |
+| Codex       | `~/.agents/skills` | one symlink, made by hand     |
+| Claude Code | `~/.claude/skills` | stowed, one symlink per skill |
 
-`shared/.claude/skills` is a symlink to `../../.agents/skills`, so stow walks
-into it and links each file individually the way it does everywhere else. Adding
-a skill under `.agents/skills/` and re-running `stow shared` is enough for Claude
-Code; Codex picks it up with no re-stow at all.
+`shared/.claude/skills/` holds one symlink per skill, each pointing at
+`../../../.agents/skills/<name>`. Stow never walks into a symlink, even with
+`--no-folding`. It links the symlink itself, so stowing gives a real
+`~/.claude/skills` directory with one link per skill. Anything Claude Code
+writes there on its own stays out of the repo. That includes `synced/`, where it
+keeps the org skills it pulls from claude.ai. Linking the whole `skills`
+directory instead would put `synced/` in the working tree.
+
+Adding a skill under `.agents/skills/` takes one extra step for Claude Code:
+
+```sh
+ln -s ../../../.agents/skills/<name> shared/.claude/skills/<name>
+stow shared
+```
+
+Codex picks it up with no re-stow at all.
 
 Codex needs the hand-made symlink because it will not follow a symlinked
 `SKILL.md` — a skill whose `SKILL.md` is a link is skipped silently, so stow's
