@@ -76,10 +76,11 @@ install_homebrew
 
 cd "$REPO_DIR"
 prepare_gnupg_home
-stow shared nvim macos
+stow shared lazyvim macos
 
 install_oh_my_zsh
 install_mise
+/bin/bash "$REPO_DIR/macos/macos-defaults.sh"
 
 echo "Setup complete. Start a new login shell with: exec zsh -l"
 echo "On an Attio machine, also run: stow attio"

@@ -25,9 +25,12 @@ stow attio                    # on top of either, on an Attio machine
 After a manual macOS Stow run, use `~/.local/bin/mise install` to install the
 tools declared in the global config.
 
-On macOS also run `./macos/macos-defaults.sh` once, then log out and back in.
-It sets the preferences that live in the `defaults` database rather than in a
-file, so stow has nothing to symlink.
+The macOS bootstrap runs `./macos/macos-defaults.sh` too. After a manual Stow
+run, run that script yourself, then log out and back in. It sets keyboard repeat
+and disables macOS screenshot shortcuts (Shift-Command-3/4/5/6, including the
+Control clipboard variants). These preferences live in the `defaults` database,
+so stow has nothing to symlink. To change only screenshot shortcuts, run
+`./macos/screenshot-shortcuts.sh`; it applies them in the current session.
 
 Agent skills need one symlink stow cannot make (see "Agent skills" below):
 

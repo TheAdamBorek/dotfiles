@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # macOS preferences that live in the defaults database rather than in a file,
-# so stow can't symlink them. Run by hand after a fresh install:
+# so stow can't symlink them. Bootstrap runs this automatically. After manual
+# Stow, run:
 #
 #   ./macos/macos-defaults.sh
 #
@@ -18,5 +19,7 @@ defaults write -g InitialKeyRepeat -int 15  # 225ms before the repeat kicks in
 # Hold a key to repeat it instead of opening the accent-character popup.
 # Apps that honour this won't repeat held keys at all while it's on.
 defaults write -g ApplePressAndHoldEnabled -bool false
+
+/bin/bash "$(dirname "$0")/screenshot-shortcuts.sh"
 
 echo "Written. Log out and back in for these to take effect everywhere."
