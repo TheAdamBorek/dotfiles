@@ -1,5 +1,8 @@
 {
   "permissions": {
+    "allow": [
+      "mcp__argent"
+    ],
     "read": {
       "deny": [
         "**/*bash_profile*",
@@ -16,10 +19,7 @@
         "**/id_ed25519*",
         "**/.ssh/**"
       ]
-    },
-    "allow": [
-      "mcp__argent"
-    ]
+    }
   },
   "enabledPlugins": {
     "figma@claude-plugins-official": true,
@@ -35,5 +35,10 @@
   "theme": "auto",
   "editorMode": "vim",
   "autoCompactEnabled": false,
-  "useAutoModeDuringPlan": false
+  "useAutoModeDuringPlan": false,
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "xhigh"
+    }
+  }
 }
