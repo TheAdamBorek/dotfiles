@@ -20,6 +20,11 @@ defaults write -g InitialKeyRepeat -int 15  # 225ms before the repeat kicks in
 # Apps that honour this won't repeat held keys at all while it's on.
 defaults write -g ApplePressAndHoldEnabled -bool false
 
+# Group Mission Control windows by app, so tiling tools like AeroSpace don't
+# leave a wall of tiny thumbnails. The Dock owns this, so restart it.
+defaults write com.apple.dock expose-group-apps -bool true
+killall Dock
+
 /bin/bash "$(dirname "$0")/screenshot-shortcuts.sh"
 
 echo "Written. Log out and back in for these to take effect everywhere."
