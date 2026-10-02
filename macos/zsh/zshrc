@@ -38,8 +38,6 @@ function sysreport() {
 command -v mise >/dev/null && eval "$(mise activate zsh)"
 
 source $ZSH/oh-my-zsh.sh
-# Device-specific zsh settings are not tracked in dotfiles.
-[ -f ~/.zshrc.local ] && source ~/.zshrc.local
 source ~/dotfiles/macos/zsh/aliases
 source ~/dotfiles/macos/zsh/git_aliases
 

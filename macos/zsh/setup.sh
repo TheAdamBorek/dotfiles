@@ -63,6 +63,48 @@ prepare_gnupg_home() {
   chmod 700 "$HOME/.gnupg"
 }
 
+link_local_zsh_file() {
+  # ~/.zshenv, ~/.zprofile and ~/.zshrc stay machine-local files (secrets,
+  # installer additions) that source the tracked config, so they are not
+  # stowed. An existing file keeps its content and only gains the source line.
+  local target="$HOME/.$1"
+  local line="source ~/dotfiles/macos/zsh/$1"
+
+  # Earlier setups stowed ~/.zshrc as a symlink into this repository.
+  if [[ -L "$target" && "$(readlink "$target")" == *dotfiles/* ]]; then
+    rm "$target"
+  fi
+
+  if [[ ! -f "$target" ]]; then
+    printf '%s\n\n# Machine-specific settings go below. This file is not tracked in dotfiles.\n' \
+      "$line" >"$target"
+    return
+  fi
+
+  if grep -qxF "$line" "$target"; then
+    return
+  fi
+
+  local tmp
+  tmp="$(mktemp)"
+  {
+    echo "$line"
+    echo
+    cat "$target"
+  } >"$tmp"
+  # Write through cat so the file keeps its permissions.
+  cat "$tmp" >"$target"
+  rm "$tmp"
+}
+
+prepare_local_zsh_files() {
+  link_local_zsh_file zshenv
+  # ~/.zshenv holds machine-specific secrets.
+  chmod 600 "$HOME/.zshenv"
+  link_local_zsh_file zprofile
+  link_local_zsh_file zshrc
+}
+
 install_mise() {
   if [[ ! -x "$HOME/.local/bin/mise" ]]; then
     curl -fsSL https://mise.run | sh
@@ -76,6 +118,8 @@ install_homebrew
 
 cd "$REPO_DIR"
 prepare_gnupg_home
+# Before Oh My Zsh: its installer writes its own ~/.zshrc when none exists.
+prepare_local_zsh_files
 stow shared lazyvim macos
 
 install_oh_my_zsh
