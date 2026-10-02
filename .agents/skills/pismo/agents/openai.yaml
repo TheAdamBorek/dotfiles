@@ -1,0 +1,5 @@
+interface:
+  display_name: "Pismo"
+  short_description: "Tworzenie pism przy użyciu CLI pismo"
+policy:
+  allow_implicit_invocation: false
