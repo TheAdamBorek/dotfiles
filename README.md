@@ -32,12 +32,6 @@ Control clipboard variants). These preferences live in the `defaults` database,
 so stow has nothing to symlink. To change only screenshot shortcuts, run
 `./macos/screenshot-shortcuts.sh`; it applies them in the current session.
 
-Agent skills need one symlink stow cannot make (see "Agent skills" below):
-
-```sh
-mkdir -p ~/.agents && ln -s ~/dotfiles/.agents/skills ~/.agents/skills
-```
-
 `.stowrc` sets `--no-folding`, so stow links individual files rather than
 symlinking whole directories — safe to stow into `~/.config` alongside configs
 that aren't tracked here.
@@ -59,7 +53,7 @@ continues to apply.
 
 | Path                      | Stowed | Contents                                                    |
 | ------------------------- | ------ | ----------------------------------------------------------- |
-| `shared/`                 | yes    | ghostty, yazi, starship, lazygit, `.claude`, `.codex`       |
+| `shared/`                 | yes    | ghostty, yazi, starship, lazygit, `.agents`, `.claude`, `.codex` |
 | `nvim/`                   | choice | custom nvim config                                          |
 | `lazyvim/`                | choice | LazyVim config, minus `theme.lua`                           |
 | `macos/`                  | yes    | aerospace, mise, nvim `theme.lua`, `.zshrc`, `t3-open-nvim` |
@@ -81,8 +75,12 @@ them, by different paths:
 
 | Consumer    | Path               | How it gets there             |
 | ----------- | ------------------ | ----------------------------- |
-| Codex       | `~/.agents/skills` | one symlink, made by hand     |
+| Codex       | `~/.agents/skills` | stowed, one directory symlink |
 | Claude Code | `~/.claude/skills` | stowed, one symlink per skill |
+
+`shared/.agents/skills` points at `../../.agents/skills`. Stow links this
+directory symlink into `~/.agents/skills`, including with `--no-folding`.
+Running `stow shared` installs the skills for both agents.
 
 `shared/.claude/skills/` holds one symlink per skill, each pointing at
 `../../../.agents/skills/<name>`. Stow never walks into a symlink, even with
@@ -101,11 +99,8 @@ stow shared
 
 Codex picks it up with no re-stow at all.
 
-Codex needs the hand-made symlink because it will not follow a symlinked
-`SKILL.md` — a skill whose `SKILL.md` is a link is skipped silently, so stow's
-`--no-folding` file links are invisible to it. It does follow symlinked
-_directories_, which is why linking the whole `skills` root works and why
-`.agents/` has to sit outside the stow packages.
+The skill files stay outside the Stow packages. Linking the `skills` directory
+lets Codex read the original `SKILL.md` files rather than individual file links.
 
 Skills carry an optional `agents/openai.yaml` alongside `SKILL.md`. It is a Codex
 extension, not part of the Agent Skills spec, and Claude Code ignores it. Note
