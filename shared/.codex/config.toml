@@ -6,10 +6,10 @@
 # levels, [hooks.state] hashes, [marketplaces] and [mcp_servers] (absolute paths
 # into ChatGPT.app, pinned to a build number), and the [tui] nux counters.
 
-model = "gpt-6-astra"
-model_reasoning_effort = "xhigh"
+model = "gpt-6.1-sol"
+model_reasoning_effort = "high"
 personality = "pragmatic"
-service_tier = "flex"
+service_tier = "fast"
 approvals_reviewer = "auto_review"
 
 [features]
