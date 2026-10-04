@@ -99,6 +99,9 @@ stow shared
 
 Codex picks it up with no re-stow at all.
 
+The `sync-skills` skill (`/sync-skills` in Claude Code, `$sync-skills` in Codex)
+pulls `master`, adds any missing Claude Code links and stows `shared`.
+
 The skill files stay outside the Stow packages. Linking the `skills` directory
 lets Codex read the original `SKILL.md` files rather than individual file links.
 

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Sync skills"
+  short_description: "Pull dotfiles and install skills for Codex and Claude"
+policy:
+  allow_implicit_invocation: false
