@@ -32,3 +32,6 @@ vim.keymap.set("n", "<leader>me", "<cmd>e!<CR>", { desc = "Reload buffer discard
 vim.keymap.set({ "n", "x" }, "<leader>mf", function()
   LazyVim.format({ force = true })
 end, { desc = "[F]ormat file or range" })
+
+vim.keymap.set("n", "<C-n>", "<cmd>cnext<CR>", { desc = "Next quickfix item" })
+vim.keymap.set("n", "<C-p>", "<cmd>cprev<CR>", { desc = "Prev quickfix item" })
