@@ -76,3 +76,4 @@ shared/.config/gh/hosts.yml
 /shared/.config/gh
 # argent skills are installed and refreshed by `argent init` / `argent update` via ~/.agents/skills
 .agents/skills/argent-*/
+/reports
