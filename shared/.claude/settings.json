@@ -40,5 +40,17 @@
   "theme": "auto",
   "editorMode": "vim",
   "autoCompactEnabled": false,
-  "useAutoModeDuringPlan": false
+  "useAutoModeDuringPlan": false,
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/herdr-autoname.sh"
+          }
+        ]
+      }
+    ]
+  }
 }
