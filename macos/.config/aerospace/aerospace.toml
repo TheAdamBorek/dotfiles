@@ -297,14 +297,17 @@ automatically-unhide-macos-hidden-apps = true
 #     if.app-id = 'com.gather.GatherV2'
 #     run = ['move-node-to-workspace G', 'layout tiling']
 
-# Grid auto-layout. AeroSpace tiles a workspace as one flat row, so an Nth
-# window shrinks every other window to 1/N. This callback reshapes the
-# workspace into columns of two instead: 2 windows = halves, 3 = 1/2 + two 1/4,
-# 4 = a 2x2 grid, 6 = a 3x2 grid. New windows land in the last column.
-# See bsp-grid.sh. Accordion workspaces are left alone.
+# BSP auto-layout. AeroSpace tiles a workspace as one flat row, so an Nth
+# window shrinks every other window to 1/N. This callback instead gives a new
+# window half of the window that had focus, alternating side-by-side and
+# top/bottom splits. Other windows keep their place and size. See bsp-grid.sh.
+# Accordion workspaces are left alone.
+#
+# Skipped during AeroSpace startup: every existing window is detected then, one
+# after another, and splitting each one in turn would nest them into a spiral.
 #
 # Keep this callback last. If you add an app-specific rule above it, that rule
 # needs 'check-further-callbacks = true' or this one will never run.
 [[on-window-detected]]
-    if = 'true'
+    if.during-aerospace-startup = false
     run = 'exec-and-forget /Users/adamborek/.config/aerospace/bsp-grid.sh'
