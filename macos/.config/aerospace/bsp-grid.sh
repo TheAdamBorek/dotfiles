@@ -22,6 +22,13 @@
 # enable-normalization-flatten-containers collapses into the root, flipping the
 # whole workspace 90 degrees.
 #
+# Closing windows flips the root the same way: once a column empties, the
+# container left in the other one replaces the root, and the root takes its
+# axis. AeroSpace picks the axis from the monitor only when it creates the root,
+# which a persistent workspace never gets again, so the next two windows there
+# would stack top/bottom. While the workspace holds at most two windows, the
+# script turns the root back to the monitor's natural axis.
+#
 # Known gap: when a floating window had focus, AeroSpace appends the newcomer to
 # the end of the root container, so it gets joined with whatever node is last
 # there.
@@ -61,15 +68,16 @@ fi
 
 # One read for everything: which workspace the new window landed in (an earlier
 # callback may have moved it), its parent container's layout, the workspace's
-# root layout, and the layouts of the workspace's other windows.
+# root layout and monitor, and the layouts of the workspace's other windows.
 state=$(q list-windows --all --format \
-  '%{window-id}%{tab}%{workspace}%{tab}%{window-parent-container-layout}%{tab}%{workspace-root-container-layout}')
+  '%{window-id}%{tab}%{workspace}%{tab}%{window-parent-container-layout}%{tab}%{workspace-root-container-layout}%{tab}%{monitor-appkit-nsscreen-screens-id}')
 
 ws=$(printf '%s\n' "$state" | awk -F'\t' -v id="$new_window" '$1 == id { print $2; exit }')
 [ -n "$ws" ] || exit 0
 
 rows=$(printf '%s\n' "$state" | awk -F'\t' -v ws="$ws" '$2 == ws')
 parent_layout=$(printf '%s\n' "$rows" | awk -F'\t' -v id="$new_window" '$1 == id { print $3 }')
+screen=$(printf '%s\n' "$rows" | awk -F'\t' -v id="$new_window" '$1 == id { print $5 }')
 root_layout=$(printf '%s\n' "$rows" | awk -F'\t' 'NR == 1 { print $4 }')
 count=$(printf '%s\n' "$rows" | awk -F'\t' '$3 ~ /^[hv]_(tiles|accordion)$/' | grep -c .)
 
@@ -91,11 +99,22 @@ case "$parent_layout" in
 esac
 
 if [ "$count" -lt 3 ]; then
-  log "skipped: $count tiling window(s)"
-  exit 0
+  # Mirror default-root-container-orientation = 'auto': horizontal unless the
+  # monitor is taller than wide. The screen id is a 1-based NSScreen index.
+  size=$(osascript -l JavaScript -e "ObjC.import('AppKit')
+    var f = \$.NSScreen.screens.objectAtIndex($screen - 1).frame.size
+    f.width + ' ' + f.height" 2>/dev/null)
+  axis=$(printf '%s\n' "$size" | awk '{ print ($1 != "" && $1 < $2) ? "vertical" : "horizontal" }')
+  case "$axis:$root_layout" in
+    horizontal:h_tiles | vertical:v_tiles)
+      log "skipped: $count tiling window(s), root already $axis"
+      exit 0
+      ;;
+  esac
+  cmd="layout --workspace $ws --root $axis"
+else
+  cmd="join-with --window-id $new_window $dir"
 fi
-
-cmd="join-with --window-id $new_window $dir"
 
 if [ -n "${DRY:-}" ]; then
   printf '  aerospace %s\n' "$cmd"
