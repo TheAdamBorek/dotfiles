@@ -47,19 +47,20 @@ Revise the sequence when implementation reveals a dependency. Describe the final
 
 ## Reorganize existing history
 
-1. **Freeze the source.** Record the intended base, tip, and tree IDs. Create local backup refs for every branch to be rewritten. Preserve unrelated working changes and use an isolated worktree when appropriate. These snapshots define the contents to retain.
-2. **Reconstruct the sequence.** Build the planned commits from the frozen changes. Split hunks as needed to make intermediate states coherent, even when the final file belongs to several commits. Preserve the existing final implementation.
-3. **Check the stages.** Verify boot or build and relevant existing tests at the intermediate commits affected by the split. Check that the sequence has no accidental empty commits or merge commits. Repair grouping problems before completing the local history.
-4. **Verify the final result.** For each branch, require an empty diff between the saved source tip and rewritten tip. Matching Git tree IDs prove identical tracked paths, contents, and modes:
+Steps 1, 4, and 5 run through `scripts/git-guard` in this skill's directory; `git-guard --help` lists every subcommand.
+
+1. **Freeze the source.** Snapshot every branch to be rewritten in one call, naming each branch's base; a base that is another guarded branch makes the pair a stack:
 
    ```bash
-   git diff --exit-code <saved-tip> <rewritten-tip>
-   git rev-parse <saved-tip>^{tree} <rewritten-tip>^{tree}
+   scripts/git-guard snapshot --name <name> --base origin/main <branch> <child>=<branch>
    ```
 
-   Also compare the aggregate diff from each branch's base. For a stack, rewrite parents before children, move children onto the new parent tips, and verify each layer against its own saved source. Changed parent commit IDs are expected; equivalent parent trees preserve the layer's diff.
-5. **Confirm local state.** Verify the final local branch heads and stack bases. Preserve work added by another task; reconcile the source snapshot within the authorized scope, or leave that branch untouched and report the conflict. Repeat final verification after any reconciliation. Respect changes to the requested PR scope, including withdrawals. Retain local backups through completion.
+   The snapshot records base, tip, tree, and the patch hash, and creates backup refs under `refs/backups/<name>/`. Preserve unrelated working changes and use an isolated worktree when appropriate. The snapshot defines the contents to retain.
+2. **Reconstruct the sequence.** Build the planned commits from the frozen changes. Split hunks as needed to make intermediate states coherent, even when the final file belongs to several commits. Preserve the existing final implementation.
+3. **Check the stages.** Verify boot or build and relevant existing tests at the intermediate commits affected by the split. Check that the sequence has no accidental empty commits or merge commits. Repair grouping problems before completing the local history.
+4. **Verify the final result.** For a stack, rewrite parents before children and move children onto the new parent tips. Then run `git-guard verify <name>` until every branch reports `ok`: the final tree matches the snapshot (identical tracked paths, contents, and modes), the aggregate diff from the base matches, each child sits on its current parent, and the new commits contain no merge or empty commits. Changed parent commit IDs are expected; equivalent parent trees preserve the layer's diff. Pass `--allow-rebase` only when the user authorized moving the branch to a newer base. On `FAIL`, run the printed `inspect` or `fix` command and move each missing or extra hunk into the commit it belongs to; a catch-all commit that restores the tree hides the grouping error.
+5. **Confirm local state.** Verify the final local branch heads and stack bases. Preserve work added by another task; reconcile the source snapshot within the authorized scope, or leave that branch untouched and report the conflict. Repeat `git-guard verify` after any reconciliation. Respect changes to the requested PR scope, including withdrawals. Retain the snapshot through completion; `git-guard restore <name> [branch...]` returns branches to their saved tips, and `git-guard drop` belongs to the user.
 
 ## Completion
 
-Report the ordered commit subjects and hashes, final-content comparison, checks performed, and any remaining validation. Identify branches deliberately left unchanged and state that the commits are local and have not been pushed.
+Report the ordered commit subjects and hashes, `git-guard verify` result, checks performed, and any remaining validation. Identify branches deliberately left unchanged and state that the commits are local and have not been pushed.

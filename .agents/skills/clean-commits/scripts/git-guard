@@ -1,0 +1,373 @@
+#!/usr/bin/env python3
+"""Snapshot branches before a history rewrite, then prove the rewrite kept their contents.
+
+  git-guard snapshot [--name NAME] [--base REF] BRANCH[=BASE]...
+  git-guard verify NAME [--allow-rebase]
+  git-guard restore NAME [BRANCH...]
+  git-guard list
+  git-guard show NAME
+  git-guard drop NAME --yes
+
+BASE names the commit the branch's changes start from. When BASE is another
+guarded branch, the pair forms a stack: verify resolves BASE to that branch's
+current tip, so a child must sit on top of its rewritten parent.
+
+verify compares the final tree while the base is unchanged, and the branch's
+own diff (per-file patch IDs, which ignore line numbers) once the base moved.
+
+Backups live at refs/backups/NAME/BRANCH; manifests in <git-common-dir>/git-guard/.
+"""
+
+import argparse
+import datetime
+import json
+import os
+import subprocess
+import sys
+
+
+class GuardError(Exception):
+    pass
+
+
+def git(*args, cwd=None, check=True):
+    result = subprocess.run(["git", *args], cwd=cwd, capture_output=True)
+    if check and result.returncode != 0:
+        raise GuardError(f"git {' '.join(args)}: {result.stderr.decode().strip()}")
+    return result
+
+
+def out(*args, cwd=None):
+    return git(*args, cwd=cwd).stdout.decode().strip()
+
+
+def stat(a, b):
+    return git("diff", "--stat", a, b).stdout.decode().rstrip()
+
+
+def resolve(ref):
+    result = git("rev-parse", "--verify", "--quiet", f"{ref}^{{commit}}", check=False)
+    if result.returncode != 0:
+        raise GuardError(f"unknown ref: {ref}")
+    return result.stdout.decode().strip()
+
+
+def tree(oid):
+    return out("rev-parse", f"{oid}^{{tree}}")
+
+
+def file_patch_ids(base, tip):
+    """Map each path changed between base and tip to the patch ID of its diff."""
+    paths = [p for p in git("diff", "--name-only", "-z", "--no-renames", base, tip)
+             .stdout.decode().split("\0") if p]
+    patch = git("diff", "--binary", "--full-index", "--no-renames", base, tip).stdout
+    chunks = [c.rstrip(b"\n") for c in patch.split(b"\ndiff --git ") if c]
+    if len(chunks) != len(paths):
+        raise GuardError(f"cannot split the diff {base[:12]}..{tip[:12]} per file")
+    # Prefix each file's diff with a fake commit line so one patch-id call hashes them all.
+    stream = b"".join(b"commit %040x\n" % i + (c if i == 0 else b"diff --git " + c) + b"\n"
+                      for i, c in enumerate(chunks))
+    result = subprocess.run(["git", "patch-id", "--verbatim"], input=stream, capture_output=True)
+    if result.returncode != 0:
+        raise GuardError(f"git patch-id: {result.stderr.decode().strip()}")
+    ids = {}
+    for line in result.stdout.decode().splitlines():
+        patch_id, index = line.split()
+        ids[paths[int(index, 16)]] = patch_id
+    return ids
+
+
+def compare_files(saved, current):
+    """Describe paths whose diff from the base differs from the snapshot."""
+    lines = []
+    for path in sorted(saved.keys() | current.keys()):
+        if path not in current:
+            lines.append(f"missing  {path}")
+        elif path not in saved:
+            lines.append(f"extra    {path}")
+        elif saved[path] != current[path]:
+            lines.append(f"changed  {path}")
+    return lines
+
+
+def manifest_dir():
+    return os.path.join(os.path.abspath(out("rev-parse", "--git-common-dir")), "git-guard")
+
+
+def manifest_path(name):
+    return os.path.join(manifest_dir(), f"{name}.json")
+
+
+def load(name):
+    path = manifest_path(name)
+    if not os.path.exists(path):
+        raise GuardError(f"no snapshot named {name!r}; run `git-guard list`")
+    with open(path) as f:
+        return json.load(f)
+
+
+def backup_ref(name, branch):
+    return f"refs/backups/{name}/{branch}"
+
+
+def default_base():
+    result = git("symbolic-ref", "--quiet", "--short", "refs/remotes/origin/HEAD", check=False)
+    if result.returncode == 0:
+        return result.stdout.decode().strip()
+    for candidate in ("origin/main", "origin/master", "main", "master"):
+        if git("rev-parse", "--verify", "--quiet", candidate, check=False).returncode == 0:
+            return candidate
+    raise GuardError("cannot detect a default base; pass --base or BRANCH=BASE")
+
+
+def worktrees():
+    """Map branch name -> worktree path for every checked-out branch."""
+    found, path = {}, None
+    for line in out("worktree", "list", "--porcelain").splitlines():
+        if line.startswith("worktree "):
+            path = line[len("worktree "):]
+        elif line.startswith("branch refs/heads/"):
+            found[line[len("branch refs/heads/"):]] = path
+    return found
+
+
+def dirty(path):
+    return bool(out("status", "--porcelain", "--untracked-files=no", cwd=path))
+
+
+def commits_since(base, tip):
+    log = out("rev-list", "--reverse", "--parents", f"{base}..{tip}")
+    return [line.split() for line in log.splitlines()]
+
+
+def check_name(name):
+    if "/" in name or git("check-ref-format", f"refs/backups/{name}/x", check=False).returncode:
+        raise GuardError(f"invalid snapshot name {name!r}; use letters, digits, '-', '_' or '.'")
+    if os.path.exists(manifest_path(name)):
+        raise GuardError(f"snapshot {name!r} already exists")
+    if out("for-each-ref", "--format=%(refname)", f"refs/backups/{name}/"):
+        raise GuardError(f"refs/backups/{name}/ already holds refs; choose another name")
+
+
+def cmd_snapshot(args):
+    name = args.name or "clean-" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    check_name(name)
+
+    specs = []
+    for spec in args.branches:
+        branch, _, base = spec.partition("=")
+        if git("show-ref", "--verify", "--quiet", f"refs/heads/{branch}", check=False).returncode:
+            raise GuardError(f"not a local branch: {branch}")
+        specs.append((branch, base or args.base or default_base()))
+    guarded = {branch for branch, _ in specs}
+
+    checked_out = worktrees()
+    branches = {}
+    for branch, base in specs:
+        tip = resolve(f"refs/heads/{branch}")
+        base_oid = resolve(base) if base in guarded else out("merge-base", base, tip)
+        if base in guarded and git("merge-base", "--is-ancestor", base_oid, tip, check=False).returncode:
+            raise GuardError(f"{branch} is not stacked on {base}")
+        commits = len(commits_since(base_oid, tip))
+        if not commits:
+            raise GuardError(f"{branch} has no commits on top of {base} ({base_oid[:12]}); "
+                             f"pass --base REF or {branch}=BASE naming the commit its changes start from")
+        branches[branch] = {
+            "base": base,
+            "stacked": base in guarded,
+            "base_oid": base_oid,
+            "tip": tip,
+            "tree": tree(tip),
+            "files": file_patch_ids(base_oid, tip),
+            "commits": commits,
+        }
+        if branch in checked_out and dirty(checked_out[branch]):
+            print(f"warning: {branch} has uncommitted changes in {checked_out[branch]}; "
+                  "the snapshot covers commits only", file=sys.stderr)
+
+    created = []
+    try:
+        for branch, entry in branches.items():
+            git("update-ref", "-m", f"git-guard snapshot {name}", backup_ref(name, branch), entry["tip"], "")
+            created.append(backup_ref(name, branch))
+        os.makedirs(manifest_dir(), exist_ok=True)
+        manifest = {"name": name, "created": datetime.datetime.now().isoformat(timespec="seconds"),
+                    "branches": branches}
+        with open(manifest_path(name), "w") as f:
+            json.dump(manifest, f, indent=2)
+            f.write("\n")
+    except (GuardError, OSError):
+        for ref in created:
+            git("update-ref", "-d", ref, check=False)
+        raise
+
+    print(f"snapshot {name}")
+    for branch, entry in branches.items():
+        print(f"  {branch}: {entry['tip'][:12]} on {entry['base']} ({entry['commits']} commits)"
+              f" -> {backup_ref(name, branch)}")
+    return 0
+
+
+def cmd_verify(args):
+    manifest = load(args.name)
+    branches = manifest["branches"]
+    failed = False
+
+    for branch, entry in branches.items():
+        problems, notes = [], []
+        tip = resolve(f"refs/heads/{branch}")
+        backup = backup_ref(args.name, branch)
+        if entry["stacked"]:
+            parent = entry["base"]
+            base = resolve(f"refs/heads/{parent}")
+            if git("merge-base", "--is-ancestor", base, tip, check=False).returncode:
+                problem = f"not on top of current {parent} ({base[:12]})"
+                old_parent = backup_ref(args.name, parent)
+                if not git("merge-base", "--is-ancestor", old_parent, tip, check=False).returncode:
+                    problem += f"\nfix: git rebase --onto {parent} {old_parent} {branch}"
+                problems.append(problem)
+        else:
+            base = out("merge-base", resolve(entry["base"]), tip)
+
+        if tree(base) == tree(entry["base_oid"]):
+            # Same starting contents: the final tree alone decides.
+            if tree(tip) != entry["tree"]:
+                problems.append("final tree differs from snapshot:\n" + stat(entry["tip"], tip)
+                                + f"\ninspect: git diff {backup} {branch}")
+        else:
+            if not entry["stacked"]:
+                moved = f"base moved from {entry['base_oid'][:12]} to {base[:12]}"
+                if args.allow_rebase:
+                    notes.append(moved + "; compared the branch's own diff")
+                else:
+                    problems.append(moved + "; pass --allow-rebase only if moving the base "
+                                    "was authorized, otherwise rebase back onto " + entry["base_oid"][:12])
+            differing = compare_files(entry["files"], file_patch_ids(base, tip))
+            if differing:
+                problems.append(f"diff from {entry['base']} differs from snapshot:\n"
+                                + "\n".join(differing)
+                                + f"\ninspect: git diff {entry['base_oid'][:12]} {backup} -- PATH"
+                                + f"\n    vs:  git diff {base[:12]} {branch} -- PATH")
+
+        commits = commits_since(base, tip)
+        if not commits:
+            problems.append(f"no commits on top of {entry['base']}")
+        for oid, *parents in commits:
+            subject = out("log", "-1", "--format=%s", oid)
+            if len(parents) > 1:
+                problems.append(f"merge commit {oid[:12]} {subject}")
+            elif parents and tree(oid) == tree(parents[0]):
+                problems.append(f"empty commit {oid[:12]} {subject}")
+
+        if tip == entry["tip"]:
+            notes.append("tip unchanged since snapshot: this branch has not been rewritten")
+
+        status = "FAIL" if problems else "ok"
+        failed |= bool(problems)
+        print(f"{status} {branch}: {entry['tip'][:12]} -> {tip[:12]}, "
+              f"{entry['commits']} -> {len(commits)} commits on {entry['base']}")
+        for oid, *_ in commits:
+            print(f"     {out('log', '-1', '--format=%h %s', oid)}")
+        for note in notes:
+            print(f"  note: {note}")
+        for problem in problems:
+            print("  " + problem.replace("\n", "\n    "))
+
+    return 1 if failed else 0
+
+
+def cmd_restore(args):
+    manifest = load(args.name)
+    targets = args.branches or list(manifest["branches"])
+    unknown = [b for b in targets if b not in manifest["branches"]]
+    if unknown:
+        raise GuardError(f"not in snapshot {args.name}: {', '.join(unknown)}")
+
+    checked_out = worktrees()
+    for branch in targets:
+        saved = resolve(backup_ref(args.name, branch))
+        current = resolve(f"refs/heads/{branch}")
+        if current == saved:
+            print(f"{branch}: already at {saved[:12]}")
+            continue
+        if branch in checked_out:
+            path = checked_out[branch]
+            if dirty(path):
+                raise GuardError(f"{branch} is checked out in {path} with uncommitted changes; "
+                                 "commit or stash them first")
+            git("reset", "--keep", saved, cwd=path)
+        else:
+            git("update-ref", "-m", f"git-guard restore {args.name}",
+                f"refs/heads/{branch}", saved, current)
+        print(f"{branch}: {current[:12]} -> {saved[:12]} (previous tip kept in the reflog)")
+    return 0
+
+
+def cmd_list(args):
+    directory = manifest_dir()
+    names = sorted(f[:-5] for f in os.listdir(directory) if f.endswith(".json")) if os.path.isdir(directory) else []
+    for name in names:
+        manifest = load(name)
+        print(f"{name}  {manifest['created']}  {', '.join(manifest['branches'])}")
+    return 0
+
+
+def cmd_show(args):
+    print(json.dumps(load(args.name), indent=2))
+    return 0
+
+
+def cmd_drop(args):
+    manifest = load(args.name)
+    if not args.yes:
+        raise GuardError("drop deletes the backup refs; rerun with --yes once the rewrite is accepted")
+    for branch in manifest["branches"]:
+        git("update-ref", "-d", backup_ref(args.name, branch), check=False)
+    os.remove(manifest_path(args.name))
+    print(f"dropped {args.name}")
+    return 0
+
+
+def main():
+    parser = argparse.ArgumentParser(prog="git-guard", description=__doc__,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    p = sub.add_parser("snapshot", help="back up branches and record their contents")
+    p.add_argument("--name", help="snapshot name (default: clean-<timestamp>)")
+    p.add_argument("--base", help="base for branches given without =BASE (default: origin/HEAD)")
+    p.add_argument("branches", nargs="+", metavar="BRANCH[=BASE]")
+    p.set_defaults(func=cmd_snapshot)
+
+    p = sub.add_parser("verify", help="check rewritten branches against a snapshot")
+    p.add_argument("name")
+    p.add_argument("--allow-rebase", action="store_true",
+                   help="accept a branch moved to a newer base when its own diff is unchanged")
+    p.set_defaults(func=cmd_verify)
+
+    p = sub.add_parser("restore", help="reset branches to their snapshot tips")
+    p.add_argument("name")
+    p.add_argument("branches", nargs="*")
+    p.set_defaults(func=cmd_restore)
+
+    sub.add_parser("list", help="list snapshots").set_defaults(func=cmd_list)
+
+    p = sub.add_parser("show", help="print a snapshot manifest")
+    p.add_argument("name")
+    p.set_defaults(func=cmd_show)
+
+    p = sub.add_parser("drop", help="delete a snapshot and its backup refs")
+    p.add_argument("name")
+    p.add_argument("--yes", action="store_true")
+    p.set_defaults(func=cmd_drop)
+
+    args = parser.parse_args()
+    try:
+        return args.func(args)
+    except GuardError as error:
+        print(f"git-guard: {error}", file=sys.stderr)
+        return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())
