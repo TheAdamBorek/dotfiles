@@ -1,0 +1,3 @@
+interface:
+  display_name: "Mermaid"
+  short_description: "Mermaid diagrams with a mermaid.live link"
