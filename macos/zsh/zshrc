@@ -47,6 +47,26 @@ source ~/dotfiles/macos/zsh/git_aliases
 
 # Setup yazi & dependencies
 command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
+# Worktree-aware `z`: zoxide ranks the main checkout highest, so a match inside
+# another worktree of the current repo is remapped onto the current worktree.
+function z() {
+  local here
+  here=$(git rev-parse --show-toplevel 2>/dev/null)
+  if [[ -z $here || $# -eq 0 || ( $# -eq 1 && ( $1 == - || -d $1 ) ) ]]; then
+    __zoxide_z "$@"
+    return
+  fi
+  local target owner wt
+  target=$(zoxide query --exclude "$(__zoxide_pwd)" -- "$@") || return
+  # Longest prefix wins, in case a worktree lives inside the main checkout.
+  for wt in ${(f)"$(git worktree list --porcelain | sed -n 's/^worktree //p')"}; do
+    [[ ( $target == $wt || $target == $wt/* ) && ${#wt} -gt ${#owner} ]] && owner=$wt
+  done
+  if [[ -n $owner && $owner != $here && -d $here${target#$owner} ]]; then
+    target=$here${target#$owner}
+  fi
+  __zoxide_cd "$target"
+}
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
 	yazi "$@" --cwd-file="$tmp"
