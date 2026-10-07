@@ -5,6 +5,7 @@ bun = "latest"
 pnpm = "11"
 "aqua:neovim/neovim" = "0.12.5"
 "npm:@swmansion/argent" = "latest"
+java = "zulu-17"
 
 [settings]
 idiomatic_version_file_enable_tools = [
