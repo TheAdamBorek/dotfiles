@@ -8,8 +8,11 @@
 -- rather than a popup. It uses the comment syntax of the language at that spot
 -- -- `// ...` in TS, `# ...` in Ruby, `{/* ... */}` between JSX children.
 -- <leader>af lists every `AI_REVIEW:` comment in the project in a Snacks picker.
+-- The `ai-review` agent skill answers them in place with `AI_REPLY:` lines.
+-- <leader>ax deletes every `AI_REVIEW:` and `AI_REPLY:` line in the project.
 
 local KEYWORD = "AI_REVIEW"
+local REPLY = "AI_REPLY"
 
 ---@param cs string
 ---@return string
@@ -69,6 +72,71 @@ local function add_comment()
   vim.cmd(suffix == "" and "startinsert!" or "startinsert")
 end
 
+---@param line string
+local function is_review_line(line)
+  return line:find(KEYWORD .. ":", 1, true) or line:find(REPLY .. ":", 1, true)
+end
+
+--- Delete every `AI_REVIEW:` and `AI_REPLY:` line in the project.
+---
+--- Edits go through buffers rather than `sed`, so open files update in place
+--- and each file's deletion is one undo step. A buffer that already had unsaved
+--- changes is left modified instead of written, so those changes are not saved
+--- behind your back.
+local function clear_comments()
+  local root = LazyVim.root()
+  local pattern = ("%s:|%s:"):format(KEYWORD, REPLY)
+  local rg = vim.system({ "rg", "--count", "--", pattern }, { cwd = root, text = true }):wait()
+  if rg.code == 1 then
+    return vim.notify("No review comments", vim.log.levels.INFO)
+  elseif rg.code ~= 0 then
+    return vim.notify(rg.stderr, vim.log.levels.ERROR)
+  end
+
+  local files, total = {}, 0
+  for entry in rg.stdout:gmatch("[^\n]+") do
+    local path, count = entry:match("^(.*):(%d+)$")
+    files[#files + 1] = vim.fs.joinpath(root, path)
+    total = total + tonumber(count)
+  end
+  if vim.fn.confirm(("Delete %d review lines in %d files?"):format(total, #files), "&Yes\n&No", 2) ~= 1 then
+    return
+  end
+
+  local unsaved = 0
+  for _, path in ipairs(files) do
+    local buf = vim.fn.bufadd(path)
+    local was_loaded = vim.api.nvim_buf_is_loaded(buf)
+    vim.fn.bufload(buf)
+    local was_modified = vim.bo[buf].modified
+
+    local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+    for i = #lines, 1, -1 do
+      if is_review_line(lines[i]) then
+        vim.api.nvim_buf_set_lines(buf, i - 1, i, false, {})
+      end
+    end
+
+    if was_modified then
+      unsaved = unsaved + 1
+    else
+      -- `noautocmd` keeps format-on-save from touching the rest of the file.
+      vim.api.nvim_buf_call(buf, function()
+        vim.cmd("silent noautocmd write")
+      end)
+      if not was_loaded then
+        vim.api.nvim_buf_delete(buf, {})
+      end
+    end
+  end
+
+  local msg = ("Deleted %d review lines in %d files"):format(total, #files)
+  if unsaved > 0 then
+    msg = msg .. (", %d left unsaved (they had other changes)"):format(unsaved)
+  end
+  vim.notify(msg, vim.log.levels.INFO)
+end
+
 return {
   {
     -- Binaries are fetched from GitHub releases on first use; no compiler needed.
@@ -94,9 +162,11 @@ return {
     opts = {
       keywords = {
         [KEYWORD] = { icon = "󰚩 ", color = "ai_review" },
+        [REPLY] = { icon = "󰚩 ", color = "ai_reply" },
       },
       colors = {
         ai_review = { "#FF9E64" },
+        ai_reply = { "#7DCFFF" },
       },
     },
     keys = {
@@ -108,6 +178,7 @@ return {
         end,
         desc = "Find review comments",
       },
+      { "<leader>ax", clear_comments, desc = "Delete all review comments" },
     },
   },
   {

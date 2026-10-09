@@ -1,0 +1,5 @@
+interface:
+  display_name: "AI Review"
+  short_description: "Resolve AI_REVIEW comments, replying in the code"
+policy:
+  allow_implicit_invocation: false
