@@ -3,6 +3,8 @@
 -- <leader>ad opens the diff in codediff.nvim. Against the working tree its
 -- right-hand pane is the real, writable file buffer, so the comment binding
 -- below works straight from the diff -- no jumping to the source first.
+-- <leader>ab diffs the whole branch: the working tree against the point where
+-- the branch left its base, as GitHub sees it when the branch has a PR.
 -- <leader>ac opens a new `AI_REVIEW:` comment line above the current line and
 -- drops you into insert mode there, so the comment is edited in the buffer
 -- rather than a popup. It uses the comment syntax of the language at that spot
@@ -137,6 +139,85 @@ local function clear_comments()
   vim.notify(msg, vim.log.levels.INFO)
 end
 
+---@param cmd string[]
+---@param on_exit fun(out: vim.SystemCompleted)
+local function run(cmd, on_exit)
+  vim.system(cmd, { text = true }, vim.schedule_wrap(on_exit))
+end
+
+local SPINNER = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }
+
+--- Show `msg` with a spinner until the returned function is called.
+---@param msg string
+---@return fun()
+local function progress(msg)
+  local id, frame, done = "ai_review_progress", 0, false
+  local timer = assert(vim.uv.new_timer())
+  timer:start(0, 80, vim.schedule_wrap(function()
+    -- A tick queued before `stop` would otherwise bring the notification back.
+    if done then
+      return
+    end
+    frame = frame % #SPINNER + 1
+    vim.notify(msg, vim.log.levels.INFO, { id = id, title = "Branch diff", icon = SPINNER[frame], timeout = false })
+  end))
+  return function()
+    done = true
+    timer:stop()
+    timer:close()
+    Snacks.notifier.hide(id)
+  end
+end
+
+--- Diff against the merge base with the remote's default branch, or a local
+--- `main`/`master` when `origin/HEAD` is unset. Only right while that ref is
+--- fresh: one older than the branch's start pulls other people's commits in.
+local function diff_against_default_branch()
+  local base
+  local head = vim.system({ "git", "rev-parse", "--abbrev-ref", "origin/HEAD" }, { text = true }):wait()
+  if head.code == 0 then
+    base = vim.trim(head.stdout)
+  else
+    for _, name in ipairs({ "main", "master" }) do
+      if vim.system({ "git", "rev-parse", "--verify", "--quiet", name }):wait().code == 0 then
+        base = name
+        break
+      end
+    end
+  end
+  if not base then
+    return vim.notify("No base branch: origin/HEAD, main and master are all missing", vim.log.levels.ERROR)
+  end
+  -- `<base>...` compares the merge base of `<base>` and HEAD with the working tree.
+  vim.cmd("CodeDiff " .. base .. "...")
+end
+
+--- Diff the whole branch. For a branch with a PR, GitHub computes the merge base
+--- against the PR's own base, so a stale local master is never involved and a
+--- stacked PR shows only its own changes. The merge base is an ancestor of the
+--- checked-out head, so it exists locally without a fetch.
+local function diff_branch()
+  local stop = progress("Finding where the branch started…")
+  local jq = '.baseRefName + " " + .headRefOid'
+  run({ "gh", "pr", "view", "--json", "baseRefName,headRefOid", "--jq", jq }, function(pr)
+    if pr.code ~= 0 then
+      stop()
+      return diff_against_default_branch()
+    end
+    local base, head = pr.stdout:match("^(%S+) (%S+)")
+    local compare = ("repos/{owner}/{repo}/compare/%s...%s"):format(base, head)
+    run({ "gh", "api", compare, "--jq", ".merge_base_commit.sha" }, function(cmp)
+      stop()
+      local sha = vim.trim(cmp.stdout)
+      if cmp.code ~= 0 or vim.system({ "git", "cat-file", "-e", sha .. "^{commit}" }):wait().code ~= 0 then
+        vim.notify("GitHub merge base unavailable, falling back to the local default branch", vim.log.levels.WARN)
+        return diff_against_default_branch()
+      end
+      vim.cmd("CodeDiff " .. sha)
+    end)
+  end)
+end
+
 return {
   {
     -- Binaries are fetched from GitHub releases on first use; no compiler needed.
@@ -155,6 +236,7 @@ return {
         end,
         desc = "Review diff (against revision)",
       },
+      { "<leader>ab", diff_branch, desc = "Review diff (whole branch)" },
     },
   },
   {
