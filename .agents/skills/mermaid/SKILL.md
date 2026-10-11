@@ -1,6 +1,6 @@
 ---
 name: mermaid
-description: Mermaid diagrams. Use when writing or editing a Mermaid diagram.
+description: Mermaid diagrams. Load before writing any ```mermaid block in a reply, doc or PR body; adds the mermaid.live link.
 ---
 
 # Mermaid
