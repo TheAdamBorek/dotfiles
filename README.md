@@ -68,6 +68,9 @@ continues to apply.
 `.claude` at the repo root is a symlink into `shared/.claude` so the same file
 serves as this repo's project instructions and as `~/.claude/CLAUDE.md`.
 
+`shared/.claude/CLAUDE.md` is a symlink to `shared/.codex/AGENTS.md`, so Claude
+Code and Codex read the same global instructions. Edit `AGENTS.md`.
+
 ## Agent skills
 
 `.agents/skills/` at the repo root holds the real skill files. Two agents read
