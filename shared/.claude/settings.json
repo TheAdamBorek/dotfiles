@@ -21,11 +21,24 @@
       ]
     }
   },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/herdr-autoname.sh"
+          }
+        ]
+      }
+    ]
+  },
   "enabledPlugins": {
     "figma@claude-plugins-official": true,
     "linear@claude-plugins-official": true,
     "notion@claude-plugins-official": true,
-    "slack@claude-plugins-official": true
+    "slack@claude-plugins-official": true,
+    "cronitor@cronitor": true
   },
   "alwaysThinkingEnabled": true,
   "effortLevel": "xhigh",
@@ -40,17 +53,5 @@
   "theme": "auto",
   "editorMode": "vim",
   "autoCompactEnabled": false,
-  "useAutoModeDuringPlan": false,
-  "hooks": {
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/herdr-autoname.sh"
-          }
-        ]
-      }
-    ]
-  }
+  "useAutoModeDuringPlan": false
 }
