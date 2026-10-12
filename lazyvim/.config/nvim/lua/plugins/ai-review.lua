@@ -1,4 +1,4 @@
--- Reviewing LLM-generated code.
+-- Reviewing code: LLM-generated changes, and other people's PRs.
 --
 -- <leader>ad opens the diff in codediff.nvim. Against the working tree its
 -- right-hand pane is the real, writable file buffer, so the comment binding
@@ -12,78 +12,23 @@
 -- <leader>af lists every `AI_REVIEW:` comment in the project in a Snacks picker.
 -- The `ai-review` agent skill answers them in place with `AI_REPLY:` lines.
 -- <leader>ax deletes every `AI_REVIEW:` and `AI_REPLY:` line in the project.
+-- <leader>ap opens a `PR_REVIEW:` comment the same way, as a block comment where
+-- the language has one, and <leader>aP pushes them all into your pending GitHub
+-- review and deletes them (see `review/pr.lua`).
+
+local review = require("review")
+local pr = require("review.pr")
 
 local KEYWORD = "AI_REVIEW"
 local REPLY = "AI_REPLY"
-
----@param cs string
----@return string
-local function norm(cs)
-  return (vim.trim(cs):gsub("%s*%%s%s*", " %%s "))
-end
-
---- Pick the commentstring for a comment inserted *above* `lnum`.
----
---- Reuses the per-node specs from ts-comments.nvim, but ignores nodes that
---- start on `lnum` itself: the comment goes on the line before, so it is not
---- inside them. That is what keeps `{/* %s */}` -- only valid between JSX
---- children -- off the line above a `<div>` that opens the element.
----@param lnum integer
----@return string
-local function commentstring(lnum)
-  local ok, Config = pcall(require, "ts-comments.config")
-  local spec = ok and Config.options.lang[vim.treesitter.language.get_lang(vim.bo.filetype) or vim.bo.filetype]
-
-  if type(spec) == "table" and not vim.islist(spec) then
-    local row = lnum - 1
-    local col = #vim.fn.getline(lnum):match("^%s*")
-    local found, node = pcall(vim.treesitter.get_node, { ignore_injections = false, pos = { row, col } })
-    while found and node do
-      local cs = spec[node:type()]
-      if cs and node:start() < row then
-        return norm(type(cs) == "table" and cs[1] or cs)
-      end
-      node = node:parent()
-    end
-  end
-
-  local fallback = (type(spec) == "table" and spec[1]) or (type(spec) == "string" and spec)
-  return norm(fallback or (vim.bo.commentstring ~= "" and vim.bo.commentstring) or "# %s")
-end
-
-local function add_comment()
-  local mode = vim.api.nvim_get_mode().mode
-  local lnum = vim.fn.line(".")
-  if mode == "v" or mode == "V" or mode == "\22" then
-    lnum = math.min(lnum, vim.fn.line("v"))
-    vim.api.nvim_feedkeys(vim.keycode("<Esc>"), "nx", false)
-    vim.api.nvim_win_set_cursor(0, { lnum, 0 })
-  end
-
-  local cs = commentstring(lnum)
-  local indent = vim.fn.getline(lnum):match("^%s*")
-
-  -- Split around the `%s` so the cursor can sit between the two halves: at the
-  -- end of `// AI_REVIEW: `, but *inside* `{/* AI_REVIEW:  */}`.
-  local prefix, suffix = cs:match("^(.-)%%s(.*)$")
-  prefix = indent .. (prefix or "") .. KEYWORD .. ": "
-  suffix = suffix or ""
-
-  vim.api.nvim_buf_set_lines(0, lnum - 1, lnum - 1, false, { prefix .. suffix })
-  vim.api.nvim_win_set_cursor(0, { lnum, #prefix })
-  vim.cmd(suffix == "" and "startinsert!" or "startinsert")
-end
 
 ---@param line string
 local function is_review_line(line)
   return line:find(KEYWORD .. ":", 1, true) or line:find(REPLY .. ":", 1, true)
 end
 
---- Delete every `AI_REVIEW:` and `AI_REPLY:` line in the project.
----
---- Edits go through buffers rather than `sed`, so open files update in place
---- and each file's deletion is one undo step. A buffer that already had unsaved
---- changes is left modified instead of written, so those changes are not saved
+--- Delete every `AI_REVIEW:` and `AI_REPLY:` line in the project. A buffer that
+--- already had unsaved changes is left unsaved, so those changes are not saved
 --- behind your back.
 local function clear_comments()
   local root = LazyVim.root()
@@ -107,28 +52,16 @@ local function clear_comments()
 
   local unsaved = 0
   for _, path in ipairs(files) do
-    local buf = vim.fn.bufadd(path)
-    local was_loaded = vim.api.nvim_buf_is_loaded(buf)
-    vim.fn.bufload(buf)
-    local was_modified = vim.bo[buf].modified
-
-    local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
-    for i = #lines, 1, -1 do
-      if is_review_line(lines[i]) then
-        vim.api.nvim_buf_set_lines(buf, i - 1, i, false, {})
+    local written = review.edit_file(path, function(buf)
+      local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+      for i = #lines, 1, -1 do
+        if is_review_line(lines[i]) then
+          vim.api.nvim_buf_set_lines(buf, i - 1, i, false, {})
+        end
       end
-    end
-
-    if was_modified then
+    end)
+    if not written then
       unsaved = unsaved + 1
-    else
-      -- `noautocmd` keeps format-on-save from touching the rest of the file.
-      vim.api.nvim_buf_call(buf, function()
-        vim.cmd("silent noautocmd write")
-      end)
-      if not was_loaded then
-        vim.api.nvim_buf_delete(buf, {})
-      end
     end
   end
 
@@ -143,30 +76,6 @@ end
 ---@param on_exit fun(out: vim.SystemCompleted)
 local function run(cmd, on_exit)
   vim.system(cmd, { text = true }, vim.schedule_wrap(on_exit))
-end
-
-local SPINNER = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }
-
---- Show `msg` with a spinner until the returned function is called.
----@param msg string
----@return fun()
-local function progress(msg)
-  local id, frame, done = "ai_review_progress", 0, false
-  local timer = assert(vim.uv.new_timer())
-  timer:start(0, 80, vim.schedule_wrap(function()
-    -- A tick queued before `stop` would otherwise bring the notification back.
-    if done then
-      return
-    end
-    frame = frame % #SPINNER + 1
-    vim.notify(msg, vim.log.levels.INFO, { id = id, title = "Branch diff", icon = SPINNER[frame], timeout = false })
-  end))
-  return function()
-    done = true
-    timer:stop()
-    timer:close()
-    Snacks.notifier.hide(id)
-  end
 end
 
 --- Diff against the merge base with the remote's default branch, or a local
@@ -197,7 +106,7 @@ end
 --- stacked PR shows only its own changes. The merge base is an ancestor of the
 --- checked-out head, so it exists locally without a fetch.
 local function diff_branch()
-  local stop = progress("Finding where the branch started…")
+  local stop = review.progress("Finding where the branch started…", "Branch diff")
   local jq = '.baseRefName + " " + .headRefOid'
   run({ "gh", "pr", "view", "--json", "baseRefName,headRefOid", "--jq", jq }, function(pr)
     if pr.code ~= 0 then
@@ -245,14 +154,32 @@ return {
       keywords = {
         [KEYWORD] = { icon = "󰚩 ", color = "ai_review" },
         [REPLY] = { icon = "󰚩 ", color = "ai_reply" },
+        [pr.KEYWORD] = { icon = " ", color = "pr_review" },
       },
       colors = {
         ai_review = { "#FF9E64" },
         ai_reply = { "#7DCFFF" },
+        pr_review = { "#9ECE6A" },
       },
     },
     keys = {
-      { "<leader>ac", add_comment, mode = { "n", "x" }, desc = "Add review comment" },
+      {
+        "<leader>ac",
+        function()
+          review.insert(KEYWORD)
+        end,
+        mode = { "n", "x" },
+        desc = "Add review comment",
+      },
+      {
+        "<leader>ap",
+        function()
+          review.insert(pr.KEYWORD, { block = true })
+        end,
+        mode = { "n", "x" },
+        desc = "Add PR comment",
+      },
+      { "<leader>aP", pr.push, desc = "Push PR comments to GitHub" },
       {
         "<leader>af",
         function()
@@ -267,7 +194,7 @@ return {
     "folke/which-key.nvim",
     opts = {
       spec = {
-        { "<leader>a", group = "ai review", icon = { icon = "󰚩 ", color = "orange" } },
+        { "<leader>a", group = "review", icon = { icon = "󰚩 ", color = "orange" } },
       },
     },
   },
