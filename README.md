@@ -10,8 +10,8 @@ hand:
 ./macos/zsh/setup.sh
 ```
 
-It installs the Homebrew dependencies, stows `shared`, `nvim` and `macos`, then
-uses mise to install the global development tools.
+It installs the Homebrew dependencies, stows the config packages, installs agent
+skills, then uses mise to install the global development tools.
 
 To manage the Stow packages manually instead:
 
@@ -20,6 +20,7 @@ cd ~/dotfiles
 stow shared nvim macos        # macOS with the custom Neovim config
 stow shared lazyvim omarchy   # Omarchy with LazyVim
 stow attio                    # on top of either, on an Attio machine
+bash scripts/install-agent-skills.sh  # skills for both agents, on either OS
 ```
 
 After a manual macOS Stow run, use `~/.local/bin/mise install` to install the
@@ -53,7 +54,7 @@ continues to apply.
 
 | Path                      | Stowed | Contents                                                    |
 | ------------------------- | ------ | ----------------------------------------------------------- |
-| `shared/`                 | yes    | ghostty, yazi, starship, lazygit, `.agents`, `.claude`, `.codex` |
+| `shared/`                 | yes    | ghostty, yazi, starship, lazygit, `.claude`, `.codex`          |
 | `nvim/`                   | choice | custom nvim config                                          |
 | `lazyvim/`                | choice | LazyVim config, minus `theme.lua`                           |
 | `macos/`                  | yes    | aerospace, mise, nvim `theme.lua`, `.zshrc`, `t3-open-nvim` |
@@ -65,9 +66,6 @@ continues to apply.
 | `scripts/`, `kinesis/`    | no     | not config; run or referenced directly                      |
 | `.agents/`                | no     | agent skills; the real files, linked into `~/.agents`       |
 
-`.claude` at the repo root is a symlink into `shared/.claude` so the same file
-serves as this repo's project instructions and as `~/.claude/CLAUDE.md`.
-
 `shared/.claude/CLAUDE.md` is a symlink to `shared/.codex/AGENTS.md`, so Claude
 Code and Codex read the same global instructions. Edit `AGENTS.md`.
 
@@ -76,37 +74,30 @@ Code and Codex read the same global instructions. Edit `AGENTS.md`.
 `.agents/skills/` at the repo root holds the real skill files. Two agents read
 them, by different paths:
 
-| Consumer    | Path               | How it gets there             |
-| ----------- | ------------------ | ----------------------------- |
-| Codex       | `~/.agents/skills` | stowed, one directory symlink |
-| Claude Code | `~/.claude/skills` | stowed, one symlink per skill |
+| Consumer    | Path               | Direct target                            |
+| ----------- | ------------------ | ---------------------------------------- |
+| Codex       | `~/.agents/skills` | `~/dotfiles/.agents/skills`               |
+| Claude Code | `~/.claude/skills/<name>` | `~/dotfiles/.agents/skills/<name>` |
 
-`shared/.agents/skills` points at `../../.agents/skills`. Stow links this
-directory symlink into `~/.agents/skills`, including with `--no-folding`.
-Running `stow shared` installs the skills for both agents.
-
-`shared/.claude/skills/` holds one symlink per skill, each pointing at
-`../../../.agents/skills/<name>`. Stow never walks into a symlink, even with
-`--no-folding`. It links the symlink itself, so stowing gives a real
-`~/.claude/skills` directory with one link per skill. Anything Claude Code
-writes there on its own stays out of the repo. That includes `synced/`, where it
-keeps the org skills it pulls from claude.ai. Linking the whole `skills`
-directory instead would put `synced/` in the working tree.
-
-Adding a skill under `.agents/skills/` takes one extra step for Claude Code:
+Skills are installed separately from Stow. On macOS and Omarchy, run:
 
 ```sh
-ln -s ../../../.agents/skills/<name> shared/.claude/skills/<name>
-stow shared
+bash ~/dotfiles/scripts/install-agent-skills.sh --dry-run  # preview changes
+bash ~/dotfiles/scripts/install-agent-skills.sh
 ```
 
-Codex picks it up with no re-stow at all.
+The macOS bootstrap runs the installer automatically. Run it again after adding
+or removing a skill. Edits to existing skills are visible through the links
+without reinstalling. Local, uncommitted skills are installed too.
+
+The installer replaces links from the old Stow layout and removes obsolete links
+that point to this repo. A conflicting local copy or a link to another source
+stops installation before any changes. Other skills and Claude's `synced/` and
+`.trash/` directories stay outside the repo and are preserved.
 
 The `sync-skills` skill (`/sync-skills` in Claude Code, `$sync-skills` in Codex)
-pulls `master`, adds any missing Claude Code links and stows `shared`.
-
-The skill files stay outside the Stow packages. Linking the `skills` directory
-lets Codex read the original `SKILL.md` files rather than individual file links.
+pulls `master` and runs the same installer. Local installation makes no Git or
+network changes.
 
 Skills carry an optional `agents/openai.yaml` alongside `SKILL.md`. It is a Codex
 extension, not part of the Agent Skills spec, and Claude Code ignores it. Note

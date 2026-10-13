@@ -23,9 +23,10 @@ Done when it exits 0. On a `STOP:`, go to step 2; otherwise go to step 3.
 Show the user the script's message and the evidence below, propose a fix, and wait for their answer before changing anything:
 
 - **Not on master, or pull refused**: `git status` and `git log --oneline --left-right origin/master...HEAD`.
-- **`~/.claude/skills/<name>` differs from the repo**: `diff -r` of the two. The local copy may hold edits that belong in the repo.
-- **`~/.agents/skills` links elsewhere**: where it points and what that directory holds.
-- **Stow conflicts**: for each target stow names, `ls -la` of it, plus a diff against the repo file when it is a regular file.
+- **Local file or directory conflicts with a skill link**: `diff -r` against the source named in the message. Preserve local edits before replacing it.
+- **A skill path links elsewhere**: where it points and what that directory holds.
+
+For local installation without pulling Git changes, run `bash ~/dotfiles/scripts/install-agent-skills.sh`. Add `--dry-run` to preview the direct links and obsolete-link cleanup. The installer preserves Claude's `synced/` directory and skills from other sources.
 
 After the fix, run the script again. Done when it exits 0.
 

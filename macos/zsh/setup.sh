@@ -121,6 +121,7 @@ prepare_gnupg_home
 # Before Oh My Zsh: its installer writes its own ~/.zshrc when none exists.
 prepare_local_zsh_files
 stow shared lazyvim macos
+bash "$REPO_DIR/scripts/install-agent-skills.sh"
 
 install_oh_my_zsh
 install_mise
