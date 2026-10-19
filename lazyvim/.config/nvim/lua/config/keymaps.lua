@@ -4,6 +4,11 @@
 
 vim.keymap.set("i", "jk", "<Esc>", { desc = "Escape insert mode" })
 
+local selection = require("config.incremental-selection")
+vim.keymap.set("n", "<C-s>", selection.init_selection, { desc = "Select treesitter node" })
+vim.keymap.set("x", "<C-s>", selection.node_incremental, { desc = "Expand selection to parent node" })
+vim.keymap.set("x", "<BS>", selection.node_decremental, { desc = "Shrink selection to previous node" })
+
 vim.keymap.set({ "n", "x" }, "<leader>y", '"+y', { desc = "Yank to system clipboard" })
 vim.keymap.set({ "n", "x" }, "<leader>p", '"+p', { desc = "Paste from system clipboard" })
 
