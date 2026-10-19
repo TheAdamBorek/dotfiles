@@ -122,8 +122,11 @@ alt-ctrl-shift-k = 'move up'
 alt-ctrl-shift-l = 'move right'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#resize
-alt-ctrl-minus = 'resize smart -50'
-alt-ctrl-equal = 'resize smart +50'
+cmd-ctrl-minus = 'resize smart -50'
+cmd-ctrl-equal = 'resize smart +50'
+
+# Reclaim unused tile width when Simulator keeps a narrower window frame.
+cmd-ctrl-w = 'exec-and-forget /bin/bash "$HOME/.config/aerospace/fit-simulator-width.sh"'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
 cmd-1 = 'workspace 1'
