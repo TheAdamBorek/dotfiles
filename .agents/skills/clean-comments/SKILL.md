@@ -1,5 +1,5 @@
 ---
-name: code-comments
+name: clean-comments
 description: Code comments and doc comments, when to write, keep or delete one. Use when writing or editing code.
 ---
 
