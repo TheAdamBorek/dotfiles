@@ -14,6 +14,7 @@ The default is no inline comment. Write one only when a reader who knows the lan
 - Code that looks wrong, or easy to simplify, but has to stay that way. Say why, so the next editor doesn't "fix" it.
 - An alternative a reader would likely propose, and why it was rejected.
 - Hidden coupling or ordering: what else must change along with this, what must run before or after it.
+- The goal the code serves, when the code doesn't show it ("so the chip's view stays mounted"). A reviewer can then spot code that misses it.
 - The outside source of a fact: a spec section, the library version behind a workaround, where a magic constant comes from.
 - A construct the reader won't recognize, like a regex or a bit trick. Common idioms of the language need none.
 - Dense code: name the algorithm. When a long function would need a note per step, split it into helpers whose names say the steps (only in code your change touches).
@@ -22,9 +23,9 @@ The default is no inline comment. Write one only when a reader who knows the lan
 
 ## Doc comments
 
-Write a doc comment only when the signature leaves something out. State the contract, not the implementation. Each fact lives once, on the declaration: not at call sites, not again on overrides.
+Write a doc comment only when the signature leaves something out. State the contract, not the implementation. Anything from "What earns a comment" may go there too, such as why a private helper works the way it does. Each fact lives once, on the declaration: not at call sites, not again on overrides.
 
-Doc comments on the fields of a larger object (a JSDoc block, a docstring, a struct field comment) are fine when the field types aren't obvious from the names, or when a few fields look alike and a reader could mix them up (`timeout`, `idleTimeout`, `connectTimeout`).
+Doc comments on the fields of a larger object (a JSDoc block, a docstring, a struct field comment) follow the same test: write one when the name and type leave something out, such as what the value holds, why it exists, or which of a few look-alike fields it is (`timeout`, `idleTimeout`, `connectTimeout`).
 
 ## Writing one
 
