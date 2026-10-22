@@ -54,7 +54,7 @@ continues to apply.
 
 | Path                      | Stowed | Contents                                                    |
 | ------------------------- | ------ | ----------------------------------------------------------- |
-| `shared/`                 | yes    | ghostty, yazi, starship, lazygit, `.claude`, `.codex`          |
+| `shared/`                 | yes    | ghostty, yazi, starship, lazygit, `.claude`, `.codex`, `monitor-input` |
 | `nvim/`                   | choice | custom nvim config                                          |
 | `lazyvim/`                | choice | LazyVim config, minus `theme.lua`                           |
 | `macos/`                  | yes    | aerospace, mise, nvim `theme.lua`, `.zshrc`, `t3-open-nvim` |

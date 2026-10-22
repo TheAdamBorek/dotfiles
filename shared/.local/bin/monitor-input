@@ -1,0 +1,16 @@
+#!/bin/bash
+# Switches the Dell U3225QE to the other computer. Keyboard and mouse sit on the
+# monitor's USB hub, which follows the input, so this only ever runs on the
+# computer being shown: no need to read the current input first.
+set -eu
+
+case "$(uname -s)" in
+  Linux)
+    # USB-C input (Mac). A Dell-specific value, ddcutil reports it as invalid.
+    exec ddcutil --model "DELL U3225QE" --noverify setvcp 60 0x19
+    ;;
+  Darwin)
+    # DisplayPort-1 (Linux), 0x0f
+    PATH="/opt/homebrew/bin:$PATH" exec m1ddc set input 15
+    ;;
+esac

@@ -88,3 +88,5 @@ o.bind("F11", "Full screen (keep Brave toolbar)", function()
     end, { timeout = 50, type = "oneshot" })
   end
 end)
+
+o.bind("SUPER + CTRL + ALT + SHIFT + M", "Switch monitor and peripherals to Mac", "monitor-input")

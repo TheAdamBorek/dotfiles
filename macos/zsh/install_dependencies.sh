@@ -30,6 +30,7 @@ brew_packages=(
   "jesseduffield/lazydocker/lazydocker"     # terminal UI for docker/docker-compose
   "libimobiledevice"                        # talk to iOS devices over USB (idevice* tools)
   "switchaudio-osx"                         # switch macOS audio in/out from the CLI
+  "m1ddc"                                   # DDC/CI monitor control; monitor-input uses it to switch inputs
   "tlrc"                                    # tldr client: concise, example-first man pages
   "stow"                                    # symlink manager for dotfiles
   "lua"                                     # Lua interpreter (Neovim config, etc.)

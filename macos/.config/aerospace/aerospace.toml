@@ -128,6 +128,9 @@ cmd-ctrl-equal = 'resize smart +50'
 # Reclaim unused tile width when Simulator keeps a narrower window frame.
 cmd-ctrl-w = 'exec-and-forget /bin/bash "$HOME/.config/aerospace/fit-simulator-width.sh"'
 
+# Hand the Dell monitor and the peripherals on its USB hub to the Linux machine.
+cmd-alt-ctrl-shift-m = 'exec-and-forget /bin/bash "$HOME/.local/bin/monitor-input"'
+
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
 cmd-1 = 'workspace 1'
 cmd-2 = 'workspace 2'
