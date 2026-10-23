@@ -1,6 +1,8 @@
 ## Code
 
-When writing code, ask before you add tests.
+Before writing implementation or test code, agree with the user whether tests are needed and, if so, which behaviors and public interfaces they should cover. Reuse any agreement already made in the session.
+
+Before planning, writing, modifying, or reviewing tests, load the `tdd` skill. It defines how to write tests, what makes a good test, and which anti-patterns to avoid. Apply it even when the user hasn't explicitly requested TDD.
 
 ## Reports
 
