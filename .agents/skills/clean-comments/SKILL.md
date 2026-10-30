@@ -1,13 +1,13 @@
 ---
 name: clean-comments
-description: Code comments and doc comments, when to write, keep or delete one. Use when writing or editing code.
+description: Use when the user asks to write, edit or review a code comment or doc comment.
 ---
 
 # Code comments
 
 A useful comment tells a future reader something they couldn't get by reading the code itself. Everything else is noise.
 
-The default is no inline comment. Write one only when a reader who knows the language and the module would get something wrong without it.
+Comments are written only on the user's request. Even then, write one only where a reader who knows the language and the module would get something wrong without it. When the requested comment would be noise under these rules, say so and propose the useful version.
 
 ## What earns a comment
 

@@ -4,6 +4,8 @@ Before writing implementation or test code, agree with the user whether tests ar
 
 Before planning, writing, modifying, or reviewing tests, load the `tdd` skill. It defines how to write tests, what makes a good test, and which anti-patterns to avoid. Apply it even when the user hasn't explicitly requested TDD.
 
+Write code without comments or doc comments. Add one only when the user explicitly asks for it, and load the `clean-comments` skill first. When your change makes an existing comment false, fix or delete it.
+
 ## Reports
 
 When generating reports, by default use .html. Never create .xls or .docx formats on your own. Ask before doing so. You can also use .md for such reports.
