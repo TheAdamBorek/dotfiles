@@ -1,0 +1,89 @@
+--- a/Panel.qml
++++ b/Panel.qml
+@@ -76,7 +76,6 @@
+   readonly property var visibleSections: {
+     var list = []
+     if (brightnessAvailable) list.push("brightness")
+-    list.push("textsize")
+     list.push("scale")
+     if (displays.length > 1) list.push("monitors")
+     return list
+@@ -657,78 +656,6 @@
+                   root.selectedIndex = -1
+                 }
+               }
+-            }
+-          }
+-
+-          // ---------- Text size ----------
+-          PanelSeparator {
+-            foreground: root.bar.foreground
+-          }
+-
+-          Column {
+-            width: parent.width
+-            spacing: Style.space(6)
+-
+-            Item {
+-              width: parent.width
+-              implicitHeight: Math.max(textSizeHeader.implicitHeight, textSizePx.implicitHeight)
+-
+-              PanelSectionHeader {
+-                id: textSizeHeader
+-                text: "TEXT SIZE"
+-                foreground: root.bar.foreground
+-                fontFamily: root.bar.fontFamily
+-                anchors.left: parent.left
+-                anchors.verticalCenter: parent.verticalCenter
+-              }
+-
+-              Text {
+-                id: textSizePx
+-                textFormat: Text.PlainText
+-                text: (textSizeSlider.dragging
+-                       ? root.textSizeStops[Math.round(textSizeSlider.liveValue)]
+-                       : root.displayedTextPx()) + "px"
+-                color: Qt.darker(root.bar.foreground, 1.4)
+-                font.family: root.bar.fontFamily
+-                font.pixelSize: Style.font.caption
+-                font.bold: true
+-                anchors.right: parent.right
+-                anchors.rightMargin: Style.space(6)
+-                anchors.verticalCenter: parent.verticalCenter
+-              }
+-            }
+-
+-            CursorSurface {
+-              id: textSizeRow
+-              width: parent.width
+-              height: textSizeSlider.implicitHeight + Style.spacing.controlGap
+-              hasCursor: root.cursorActive && root.focusSection === "textsize" && root.selectedIndex === -1
+-              onHasCursorChanged: if (hasCursor) root.ensureCursorVisible(textSizeRow)
+-              foreground: root.bar.foreground
+-              outline: true
+-
+-              PanelSlider {
+-                id: textSizeSlider
+-                bar: root.bar
+-                anchors.fill: parent
+-                anchors.leftMargin: Style.space(6)
+-                anchors.rightMargin: Style.space(6)
+-                minimum: 0
+-                maximum: root.textSizeStops.length - 1
+-                step: 1
+-                integer: true
+-                tickCount: root.textSizeStops.length
+-                value: root.currentTextIndex()
+-                onReleased: function(v) { root.setTextSize(root.textSizeStops[Math.round(v)]) }
+-              }
+-
+-              HoverHandler {
+-                onHoveredChanged: if (hovered && !root.reflowingText) {
+-                  root.cursorActive = true
+-                  root.focusSection = "textsize"
+-                  root.selectedIndex = -1
+-                }
+-              }
+             }
+           }
+ 

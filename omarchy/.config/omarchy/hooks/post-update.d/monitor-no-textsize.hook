@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# Rebuild the cloned Display panel from Omarchy's current omarchy.monitor after
+# every update, minus the Text size slider. The slider sets GTK's
+# text-scaling-factor, which clips 1Password's fixed-size dialogs
+# (https://github.com/omacom/omarchy/issues/8574). If the patch stops applying,
+# switch back to the built-in panel instead of keeping a stale copy.
+
+set -e
+
+plugin_id="${USER:-$(id -un)}.monitor"
+plugin_dir="$HOME/.config/omarchy/plugins/$plugin_id"
+patch_file="$HOME/.config/omarchy/patches/monitor-no-textsize.patch"
+shell_config="$HOME/.config/omarchy/shell.json"
+
+# Only maintain the clone while the bar still uses it.
+grep -q "\"$plugin_id\"" "$shell_config" || exit 0
+
+use_builtin() {
+  sed --follow-symlinks -i "s/\"$plugin_id\"/\"omarchy.monitor\"/" "$shell_config"
+  omarchy-notification-send "Display panel reset" \
+    "$1 Back on Omarchy's built-in panel, with the Text size slider."
+}
+
+source_dir=$(omarchy-plugin-catalog | jq -r '.[] | select(.firstParty and .id == "omarchy.monitor") | .sourceDir')
+if [[ -z $source_dir ]]; then
+  use_builtin "omarchy.monitor was not found."
+  exit 0
+fi
+
+stage=$(mktemp -d)
+trap 'rm -rf "$stage"' EXIT
+cp -aL "$source_dir/." "$stage/"
+
+if ! patch --batch --forward --silent -d "$stage" -p1 <"$patch_file"; then
+  use_builtin "The Text size patch no longer applies."
+  exit 0
+fi
+
+# Same manifest rewrite omarchy-plugin-clone does, so the shell still routes
+# omarchy.monitor IPC calls to the clone.
+jq --arg id "$plugin_id" '
+  .id = $id |
+  .name = "My Display" |
+  .barWidget.displayName = "My Display" |
+  .omarchy = ((.omarchy // {}) + { clonedFrom: "omarchy.monitor" }) |
+  del(.omarchy.clonePaths)
+' "$stage/manifest.json" >"$stage/manifest.json.tmp"
+mv "$stage/manifest.json.tmp" "$stage/manifest.json"
+
+chmod 755 "$stage"
+rm -rf "$plugin_dir"
+cp -a "$stage" "$plugin_dir"
