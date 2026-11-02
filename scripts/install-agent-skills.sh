@@ -4,7 +4,7 @@ set -euo pipefail
 
 DOTFILES="$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
 SKILLS="$DOTFILES/.agents/skills"
-AGENTS_LINK="$HOME/.agents/skills"
+AGENTS_SKILLS="$HOME/.agents/skills"
 CLAUDE_SKILLS="$HOME/.claude/skills"
 DRY_RUN=false
 
@@ -75,7 +75,13 @@ done
   stop "$CLAUDE_SKILLS must be a real directory so Claude's synced skills stay separate."
 
 # Validate every destination before changing any links.
-validate_link "$AGENTS_LINK" "$SKILLS" "$DOTFILES/shared/.agents/skills"
+agents_link_legacy=false
+if [[ -L "$AGENTS_SKILLS" ]]; then
+  validate_link "$AGENTS_SKILLS" "$SKILLS" "$DOTFILES/shared/.agents/skills"
+  agents_link_legacy=true
+elif [[ -e "$AGENTS_SKILLS" && ! -d "$AGENTS_SKILLS" ]]; then
+  stop "$AGENTS_SKILLS is not a directory."
+fi
 count=0
 for skill in "$SKILLS"/*; do
   [[ -f "$skill/SKILL.md" ]] || continue
@@ -83,37 +89,48 @@ for skill in "$SKILLS"/*; do
   case "$name" in
     [sS][yY][nN][cC][eE][dD]) stop "The skill name '$name' is reserved by Claude Code." ;;
   esac
+  "$agents_link_legacy" || validate_link "$AGENTS_SKILLS/$name" "$skill" "$skill"
   validate_link "$CLAUDE_SKILLS/$name" "$skill" "$DOTFILES/shared/.claude/skills/$name"
   count=$((count + 1))
 done
 [[ "$count" -gt 0 ]] || stop "No skills found in $SKILLS"
 
-run mkdir -p "$HOME/.agents" "$CLAUDE_SKILLS"
-install_link "$AGENTS_LINK" "$SKILLS"
+if "$agents_link_legacy"; then
+  run rm "$AGENTS_SKILLS"
+  printf 'replaced link with a directory: %s\n' "$AGENTS_SKILLS"
+fi
+run mkdir -p "$AGENTS_SKILLS" "$CLAUDE_SKILLS"
 for skill in "$SKILLS"/*; do
   [[ -f "$skill/SKILL.md" ]] || continue
+  install_link "$AGENTS_SKILLS/${skill##*/}" "$skill"
   install_link "$CLAUDE_SKILLS/${skill##*/}" "$skill"
 done
 
 # Only remove links owned by this installer or the previous Stow layout.
-for link in "$CLAUDE_SKILLS"/*; do
-  [[ -L "$link" ]] || continue
-  name="${link##*/}"
-  target="$(link_target "$link")"
-  if [[ "$target" == "$SKILLS/$name" || "$target" == "$DOTFILES/shared/.claude/skills/$name" ]]; then
-    if [[ ! -f "$SKILLS/$name/SKILL.md" ]]; then
-      run rm "$link"
-      printf 'removed obsolete link: %s\n' "$link"
+remove_obsolete_links() {
+  local directory="$1" legacy="$2" link name target
+  for link in "$directory"/*; do
+    [[ -L "$link" ]] || continue
+    name="${link##*/}"
+    target="$(link_target "$link")"
+    if [[ "$target" == "$SKILLS/$name" || "$target" == "$legacy/$name" ]]; then
+      if [[ ! -f "$SKILLS/$name/SKILL.md" ]]; then
+        run rm "$link"
+        printf 'removed obsolete link: %s\n' "$link"
+      fi
     fi
-  fi
-done
+  done
+}
+
+"$agents_link_legacy" || remove_obsolete_links "$AGENTS_SKILLS" "$SKILLS"
+remove_obsolete_links "$CLAUDE_SKILLS" "$DOTFILES/shared/.claude/skills"
 
 if "$DRY_RUN"; then
   printf 'Preview complete: %s skills for Codex and Claude Code.\n' "$count"
 else
   for skill in "$SKILLS"/*; do
     [[ -f "$skill/SKILL.md" ]] || continue
-    [[ -f "$AGENTS_LINK/${skill##*/}/SKILL.md" && -f "$CLAUDE_SKILLS/${skill##*/}/SKILL.md" ]] ||
+    [[ -f "$AGENTS_SKILLS/${skill##*/}/SKILL.md" && -f "$CLAUDE_SKILLS/${skill##*/}/SKILL.md" ]] ||
       stop "Skill ${skill##*/} is missing after installation."
   done
   printf 'Installed %s skills for Codex and Claude Code.\n' "$count"

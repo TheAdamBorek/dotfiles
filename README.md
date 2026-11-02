@@ -72,12 +72,22 @@ Code and Codex read the same global instructions. Edit `AGENTS.md`.
 ## Agent skills
 
 `.agents/skills/` at the repo root holds the real skill files. Two agents read
-them, by different paths:
+them, each through a link per skill:
 
-| Consumer    | Path               | Direct target                            |
-| ----------- | ------------------ | ---------------------------------------- |
-| Codex       | `~/.agents/skills` | `~/dotfiles/.agents/skills`               |
+| Consumer    | Path                      | Direct target                      |
+| ----------- | ------------------------- | ---------------------------------- |
+| Codex       | `~/.agents/skills/<name>` | `~/dotfiles/.agents/skills/<name>` |
 | Claude Code | `~/.claude/skills/<name>` | `~/dotfiles/.agents/skills/<name>` |
+
+Both paths are real directories, so third-party skills sit next to these links
+without landing in the repo. Install them with
+[`npx skills`](https://github.com/vercel-labs/skills), which copies each one
+into `~/.agents/skills/`, links it from `~/.claude/skills/`, and records its
+source in `~/.agents/.skill-lock.json` for `npx skills update`:
+
+```sh
+npx skills add backnotprop/plannotator/apps/skills/extra --global
+```
 
 Skills are installed separately from Stow. On macOS and Omarchy, run:
 
@@ -90,8 +100,10 @@ The macOS bootstrap runs the installer automatically. Run it again after adding
 or removing a skill. Edits to existing skills are visible through the links
 without reinstalling. Local, uncommitted skills are installed too.
 
-The installer replaces links from the old Stow layout and removes obsolete links
-that point to this repo. A conflicting local copy or a link to another source
+The installer replaces links from the old Stow layout, turns an old
+`~/.agents/skills` link to this repo into a directory, and removes obsolete links
+that point to this repo. Move any third-party skill out of `.agents/skills/`
+before that first run, or the installer links it as one of this repo's skills. A conflicting local copy or a link to another source
 stops installation before any changes. Other skills and Claude's `synced/` and
 `.trash/` directories stay outside the repo and are preserved.
 
