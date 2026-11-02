@@ -8,7 +8,7 @@ hl.config({
     -- Natural (inverted) scrolling, like macOS.
     natural_scroll = true,
     -- Pointer speed, -1.0 to 1.0 (Omarchy default: 0).
-    sensitivity = 0.4,
+    sensitivity = 0.0,
     -- Polish (programmers): identical to US QWERTY, plus AltGr diacritics.
     kb_layout = "pl",
     kb_options = "compose:caps,shift:both_capslock_cancel",
