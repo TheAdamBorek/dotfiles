@@ -44,10 +44,6 @@
     ]
   },
   "enabledPlugins": {
-    "figma@claude-plugins-official": true,
-    "linear@claude-plugins-official": true,
-    "notion@claude-plugins-official": true,
-    "slack@claude-plugins-official": true,
     "cronitor@cronitor": true
   },
   "alwaysThinkingEnabled": true,
@@ -63,5 +59,13 @@
   "theme": "auto",
   "editorMode": "vim",
   "autoCompactEnabled": false,
-  "useAutoModeDuringPlan": false
+  "useAutoModeDuringPlan": false,
+  "extraKnownMarketplaces": {
+    "plannotator": {
+      "source": {
+        "source": "github",
+        "repo": "backnotprop/plannotator"
+      }
+    }
+  }
 }
