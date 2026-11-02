@@ -8,6 +8,15 @@
             "command": "~/.agents/skills/mermaid/check-links.py"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -x ~/.local/bin/plannotator ] && ~/.local/bin/plannotator || true",
+            "timeout": 345600
+          }
+        ]
       }
     ]
   }
